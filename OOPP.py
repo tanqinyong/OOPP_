@@ -24,6 +24,11 @@ def render_trainee_notes():
     return render_template('trainee_notes.html')
 
 
+@app.route('/billing/')
+def render_billing():
+    return render_template('billing.html')
+
+
 if __name__ == '__main__':
     app.run()
 
