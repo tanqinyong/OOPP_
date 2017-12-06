@@ -27,7 +27,7 @@
       line-height: 1.375em;
       color: #303030;
       font-weight: 400;
-      margin-top: 30px;
+      margin-bottom: 30px;
   }
   .jumbotron {
       background-color: #f4511e;
@@ -217,34 +217,47 @@
   <h1>iCare</h1>
   <p>Helping you always!</p>
 </div>
-
-<!-- Container (About Section) -->
-<div id="portfolio" class="container-fluid">
-  <div class="row">
-  <div class="col-sm-4">
-      <span class="glyphicon glyphicon-signal logo" style="line-height:1.8;"></span>
+<!-- Container (Pricing Section) -->
+<div id="contact" class="container-fluid">
+  <div class="text-center">
+    <h2>Text/Speech</h2>
+    <h4>Choose a conversion method that works for you</h4>
+  </div>
+  <div>
+    <div class="col-sm-6 col-xs-12">
+      <div class="panel panel-default text-center">
+        <div class="panel-heading">
+          <h1>Text-to-Speech</h1>
+        </div>
+        <div class="panel-body" contenteditable="true">
+         <p>Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
+		  Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
+		  Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum</p>
+        </div>
+        <div class="panel-footer">
+          <textarea placeholder="E.g. Lorem Ipsum" rows="4" cols="50"></textarea>
+		  <br/>
+          <button class="btn btn-lg">Convert</button>
+        </div>
+      </div>
     </div>
-    <div class="col-sm-4">
-      <h2>List of cost: </h2>
-      <h4>Bed charge: $27000 <span class="glyphicon glyphicon-arrow-up" style="color:red;">$9000/day</span></h4>
-	  <h4>Medical Fee:$9000</h4>
-	  <ul>
-		<li>XXX medicine:$3000</li>
-		<li>YYY medicine:$5000</li>
-		<li>ZZZ medicine:$1000</li>
-	  </ul>
-      <h4>Services:$19000</h4>
-      <h4>Operation:$5000</h4>
-      <br><button class="btn btn-default btn-lg">Pay now/More Details?</button>
+    <div class="col-sm-6 col-xs-12">
+      <div class="panel panel-default text-center">
+        <div class="panel-heading">
+          <h1>Speech-to-text</h1>
+        </div>
+        <div class="panel-body" contenteditable="true">
+         <p>Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
+		  Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
+		  Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum</p>
+        </div>
+        <div class="panel-footer">
+          <img src="https://d30y9cdsu7xlg0.cloudfront.net/png/2313-200.png" style="max-width:100%; height:auto; cursor:pointer;" onclick="this.style.border = '1px solid red';document.getElementById('clickclick').innerHTML = 'You are recording';" ondblclick="this.style.border = 'none'; document.getElementById('clickclick').innerHTML = 'Click to record'"/>
+		  <!-- Should we use onmousedown/onmouseup event? But I don't think disabled people will be holding down the button for sure. -->
+		  <span id="clickclick">Click to record</span>
+        </div>
+      </div>
     </div>
-	<div class="col-sm-4">
-		<h2><span class="glyphicon glyphicon-info-sign" style="font-size:40px"></span>Did you know? 9 out of 10 of your neighbour pay their bills on time</h2>
-		<h2><span class="glyphicon glyphicon-info-sign" style="font-size:40px"></span>Any idea what can I put to cover this big white space?</h2>
-		<h2><span class="glyphicon glyphicon-info-sign" style="font-size:40px"></span>Something statistical I suppose?</h2>
-	</div>
-	<div class="col-sm-12">
-		<h2>Total Hospital Bill: $54000</h2>
-	</div>
   </div>
 </div>
 <footer class="container-fluid text-center">
@@ -295,4 +308,3 @@ $(document).ready(function(){
 
 </body>
 </html>
-

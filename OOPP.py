@@ -29,6 +29,16 @@ def render_billing():
     return render_template('billing.html')
 
 
+@app.route('/remote_doctor/')
+def render_remote_doctor():
+    return render_template('remote_doctor.html')
+
+
+@app.route('/speech_to_text/')
+def render_speech_to_text():
+    return render_template('speech_to_text.html')
+
+
 if __name__ == '__main__':
     app.run()
 
