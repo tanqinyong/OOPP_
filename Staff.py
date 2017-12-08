@@ -1,38 +1,23 @@
 import Person
 
 class Staff(Person.Person):
-    def __init__(self, nric, name, dob, address, phone, gender, id, password, type, position):
+    def __init__(self, nric, name, dob, address, phone, gender, id, patient):
         super().__init__(nric, name, dob, address, phone, gender)
         self.__id = id
-        self.__password = password
-        self.__type = type
-        self.__position = position
+        self.__patient = patient
 
     #Accessor methods
 
     def get_id(self):
         return self.__id
 
-    def get_password(self):
-        return self.__password
-
-    def get_type(self):
-        return self.__type
-
-    def get_position(self):
-        return self.__position
+    def get_patient(self):
+        return self.__patient
 
     #Mutator methods
 
     def set_id(self, id):
         self.__id = id
 
-    def set_password(self, password):
-        self.__password = password
-
-    def set_type(self, type):
-        self.__type = type
-
-    def set_position(self, position):
-        self.__position = position
-
+    def set_diet(self, patient):
+        self.__diet = patient
