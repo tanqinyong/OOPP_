@@ -1,21 +1,64 @@
 {% extends 'layout.html' %}
 {% block body %}
+        <style>
+        th,td
+    {
+        margin: 0;
+        text-align: center;
+        border-collapse: collapse;
+        outline: 1px solid #e3e3e3;
+    }
+
+    td
+    {
+        padding: 5px 10px;
+    }
+
+    th
+    {
+        background: #f4511e;
+        color: white;
+        padding: 5px 10px;
+    }
+
+    td:hover
+    {
+        cursor: pointer;
+        background: #f4511e;
+        color: white;
+    }
+    .toprow {
+      padding:50px;
+    }
+  #patientinfo {
+      background-color: #ffffff;
+  }
+  #medicine {
+      background-color: #f8f8ff;
+  }
+  #schedule {
+      background-color: #f5f5f5;
+  }
+  #edit:hover{
+      color:lime;
+  }
+    </style>
 <!-- PATIENT MEDICINE & DESCRIPTION -->
 <div id="services" class="container-fluid text-center">
-<div id="patientinfo" class="container-fluid text-center" contenteditable="true" style="position:relative;">
-<div style="position:absolute; top:0; right:0; color:limegreen; font-size:20px; cursor:pointer;">(exit)</div>
-	<div class="form-group">
+<div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
+<div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/">(exit)</a></div>
+	<div class="form-group"contenteditable="true">
 		<label class="form-control-label" for="name">Patient Name:</label>
 		<input type="text" name="Name" id="name" class="form-control" placeholder="E.g. Mycroft Tan" required="required" size="40"/>
 	</div>
 
-	<div class="form-group">
+	<div class="form-group" contenteditable="true">
 		<label class="form-control-label" for="illness">Patient illness/Diagnosis:</label>
 		<input type="text" name="Illness" id="illness" class="form-control" placeholder="E.g. Atherosclerosis (Coronary heart disease)" required="required" size="40"/>
 	</div>
 
 
-	<div class="form-group">
+	<div class="form-group" contenteditable="true">
 		<label class="form-control-label" for="illness_desc">Description of Illness:</label>
 		<textarea name="desc" id="illness_desc" class="form-control" cols="50" rows="8" required="required" ></textarea>
 	</div>

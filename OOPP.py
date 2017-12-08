@@ -58,6 +58,11 @@ def render_menu():
     return render_template('menu.html')
 
 
+@app.route('/patient_info_editor/')
+def render_patient_info_editor():
+    return render_template('patient_info_editor.html')
+
+
 if __name__ == '__main__':
     app.secret_key = 'icare1729'
     app.run()
