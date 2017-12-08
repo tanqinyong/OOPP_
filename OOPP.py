@@ -14,6 +14,10 @@ root = db.reference()
 app = Flask(__name__)
 
 
+class NurseCallForm(Form):
+    pass # the description & form (input text button shit like that) also ya the urgency and description thing try to be specific (headache heartattack)
+
+
 @app.route('/')
 def render_login():
     return render_template('login.html')
@@ -52,6 +56,7 @@ def render_speech_to_text():
 @app.route('/menu/')
 def render_menu():
     return render_template('menu.html')
+
 
 if __name__ == '__main__':
     app.secret_key = 'icare1729'
