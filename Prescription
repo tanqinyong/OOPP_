@@ -35,4 +35,4 @@ class Prescription:
         self.__quantity = quantity
 
     def set_instruction(self, instruction):
-        self.__instruction = instruction
+        self.__instruction = instruction 
