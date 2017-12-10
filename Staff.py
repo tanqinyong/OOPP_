@@ -1,8 +1,8 @@
-import Person
+from Person import Person
 
-class Staff(Person.Person):
+class Staff(Person):
     def __init__(self, nric, name, dob, address, phone, gender, id, password, type, position):
-        super().__init__(nric, name, dob, address, phone, gender)
+        Person.__init__(self, nric, name, dob, address, phone, gender)
         self.__id = id
         self.__password = password
         self.__type = type

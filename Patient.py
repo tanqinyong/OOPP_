@@ -1,8 +1,8 @@
-import Person
+from Person import Person
 
-class Patient(Person.Person):
+class Patient(Person):
     def __init__(self, nric, name, dob, address, phone, gender, id, diet, diagnosis, nurse):
-        super().__init__(nric, name, dob, address, phone, gender)
+        Person.__init__(self, nric, name, dob, address, phone, gender)
         self.__id = id
         self.__diet = diet
         self.__diagnosis = diagnosis
