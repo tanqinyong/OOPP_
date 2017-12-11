@@ -1,8 +1,13 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, validators
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, validators
+from wtforms.validators import DataRequired
+
 # e.g. from Patient import Patient
+from Food_Order import FoodOrder
+
 import firebase_admin
 from firebase_admin import credentials, db
+
 
 cred = credentials.Certificate('cred/oopp-4e3a2-firebase-adminsdk-njuhh-69bc3a7f98.json')
 default_app = firebase_admin.initialize_app(cred, {
@@ -16,6 +21,15 @@ app = Flask(__name__)
 
 class NurseCallForm(Form):
     pass # the description & form (input text button shit like that) also ya the urgency and description thing try to be specific (headache heartattack)
+
+
+class FoodOrderForm(Form):
+    foodname = SelectField('Food Choices', choices = [('chk','Chicken'),('fsh','fish'),('bf','beef')])
+    patientname = StringField('Name:')
+    quantity = StringField('Quantity:')
+    totalprice = 0
+    waitingtime = 0
+    submit = SubmitField('Enter')
 
 
 @app.route('/')
@@ -53,9 +67,27 @@ def render_speech_to_text():
     return render_template('speech_to_text.html')
 
 
-@app.route('/menu/')
+@app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
-    return render_template('menu.html')
+    form = FoodOrderForm(request.form)
+
+    if request.method =='POST':
+        # if form.validate() == False:
+        #     return render_template('menu.html', form=form)
+        # else:
+            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.quantity.data,0,0 )
+            neworder_db = root.child('Food_Order')
+            neworder_db.push ({
+            'foodname':neworder.get_foodname(),
+            'patientname':neworder.get_patientname(),
+            'quantity':0,
+            'price':0,
+            'waitingtime':0
+        })
+            return 'Success!'
+
+    elif request.method =='GET':
+        return render_template('menu.html', form=form)
 
 
 @app.route('/patient_info_editor/')
