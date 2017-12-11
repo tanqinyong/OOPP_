@@ -1,258 +1,271 @@
 {% extends 'layout.html' %}
 {% block body %}
-        <style>
-        th,td
-    {
-        margin: 0;
-        text-align: center;
-        border-collapse: collapse;
-        outline: 1px solid #e3e3e3;
-    }
+{% from "includes/_formhelper.html" import render_field %}
+    <h1>Patient Details</h1>
+{% if form.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+<style>
+th,td
+{
+    margin: 0;
+    text-align: center;
+    border-collapse: collapse;
+    outline: 1px solid #e3e3e3;
+}
 
-    td
-    {
-        padding: 5px 10px;
-    }
+td
+{
+    padding: 5px 10px;
+}
 
-    th
-    {
-        background: #f4511e;
-        color: white;
-        padding: 5px 10px;
-    }
+th
+{
+    background: #f4511e;
+    color: white;
+    padding: 5px 10px;
+}
 
-    td:hover
-    {
-        cursor: pointer;
-        background: #f4511e;
-        color: white;
-    }
-    .toprow {
-      padding:50px;
-    }
-  #patientinfo {
-      background-color: #ffffff;
-  }
-  #medicine {
-      background-color: #f8f8ff;
-  }
-  #schedule {
-      background-color: #f5f5f5;
-  }
-  #edit:hover{
-      color:lime;
-  }
-    </style>
+td:hover
+{
+    cursor: pointer;
+    background: #f4511e;
+    color: white;
+}
+.toprow {
+  padding:50px;
+}
+#patientinfo {
+  background-color: #ffffff;
+}
+#medicine {
+  background-color: #f8f8ff;
+}
+#schedule {
+  background-color: #f5f5f5;
+}
+#edit:hover{
+  color:lime;
+}
+</style>
+
 <!-- PATIENT MEDICINE & DESCRIPTION -->
-<div id="services" class="container-fluid text-center">
-<div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
-<div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/">(exit)</a></div>
-	<div class="form-group"contenteditable="true">
-		<label class="form-control-label" for="name">Patient Name:</label>
-		<input type="text" name="Name" id="name" class="form-control" placeholder="E.g. Mycroft Tan" required="required" size="40"/>
-	</div>
+<form method="POST" action ="">
+    <div id="services" class="container-fluid text-center">
+    <div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
+    <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/">(exit)</a></div>
+        <div class="form-group">
+            {{  render_field(form.name, class_="form-control", placeholder="Patient Name") }}
+        </div>
 
-	<div class="form-group" contenteditable="true">
-		<label class="form-control-label" for="illness">Patient illness/Diagnosis:</label>
-		<input type="text" name="Illness" id="illness" class="form-control" placeholder="E.g. Atherosclerosis (Coronary heart disease)" required="required" size="40"/>
-	</div>
-
-
-	<div class="form-group" contenteditable="true">
-		<label class="form-control-label" for="illness_desc">Description of Illness:</label>
-		<textarea name="desc" id="illness_desc" class="form-control" cols="50" rows="8" required="required" ></textarea>
-	</div>
-</div>
-
-<div id="medicine" class="container-fluid text-center" contenteditable="true">
-  <h2> Treatments & Medicine </h2>
-  <h4> Possible treatments and medicine for your diagnosis. </h4>
-  <h2> Possible medicines: </h2>
+        <div class="form-group">
+           {{  render_field(form.illness, class="form-control", placeholder="E.g. Atherosclerosis (Coronary heart disease)") }}
+        </div>
 
 
-    <div class="col-sm-3">
-      <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
+        <div class="form-group">
+            {{ render_field(form.patientdesc, class_="form-control") }}
+        </div>
     </div>
 
-    <div class="col-sm-6">
-	<div class="form-group">
-	  <label class="form-control-label" for="unknown">Description of Medicine:</label>
-	  <textarea name="what_is_this" id="unknown" class="form-control" cols="50" rows="8" required="required" ></textarea>
-	</div>
-    </div>
-    <div class="col-sm-3">
-	  <div class="form-group">
-		<label class="form-control-label" for="med1">Medicine 1:</label>
-		<input type="text" name="Med" id="med1" class="form-control" placeholder="E.g. Med1" required="required" size="40"/>
-	  </div>
-	  <div class="form-group">
-		<label class="form-control-label" for="med2">Medicine 2:</label>
-		<input type="text" name="Med" id="med2" class="form-control" placeholder="E.g. Med2" required="required" size="40"/>
-	  </div>
-	  <div class="form-group">
-		<label class="form-control-label" for="med3">Medicine 3:</label>
-		<input type="text" name="Med" id="med3" class="form-control" placeholder="E.g. Med3" required="required" size="40"/>
-	  </div>
-	  <button class="btn btn-primary" type="button">Add row</button>
-	  <button class="btn btn-danger" type="button">Delete row = hover over press 'X' on the right >>?</button>
-    </div>
-</div>
+    <div id="medicine" class="container-fluid text-center">
+      <h2> Treatments & Medicine </h2>
+      <h4> Possible treatments and medicine for your diagnosis. </h4>
+      <h2> Possible medicines: </h2>
 
 
-<!-- schedule -->
-<div id="schedule" class="container-fluid text-center" contenteditable="true">
+        <div class="col-sm-3">
+          <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
+        </div>
 
-    <h2> Schedule </h2>
-    <h4> Your timings </h4>
+        <div class="col-sm-6">
+            <div class="form-group">
+              {{ render_field(form.medicinedesc, class="form-control") }}
+            </div>
+        </div>
 
-
-    <table width="80%" align="center" >
-    <div id="head_nav">
-    <tr>
-        <th class="toprow">Time</th>
-        <th class="toprow">Monday</th>
-        <th class="toprow">Tuesday</th>
-        <th class="toprow">Wednesday</th>
-        <th class="toprow">Thursday</th>
-        <th class="toprow">Friday</th>
-        <th class="toprow">Saturday</th>
-    </tr>
+        <div class="col-sm-3">
+            <div id="meds">
+              <div class="form-group">
+                {{  render_field(form.med1, class="form-control") }}
+              </div>
+              <div class="form-group">
+                {{  render_field(form.med2, class="form-control") }}
+              </div>
+              <div class="form-group">
+               {{  render_field(form.med3, class="form-control") }}
+              </div>
+            </div>
+          <button class="btn btn-primary" type="button" onclick="addMed();">Add row</button>
+          <button class="btn btn-danger" type="button" onclick="removeMed()">Delete row = hover over press 'X' on the right >>?</button>
+        </div>
     </div>
 
-    <tr>
-        <th style="text-align:center;">10:00 - 11:00</th>
 
-            <td>On</td>
-            <td>click</td>
-            <td>=</td>
-            <td>change</td>
-            <td>then</td>
-            <td>Submit?</td>
+    <!-- schedule -->
+    <div id="schedule" class="container-fluid text-center">
 
-    </tr>
-
-    <tr>
-        <th style="text-align:center;">11:00 - 12:00</td>
-
-            <td>
-				<div class="form-group">
-					<label class="form-control-label" for="tableedit">Or:</label>
-					<input type="text" name="Med" id="tableedit" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
-				</div>
-			</td>
-
-			<td>
-				<div class="form-group">
-					<label class="form-control-label" for="tableedit1">Use:</label>
-					<input type="text" name="Med" id="tableedit1" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
-				</div>
-			</td><td>
-				<div class="form-group">
-					<label class="form-control-label" for="tableedit2">Input:</label>
-					<input type="text" name="Med" id="tableedit2" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
-				</div>
-			</td>
-			<td>
-				<div class="form-group">
-					<label class="form-control-label" for="tableedit3">To:</label>
-					<input type="text" name="Med" id="tableedit3" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
-				</div>
-			</td>
-			<td>
-				<div class="form-group">
-					<label class="form-control-label" for="tableedit4">Change:</label>
-					<input type="text" name="Med" id="tableedit4" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
-				</div>
-			</td>
-			<td>
-				<div class="form-group">
-					<label class="form-control-label" for="tableedit5">Them?:</label>
-					<input type="text" name="Med" id="tableedit5" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
-				</div>
-			</td>
-
-    </tr>
-
-    <tr>
-        <th style="text-align:center;">12:00 - 01:00</td>
-
-            <td>We</td>
-            <td>can</td>
-            <td>try</td>
-            <td>contenteditable</td>
-            <td>true</td>
-            <td>too</td>
+        <h2> Schedule </h2>
+        <h4> Your timings </h4>
 
 
-    </tr>
+    <table width="80%" align="center" id="scheduleTable">
+        <tr>
+            <th class="toprow">Time</th>
+            <th class="toprow">Monday</th>
+            <th class="toprow">Tuesday</th>
+            <th class="toprow">Wednesday</th>
+            <th class="toprow">Thursday</th>
+            <th class="toprow">Friday</th>
+            <th class="toprow">Saturday</th>
+        </tr>
 
-    <tr>
-        <th style="text-align:center;">01:00 - 02:00</td>
+        <tr>
+            <th style="text-align:center;">10:00 - 11:00</th>
 
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+                <td>On</td>
+                <td>click</td>
+                <td>=</td>
+                <td>change</td>
+                <td>then</td>
+                <td>Submit?</td>
+
+        </tr>
+
+        <tr>
+            <th style="text-align:center;">11:00 - 12:00</th>
+
+                <td>
+                    <div class="form-group">
+                        <label class="form-control-label" for="tableedit">Or:</label>
+                        <input type="text" name="Med" id="tableedit" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="form-group">
+                        <label class="form-control-label" for="tableedit1">Use:</label>
+                        <input type="text" name="Med" id="tableedit1" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
+                    </div>
+                </td><td>
+                    <div class="form-group">
+                        <label class="form-control-label" for="tableedit2">Input:</label>
+                        <input type="text" name="Med" id="tableedit2" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="form-control-label" for="tableedit3">To:</label>
+                        <input type="text" name="Med" id="tableedit3" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="form-control-label" for="tableedit4">Change:</label>
+                        <input type="text" name="Med" id="tableedit4" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="form-control-label" for="tableedit5">Them?:</label>
+                        <input type="text" name="Med" id="tableedit5" class="form-control" placeholder="E.g. Activity" required="required" size="40"/>
+                    </div>
+                </td>
+
+        </tr>
+
+        <tr>
+            <th style="text-align:center;">12:00 - 01:00</th>
+
+                <td>We</td>
+                <td>can</td>
+                <td>try</td>
+                <td>contenteditable</td>
+                <td>true</td>
+                <td>too</td>
 
 
-    </tr>
+        </tr>
 
-    <tr>
-        <th style="text-align:center;">02:00 - 03:00</td>
+        <tr>
+            <th style="text-align:center;">01:00 - 02:00</th>
 
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-
-    </tr>
-</table>
-<button class="btn btn-primary" type="button" style="margin-top:10px;">More Button</button>
-</div>
-</div>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
 
 
+        </tr>
 
+        <tr>
+            <th style="text-align:center;">02:00 - 03:00</th>
 
-<script>
-$(document).ready(function(){
-  // Add smooth scrolling to all links in navbar + footer link
-  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
-    // Make sure this.hash has a value before overriding default behavior
-    if (this.hash !== "") {
-      // Prevent default anchor click behavior
-      event.preventDefault();
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
 
-      // Store hash
-      var hash = this.hash;
+        </tr>
 
-      // Using jQuery's animate() method to add smooth page scroll
-      // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
-      $('html, body').animate({
-        scrollTop: $(hash).offset().top
-      }, 900, function(){
+    </table>
 
-        // Add hash (#) to URL when done scrolling (default click behavior)
-        window.location.hash = hash;
-      });
-    } // End if
-  });
+        <button class="btn btn-primary" type="button" style="margin-top:10px;" onclick="addRow()">More Row</button>
+        <button class="btn btn-danger" type="button" style="margin-top:10px;" onclick="removeRow()">Delete Row</button>
+        </div>
+    </div>
 
-  $(window).scroll(function() {
-    $(".slideanim").each(function(){
-      var pos = $(this).offset().top;
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-info"/>
+    </div>
+</form>
+<script type="text/javascript">
+function addMed() {
+    var med = document.getElementById("meds");
+    var div = document.createElement("div");
+    var input = document.createElement("input");
+    input.placeholder = "NEED FIXES!!!";
+    div.className = "form-group";
+    div.appendChild(input);
+    med.appendChild(div);
+}
+function removeMed() {
+    var med = document.getElementById("meds");
+    med.parentNode.removeChild(med);
+}
+function addRow() {
+    var table = document.getElementById("scheduleTable");
+    var row = table.insertRow(-1);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    var cell5 = row.insertCell(4);
+    var cell6 = row.insertCell(5);
+    var cell7 = row.insertCell(6);
+    cell1.innerHTML = "Test1";
+    cell2.innerHTML = "Test2";
+    cell3.innerHTML = "Test3";
+    cell4.innerHTML = "Test4";
+    cell5.innerHTML = "Test5";
+    cell6.innerHTML = "Test6";
+    cell7.innerHTML = "Test7";
 
-      var winTop = $(window).scrollTop();
-        if (pos < winTop + 600) {
-          $(this).addClass("slide");
-        }
-    });
-  });
-})
+}
+function removeRow() {
+    document.getElementById("scheduleTable").deleteRow(-1);
+}
 </script>
-
 {% endblock %}
