@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, validators
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, validators
 # e.g. from Patient import Patient
 from Food_Order import FoodOrder
 
