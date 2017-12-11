@@ -47,11 +47,12 @@
 <div id="services" class="container-fluid text-center">
 <div id="patientinfo" class="container-fluid text-center" style="position:relative;">
     <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info_editor/">(edit)</a></div>
-    <h2> MYCROFT TAN </h2>
-  <h3> Diagnosis: Atherosclerosis (Coronary heart disease) </h3> <br>
-  <p style="width: 600px;margin:auto"> Atherosclerosis is a disease in which plaque builds up inside your arteries. If blood flow to your heart muscle is reduced or blocked, you may have
-    angina (chest pain or discomfort) or a heart attack.</p>
+    <h2> {{ patient_infos.get_name() }} </h2>
+  <h3> {{ patient_infos.get_illness() }} </h3> <br>
+  <p style="width: 600px;margin:auto"> {{ patient_infos.get_patientdesc() }}</p>
 </div>
+
+
 
 <div id="medicine" class="container-fluid text-center">
   <h2> Treatments & Medicine </h2>
@@ -65,13 +66,13 @@
 
     <div class="col-sm-6">
       <br>
-      <p>Suspendisse finibus diam eros. Etiam non mi et nulla varius tincidunt eu vel elit. Ut facilisis pretium pulvinar. Aliquam at est iaculis, porttitor tellus sed, posuere lacus. Morbi diam odio, ullamcorper sed metus et, malesuada efficitur nisi. Vestibulum neque lectus, semper dictum vulputate at, sagittis eu ante. </p>
+      <p>{{ patient_infos.get_medicinedesc() }} </p>
     </div>
     <div class="col-sm-3">
       <ul>
-        <li>Diuretics (water pills)</li>
-        <li>Angiotensin-converting enzyme (ACE) inhibitors.</li>
-        <li>Calcium channel blockers.</li>
+        <li>{{ patient_infos.get_med1() }}</li>
+        <li>{{ patient_infos.get_med2() }}</li>
+        <li>{{ patient_infos.get_med3() }}</li>
       </ul>
     </div>
   </div>
