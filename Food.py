@@ -32,3 +32,6 @@ class Food:
 
     def set_description(self, description):
         self.__description = description
+
+
+x = Food(1, 2, 3, 4)
