@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Admin</title>
+    <style>
+        body {
+            background-color: #f4511e;
+        }
+        #box {
+            background-color: white;
+            height:325px;
+            width:500px;
+            margin: auto;
+            margin-top:100px;
+            border-radius:20px;
+            box-shadow: 0 0 0.2em 0.2em #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box" class="container">
+        <div>
+            <h1>Create/Update user</h1>
+            <form method="POST">
+                <div class="form-group">
+                    <p><b>Type</b></p>
+                    <label for="patient" class="radio-inline">
+                        <input type="radio" name="option" id="patient" value="patient">Patient
+                    </label>
+                    <label for="staff" class="radio-inline">
+                        <input type="radio" name="option" id="staff" value="staff">Staff
+                    </label>
+                </div>
+                <div class="form=group">
+                    <label for="username">Username</label>
+                    <input type="username" class="form-control" id="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
