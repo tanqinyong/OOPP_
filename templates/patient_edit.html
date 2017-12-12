@@ -1,7 +1,19 @@
-{% extends 'layout.html' %}
+{% extends 'layout_staff.html' %}
 {% block body %}
-
-{#PATIENT_INFO UPDATE, NOT SURE HOW THIS WORKS BUT DEFINITELY NOT LIKE THIS!!!#}
+{% from "includes/_formhelper.html" import render_field %}
+    <h1>Patient Details</h1>
+{% if form.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{#PATIENT_INFO UPDATE, NOT SURE HOW THIS WORKS BUT DEFINITELY NOT LIKE THIS!!! edit: actually IT IS like this!#}
 
 <form method="POST" action ="">
     <div id="services" class="container-fluid text-center">
