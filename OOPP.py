@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, validators
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators
 # e.g. from Patient import Patient
 from Food_Order import FoodOrder
+from Nurse_call import NurseCall
 
 from Patient_Info import Edit_Patient
 import firebase_admin
@@ -18,13 +19,15 @@ app = Flask(__name__)
 
 
 class NurseCallForm(Form):
-    pass # the description & form (input text button shit like that) also ya the urgency and description thing try to be specific (headache heartattack)
+    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")])
+    submit = SubmitField('Enter')
 
 
 class FoodOrderForm(Form):
     foodname = RadioField('Food Choices', choices = [('Chicken','Chicken'),('Fish','Fish'),('Beef','Beef'),('Pork','Pork')],default='Chicken')
     patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
-    quantity = StringField('Quantity:',[validators.DataRequired(),validators.Length(min=1, max=30)])
+    # quantity = StringField('Quantity:',[validators.DataRequired(),validators.Length(min=1, max=30)])
+    qty = SelectField('Qty', choices=[('1', '1'), ('2', '2')], default='')
     submit = SubmitField('Enter')
 
 
@@ -77,6 +80,7 @@ def render_speech_to_text():
 
 @app.route('/nursecallpage/')
 def render_nurse():
+    # FOOD ORDER
     Food_Order = root.child('Food_Order').get()
     list = []
     for food_id in Food_Order:
@@ -85,6 +89,15 @@ def render_nurse():
         order.set_foodid(food_id)
         list.append(order)
 
+    # NURSE CALL
+    nurse_form = NurseCallForm(request.form)
+    if request.method == 'POST' and nurse_form.validate():
+        newcall = NurseCall(nurse_form.problem.data)
+        newcall_db = root.child('Nurse Call')
+        newcall_db.push ({
+            'symptom': newcall.get_reason()
+        })
+        flash('A nurse will attend to you shortly.','success')
     return render_template('nursecallpage.html',orders = list)
 
 
@@ -99,7 +112,7 @@ def render_menu():
                 price = 6
             elif form.foodname.data == 'Beef':
                 price = 7
-            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.quantity.data,price)
+            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.qty.data,price)
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
             'foodname': neworder.get_foodname(),
@@ -107,7 +120,7 @@ def render_menu():
             'quantity': neworder.get_quantity(),
             'price': neworder.get_price(),
             })
-            flash('Success!')
+            flash('Success!','success')
             return redirect(url_for("render_nurse"))
 
     elif request.method == 'GET':
@@ -126,7 +139,7 @@ def update_order(id):
             price = 6
         elif form.foodname.data == 'Beef':
             price = 7
-        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.quantity.data, price)
+        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
         neworder_db = root.child('Food_Order'+id)
         neworder_db.push({
             'foodname': neworder.get_foodname(),
@@ -139,11 +152,11 @@ def update_order(id):
     else:
         url = 'Food_Order/' + id
         eachorder = root.child(url).get()
-        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.quantity.data, price)
+        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
         neworder.set_foodid(id)
         form.foodname.data = neworder.get_foodname()
         form.patientname.data = neworder.get_patientname()
-        form.quantity.data = neworder.get_quantity()
+        form.qty.data = neworder.get_quantity()
     return redirect(url_for("render_nurse"))
 
 
@@ -151,7 +164,7 @@ def update_order(id):
 def delete_order(id):
     order_db = root.child('Food_Order/' + id)
     order_db.delete()
-    flash('Publication Deleted', 'success')
+    flash('Order Deleted', 'success')
 
     return redirect(url_for('render_nurse'))
 
