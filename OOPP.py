@@ -137,6 +137,12 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
 
+@app.route('/staff_logout')
+def logout_staff():
+    session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
+    flash('You are now logged out', 'success')
+    return redirect(url_for('render_nurse'))
+
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)

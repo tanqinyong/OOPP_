@@ -43,7 +43,14 @@
         text-decoration: underline;
     }
     </style>
-    {% if session['logged_in'] == True %}
+    {% if session['logged_in_staff'] == True %}
+        <script type=text/javascript>
+        document.addEventListener("DOMContentLoaded",docIsReady);
+        function docIsReady(){
+            document.getElementById("authen").style.visibility = "visible";
+        }
+        </script>
+    {% else %}
         <script type=text/javascript>
         document.addEventListener("DOMContentLoaded",docIsReady);
         function docIsReady(){
@@ -54,7 +61,7 @@
 <!-- PATIENT MEDICINE & DESCRIPTION -->
 <div id="services" class="container-fluid text-center">
 <div id="patientinfo" class="container-fluid text-center" style="position:relative;">
-    <div id="authen" style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a>
+    <div id="authen" style="visibility:hidden; position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a>
         <br/> <a href="/patient_edit/{{patient_infos.get_patid()}}">(update)</a> <br/>
         <form action="{{url_for('delete_patient', id=patient_infos.get_patid())}}" method="post">
             <input type="submit" value="(delete)" id="delete" style="background:none; border:none; color:red;" onclick="return confirm('Are you sure you want to delete this patient\'s details?');"></form></div>
