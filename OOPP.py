@@ -1,3 +1,5 @@
+from flask import Flask, render_template, request, flash, redirect, url_for, session
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, validators, PasswordField
 from flask import Flask, render_template, request, flash, redirect, url_for
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators
 # e.g. from Patient import Patient
@@ -17,6 +19,11 @@ root = db.reference()
 
 app = Flask(__name__)
 
+class LoginForm(Form):
+    username = StringField('Username', [validators.DataRequired()])
+    password = PasswordField('Password', [validators.DataRequired()])
+    submit = SubmitField('Login')
+
 
 class NurseCallForm(Form):
     problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")])
@@ -32,13 +39,13 @@ class FoodOrderForm(Form):
 
 
 class Patient_Info(Form):
-        name = StringField("Name", [validators.Length(min=1, max=50), validators.DataRequired()])
-        illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
-        patientdesc = TextAreaField("Patient Description", [validators.DataRequired()])
-        medicinedesc = TextAreaField("Medicine Description", [validators.DataRequired()])
-        med1 = StringField("Medicine 1", [validators.Length(min=1, max=30), validators.DataRequired()])
-        med2 = StringField("Medicine 2", [validators.Length(min=1, max=30), validators.DataRequired()])
-        med3 = StringField("Medicine 3", [validators.Length(min=1, max=30), validators.DataRequired()])
+    name = StringField("Name", [validators.Length(min=1, max=50), validators.DataRequired()])
+    illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
+    patientdesc = TextAreaField("Patient Description", [validators.DataRequired()])
+    medicinedesc = TextAreaField("Medicine Description", [validators.DataRequired()])
+    med1 = StringField("Medicine 1", [validators.Length(min=1, max=30), validators.DataRequired()])
+    med2 = StringField("Medicine 2", [validators.Length(min=1, max=30), validators.DataRequired()])
+    med3 = StringField("Medicine 3", [validators.Length(min=1, max=30), validators.DataRequired()])
 
 
 @app.route('/')
@@ -100,6 +107,31 @@ def render_nurse():
         flash('A nurse will attend to you shortly.','success')
     return render_template('nursecallpage.html',orders = list)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+    print(request.method)
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        password = form.password.data
+
+
+        if username == 'admin' and password == 'P@ssw0rd':  # harcoded username and password
+            session['logged_in'] = True  # this is to set a session to indicate the user is login into the system.
+            return redirect(url_for('render_nurse'))
+        else:
+            error = 'Invalid login'
+            flash(error, 'danger')
+            return render_template('StaffLogin.html', form=form)
+
+    return render_template('StaffLogin.html', form=form)
+
+app.route('/logout')
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
 
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
@@ -252,5 +284,3 @@ if __name__ == '__main__':
     app.debug = True
     app.run()
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
-
-
