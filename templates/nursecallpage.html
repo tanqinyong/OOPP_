@@ -1,5 +1,17 @@
 {% extends 'layout.html' %}
 {% block body %}
+    {% from "includes/_formhelper.html" import render_field %}
+    {% if nurse.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field_name, field_errors in nurse.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ nurse[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
    <!-- Container (Services Section)(medical attention) -->
 <div id="about" class="container-fluid text-center">
   <h2>Medical attention</h2>
@@ -11,21 +23,15 @@
       <h4>MEDICAL CARE</h4>
       <p> Your online guardian angel.</p>
       </div>
-
       <!-- nurse call form -->
-      <div class="col-sm-6">
-
+      <form method="POST" action="/nursecallpage/">
+      <div class="col-sm-9">
               <div>
-
+                  {{  render_field(nurse.problem,style="margin:") }}
               </div>
+                  {{ nurse.submit(class="btn-primary") }}
       </div>
-
-      <div class="col-sm-3">
-        <form action="">
-
-
-        </form>
-      </div>
+      </form>
 
   </div>
 </div>
