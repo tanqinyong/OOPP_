@@ -1,44 +1,33 @@
 {% extends 'layout.html' %}
 {% block body %}
+    {% from "includes/_formhelper.html" import render_field %}
+{% if form.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 <main class="container signup-section">
     <div class="section-content">
       <h2> Select food choice </h2>
+
         <form method="POST" action="/menu/">
 
             <div class="form-group">
-                {{ form.foodname.label }}
-
-{#                {% if form.foodname.errors %}#}
-{#                    {% for error in form.foodname.errors %}#}
-{#                        <p class="error-message">{{ error }}</p>#}
-{#                    {% endfor %}#}
-{#                {% endif %}#}
-
-                {{ form.foodname }}
+                {{  render_field(form.foodname) }}
             </div>
 
             <div class="form-group">
-                {{ form.patientname.label }}
-
-{#                {% if form.patientname.errors %}#}
-{#                    {% for error in form.patientname.errors %}#}
-{#                        <p class="error-message">{{ error }}</p>#}
-{#                    {% endfor %}#}
-{#                {% endif %}#}
-
-                {{ form.patientname }}
+                {{  render_field(form.patientname ,placeholder="Patient Name") }}
             </div>
 
             <div class="form-group">
-                {{ form.quantity.label }}
-
-{#                {% if form.quantity.errors %}#}
-{#                    {% for error in form.quantity.errors %}#}
-{#                        <p class="error-message">{{ error }}</p>#}
-{#                    {% endfor %}#}
-{#                {% endif %}#}
-
-                {{ form.quantity }}
+                {{  render_field(form.quantity) }}
             </div>
 
             {{ form.submit(class="btn-primary") }}

@@ -22,22 +22,25 @@ class NurseCallForm(Form):
 
 
 class FoodOrderForm(Form):
-    foodname = SelectField('Food Choices', choices = [('chk','Chicken'),('fsh','fish'),('bf','beef')])
-    patientname = StringField('Name:')
-    quantity = StringField('Quantity:')
-    totalprice = 0
-    waitingtime = 0
+    foodname = RadioField('Food Choices', choices = [('Chicken','Chicken'),('Fish','Fish'),('Beef','Beef'),('Pork','Pork')],default='Chicken')
+    patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
+    quantity = StringField('Quantity:',[validators.DataRequired(),validators.Length(min=1, max=30)])
     submit = SubmitField('Enter')
+
+
+class Patient_Info(Form):
+        name = StringField("Name", [validators.Length(min=1, max=50), validators.DataRequired()])
+        illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
+        patientdesc = TextAreaField("Patient Description", [validators.DataRequired()])
+        medicinedesc = TextAreaField("Medicine Description", [validators.DataRequired()])
+        med1 = StringField("Medicine 1", [validators.Length(min=1, max=30), validators.DataRequired()])
+        med2 = StringField("Medicine 2", [validators.Length(min=1, max=30), validators.DataRequired()])
+        med3 = StringField("Medicine 3", [validators.Length(min=1, max=30), validators.DataRequired()])
 
 
 @app.route('/')
 def render_login():
     return render_template('login.html')
-
-
-@app.route('/nursecallpage/')
-def render_nurse():
-    return render_template('nursecallpage.html')
 
 
 @app.route('/patient_info/')
@@ -65,39 +68,87 @@ def render_speech_to_text():
     return render_template('speech_to_text.html')
 
 
+@app.route('/nursecallpage/')
+def render_nurse():
+    Food_Order = root.child('Food_Order').get()
+    list = []
+    for food_id in Food_Order:
+        eachorder = Food_Order[food_id]
+        order = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['price'],eachorder['quantity'])
+        order.set_foodid(food_id)
+        list.append(order)
+
+    return render_template('nursecallpage.html',orders = list)
+
+
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)
-
-    if request.method =='POST':
-        # if form.validate() == False:
-        #     return render_template('menu.html', form=form)
-        # else:
-            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.quantity.data,0,0 )
+    price = 0
+    if request.method =='POST' and form.validate():
+            if form.foodname.data == 'Chicken':
+                price = 5
+            elif form.foodname.data == 'Fish' or 'Pork':
+                price = 6
+            elif form.foodname.data == 'Beef':
+                price = 7
+            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.quantity.data,price)
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
-            'foodname':neworder.get_foodname(),
-            'patientname':neworder.get_patientname(),
-            'quantity':0,
-            'price':0,
-            'waitingtime':0
-        })
-            return 'Success!'
+            'foodname': neworder.get_foodname(),
+            'patientname': neworder.get_patientname(),
+            'quantity': neworder.get_quantity(),
+            'price': neworder.get_price(),
+            })
+            flash('Success!')
+            return redirect(url_for("render_nurse"))
 
-    elif request.method =='GET':
+    elif request.method == 'GET':
         return render_template('menu.html', form=form)
+    return render_template('menu.html', form=form)
 
 
+@app.route('/update_order/<string:id>/', methods=['GET', 'POST'])
+def update_order(id):
+    form = FoodOrderForm(request.form)
+    price = 0
+    if request.method == 'POST' and form.validate():
+        if form.foodname.data == 'Chicken':
+            price = 5
+        elif form.foodname.data == 'Fish' or 'Pork':
+            price = 6
+        elif form.foodname.data == 'Beef':
+            price = 7
+        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.quantity.data, price)
+        neworder_db = root.child('Food_Order'+id)
+        neworder_db.push({
+            'foodname': neworder.get_foodname(),
+            'patientname': neworder.get_patientname(),
+            'quantity': neworder.get_quantity(),
+            'price': neworder.get_price(),
+        })
+        flash('Updated Successfully!')
+        return redirect(url_for("render_nurse"))
+    else:
+        url = 'Food_Order/' + id
+        eachorder = root.child(url).get()
+        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.quantity.data, price)
+        neworder.set_foodid(id)
+        form.foodname.data = neworder.get_foodname()
+        form.patientname.data = neworder.get_patientname()
+        form.quantity.data = neworder.get_quantity()
+    return redirect(url_for("render_nurse"))
 
 
-class Patient_Info(Form):
-    name = StringField("Name", [validators.Length(min=1, max=50), validators.DataRequired()])
-    illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
-    patientdesc = TextAreaField("Patient Description", [validators.DataRequired()])
-    medicinedesc = TextAreaField("Medicine Description", [validators.DataRequired()])
-    med1 = StringField("Medicine 1", [validators.Length(min=1, max=30), validators.DataRequired()])
-    med2 = StringField("Medicine 2", [validators.Length(min=1, max=30), validators.DataRequired()])
-    med3 = StringField("Medicine 3", [validators.Length(min=1, max=30), validators.DataRequired()])
+@app.route('/delete_order/<string:id>', methods=['POST'])
+def delete_order(id):
+    order_db = root.child('Food_Order/' + id)
+    order_db.delete()
+    flash('Publication Deleted', 'success')
+
+    return redirect(url_for('render_nurse'))
+
+
 
 @app.route('/patient_info_editor/', methods=["GET", "POST"])
 def render_patient_info_editor():
@@ -127,6 +178,7 @@ def render_patient_info_editor():
         return redirect(url_for("render_patient_info"))
 
     return render_template('patient_info_editor.html', form=form)
+
 
 if __name__ == '__main__':
     app.secret_key = 'icare1729'
