@@ -10,12 +10,28 @@
     <link rel="stylesheet" href="../static/css/template.css" type="text/css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {% block additionalscripts %}    {% endblock %}
   <style>
-
+{#    #myNavbar {#}
+{#        color:#f4511e;#}
+{#        background-color: #f4511e;#}
+{#        padding-right:200px;#}
+{#    }#}
+{#      .navbarli {#}
+{#          color:white;#}
+{#          background-color: #f4511e;#}
+{#          font-family: Lato,Montserrat, sans-serif;#}
+{#          margin-bottom: 0;#}
+{#          font-size: 12px !important;#}
+{#          letter-spacing: 4px;#}
+{#          line-height: 1.42857143 !important;#}
+{#      }#}
   </style>
 </head>
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
 {#{%  if id = patient %}#}
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
         <span class="icon-bar"></span>
@@ -26,9 +42,9 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
-         <li><a href="/patient_info_editor/">PATIENT INFO EDITORS</a></li>
-        <li><a href="/trainee_notes/">TRAINEE NOTES</a></li>
-        <li><a href="/remote_doctor/">REMOTE DOCTOR</a></li>
+         <li><a href="/patient_info_editor/" class="navbarli">PATIENT INFO EDITORS</a></li>
+        <li><a href="/trainee_notes/" class="navbarli">TRAINEE NOTES</a></li>
+        <li><a href="/remote_doctor/" class="navbarli">REMOTE DOCTOR</a></li>
       </ul>
     </div>
   </div>
