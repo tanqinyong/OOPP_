@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, validators, PasswordField
 from flask import Flask, render_template, request, flash, redirect, url_for
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets
 # e.g. from Patient import Patient
 from Food_Order import FoodOrder
 from Nurse_call import NurseCall
@@ -26,7 +26,7 @@ class LoginForm(Form):
 
 
 class NurseCallForm(Form):
-    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")])
+    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")], option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
     submit = SubmitField('Enter')
 
 
@@ -89,7 +89,7 @@ def render_speech_to_text():
     return render_template('speech_to_text.html')
 
 
-@app.route('/nursecallpage/')
+@app.route('/nursecallpage/',methods=['GET','POST'])
 def render_nurse():
     # FOOD ORDER
     Food_Order = root.child('Food_Order').get()
@@ -109,7 +109,7 @@ def render_nurse():
             'symptom': newcall.get_reason()
         })
         flash('A nurse will attend to you shortly.','success')
-    return render_template('nursecallpage.html',orders = list)
+    return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -142,6 +142,7 @@ def logout_staff():
     session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
     flash('You are now logged out', 'success')
     return redirect(url_for('render_nurse'))
+
 
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
