@@ -237,7 +237,7 @@
 
 .bubble-right:after{
 		content: "";
-		border-right: none
+		border-right: none;
 		border-bottom: 15px solid transparent;
 		border-top: 15px solid transparent;
 		position: absolute;
@@ -247,18 +247,9 @@
 
 .fixedDiv {
 		border:1px solid gray;
-c		background-color:white;
+		background-color:white;
 		margin-bottom:1%;
 }
-body {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 13px;
-      display: flex;
-      flex-direction: column;
-      max-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    }
 
     .members-count,
     .members-list,

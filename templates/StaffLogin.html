@@ -56,7 +56,9 @@
     </ul>
 </div>
 {% endif %}
-
+<div class="container-fluid">
+    {% include 'includes/_message.html' %}
+</div>
 <div id="login" class="container">
     <div id="description" class="container">
         <img src="../static/images/iCAre.jpeg" style="float:left;height:200px;width:250px;" />
@@ -65,7 +67,7 @@
         </div>
     </div>
     <img src="https://www.bforball.com/images/geometry/vertical-line.png" style="float:left;height:500px;width:50px;"/>
-    <form action="/login" method="POST">
+    <form action="" method="POST">
     <div id="loginside">
         <br> <br> <br>
         <h1 > Login </h1>
@@ -76,7 +78,6 @@
             {{ form.submit(class="btn-primary") }}
         </div>
     </div>
-
-</div>
     </form>
+</div>
 {%  endblock %}
