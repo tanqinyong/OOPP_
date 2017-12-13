@@ -26,26 +26,34 @@
 </head>
 
 <body>
+    {% from "includes/_formhelper.html" import render_field %}
+    <div class="container-fluid">
+    {% include 'includes/_message.html' %}
+    </div>
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <ul>
+             {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                 {% for error in field_errors %}
+                    <li>{{ form[field_name].label }}: {{ error }}</li>
+                 {% endfor %}
+             {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     <div id="box" class="container">
         <div>
             <h1>Create/Update user</h1>
             <form method="POST">
                 <div class="form-group">
-                    <p><b>Type</b></p>
-                    <label for="patient" class="radio-inline">
-                        <input type="radio" name="option" id="patient" value="patient">Patient
-                    </label>
-                    <label for="staff" class="radio-inline">
-                        <input type="radio" name="option" id="staff" value="staff">Staff
-                    </label>
+                    {{ render_field(form.type) }}
                 </div>
                 <div class="form=group">
-                    <label for="username">Username</label>
-                    <input type="username" class="form-control" id="username">
+                    {{ render_field(form.password) }}
                 </div>
                 <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" class="form-control" id="password">
+
                 </div>
                 <button type="submit" class="btn btn-default">Submit</button>
             </form>

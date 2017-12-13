@@ -1,23 +1,25 @@
+# Flask, WTForms and cool shit
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, validators, PasswordField
-from flask import Flask, render_template, request, flash, redirect, url_for
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets
-# e.g. from Patient import Patient
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField
+import random
+
+# Classes and shit
 from Food_Order import FoodOrder
 from Nurse_call import NurseCall
-
 from Patient_Info import Edit_Patient
+from Admin import Staff, Patient
+
+# Database shit
 import firebase_admin
 from firebase_admin import credentials, db
-
 cred = credentials.Certificate('cred/oopp-4e3a2-firebase-adminsdk-njuhh-69bc3a7f98.json')
 default_app = firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://oopp-4e3a2.firebaseio.com/'
 })
-
 root = db.reference()
 
 app = Flask(__name__)
+
 
 class LoginForm(Form):
     username = StringField('Username', [validators.DataRequired()])
@@ -33,7 +35,6 @@ class NurseCallForm(Form):
 class FoodOrderForm(Form):
     foodname = RadioField('Food Choices', choices = [('Chicken','Chicken'),('Fish','Fish'),('Beef','Beef'),('Pork','Pork')],default='Chicken')
     patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
-    # quantity = StringField('Quantity:',[validators.DataRequired(),validators.Length(min=1, max=30)])
     qty = SelectField('Qty', choices=[('1', '1'), ('2', '2')], default='')
     submit = SubmitField('Enter')
 
@@ -48,14 +49,42 @@ class Patient_Info(Form):
     med3 = StringField("Medicine 3", [validators.Length(min=1, max=30), validators.DataRequired()])
 
 
+class AdminForm(Form):
+    type = RadioField('Type: ', choices=[('Staff','Staff'),('Patient','Patient')])
+    password = PasswordField('Password', [validators.DataRequired()])
+
+
 @app.route('/')
 def render_login():
     return render_template('login.html')
 
 
-@app.route('/Admin/')
+@app.route('/Admin/',methods=['GET','POST'])
 def render_admin():
-    return render_template('Admin.html')
+    admin_form = AdminForm(request.form)
+    if request.method == 'POST' and admin_form.validate():
+        if admin_form.type.data == 'Staff':
+            username = 'S' + str(random.randint(10000, 99999))
+            new_staff = Staff(username,admin_form.password.data)
+            new_staff_db = root.child('Staff')
+            new_staff_db.push ({
+                'username': new_staff.get_username(),
+                'password': new_staff.get_password()
+            })
+            flash('Staff added!'+ ' User = '+username + ' Password = '+new_staff.get_password(), 'success')
+
+        elif admin_form.type.data == 'Patient':
+            username = 'P' + str(random.randint(10000, 99999))
+            new_patient = Patient(username,admin_form.password.data)
+            new_patient_db = root.child('Patient')
+            new_patient_db.push({
+                'username': new_patient.get_username(),
+                'password': new_patient.get_password()
+            })
+            flash('Patient added!'+ ' User = '+username + ' Password = '+new_patient.get_password(), 'success')
+
+    return render_template('Admin.html',form=admin_form)
+
 
 @app.route('/patient_info/')
 def render_patient_info():
@@ -72,6 +101,7 @@ def render_patient_info():
     except TypeError:
         flash("No patient left in the database!", "danger")
         return redirect(url_for("render_patient_info_editor"))
+
 
 @app.route('/trainee_notes/')
 def render_trainee_notes():
@@ -123,8 +153,6 @@ def login():
     if request.method == 'POST' and form.validate():
         username = form.username.data
         password = form.password.data
-
-
         if username == 'admin' and password == 'P@ssw0rd':  # harcoded username and password
             session['logged_in'] = True  # this is to set a session to indicate the user is login into the system.
             return redirect(url_for('render_nurse'))
@@ -135,11 +163,13 @@ def login():
 
     return render_template('StaffLogin.html', form=form)
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
+
 
 @app.route('/staff_logout')
 def logout_staff():
@@ -175,36 +205,37 @@ def render_menu():
     return render_template('menu.html', form=form)
 
 
-@app.route('/update_order/<string:id>/', methods=['GET', 'POST'])
-def update_order(id):
-    form = FoodOrderForm(request.form)
-    price = 0
-    if request.method == 'POST' and form.validate():
-        if form.foodname.data == 'Chicken':
-            price = 5
-        elif form.foodname.data == 'Fish' or 'Pork':
-            price = 6
-        elif form.foodname.data == 'Beef':
-            price = 7
-        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
-        neworder_db = root.child('Food_Order'+id)
-        neworder_db.push({
-            'foodname': neworder.get_foodname(),
-            'patientname': neworder.get_patientname(),
-            'quantity': neworder.get_quantity(),
-            'price': neworder.get_price(),
-        })
-        flash('Updated Successfully!')
-        return redirect(url_for("render_nurse"))
-    else:
-        url = 'Food_Order/' + id
-        eachorder = root.child(url).get()
-        neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
-        neworder.set_foodid(id)
-        form.foodname.data = neworder.get_foodname()
-        form.patientname.data = neworder.get_patientname()
-        form.qty.data = neworder.get_quantity()
-    return redirect(url_for("render_nurse"))
+# @app.route('/update_order/<string:id>/', methods=['GET', 'POST'])
+# def update_order(id):
+#     form = FoodOrderForm(request.form)
+#     price = 0
+#     if request.method == 'POST' and form.validate():
+#         if form.foodname.data == 'Chicken':
+#             price = 5
+#         elif form.foodname.data == 'Fish' or 'Pork':
+#             price = 6
+#         elif form.foodname.data == 'Beef':
+#             price = 7
+#         neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
+#         neworder_db = root.child('Food_Order/'+id)
+#         neworder_db.push({
+#             'foodname': neworder.get_foodname(),
+#             'patientname': neworder.get_patientname(),
+#             'quantity': neworder.get_quantity(),
+#             'price': neworder.get_price(),
+#         })
+#         flash('Updated Successfully!')
+#         return render_template('nursecallpage.html', order=form)
+#         #return redirect(url_for("render_nurse"))
+#     else:
+#         url = 'Food_Order/' + id
+#         eachorder = root.child(url).get()
+#         neworder = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['quantity'],eachorder['price'])
+#         neworder.set_foodid(id)
+#         form.foodname.data = neworder.get_foodname()
+#         form.patientname.data = neworder.get_patientname()
+#         form.qty.data = neworder.get_quantity()
+#     return render_template('nursecallpage.html',order=form, nurse = "",orders="")
 
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
@@ -214,7 +245,6 @@ def delete_order(id):
     flash('Order Deleted', 'success')
 
     return redirect(url_for('render_nurse'))
-
 
 
 @app.route('/patient_info_editor/', methods=["GET", "POST"])
@@ -245,7 +275,6 @@ def render_patient_info_editor():
         return redirect(url_for("render_patient_info"))
 
     return render_template('patient_info_editor.html', form=form)
-
 
 
 @app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
@@ -291,6 +320,7 @@ def update_patient(id):
 
     return render_template("patient_edit.html", form=form)
 
+
 @app.route("/patient_delete/<string:id>", methods=["POST"])
 def delete_patient(id):
     pat_db = root.child("patient_info/" + id)
@@ -298,7 +328,6 @@ def delete_patient(id):
     flash("Patient's information has been delete", "success")
 
     return redirect(url_for("render_patient_info"))
-
 
 
 if __name__ == '__main__':
