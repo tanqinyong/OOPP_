@@ -39,15 +39,34 @@
   #schedule {
       background-color: #f5f5f5;
   }
-    #edit:hover{
-        color:lime;
+    #delete:hover {
+        text-decoration: underline;
     }
     </style>
+    {% if session['logged_in_staff'] == True %}
+        <script type=text/javascript>
+        document.addEventListener("DOMContentLoaded",docIsReady);
+        function docIsReady(){
+            document.getElementById("authen").style.visibility = "visible";
+        }
+        </script>
+    {% else %}
+        <script type=text/javascript>
+        document.addEventListener("DOMContentLoaded",docIsReady);
+        function docIsReady(){
+            document.getElementById("authen").style.visibility = "hidden";
+        }
+        </script>
+    {% endif %}
 <!-- PATIENT MEDICINE & DESCRIPTION -->
 <div id="services" class="container-fluid text-center">
 <div id="patientinfo" class="container-fluid text-center" style="position:relative;">
-    <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info_editor/">(edit)</a></div>
-    <h2> {{ patient_infos.get_name() }} </h2>
+    <div id="authen" style="visibility:hidden; position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a>
+        <br/> <a href="/patient_edit/{{patient_infos.get_patid()}}">(update)</a> <br/>
+        <form action="{{url_for('delete_patient', id=patient_infos.get_patid())}}" method="post">
+            <input type="submit" value="(delete)" id="delete" style="background:none; border:none; color:red;" onclick="return confirm('Are you sure you want to delete this patient\'s details?');"></form></div>
+
+  <h2> {{ patient_infos.get_name() }} </h2>
   <h3> {{ patient_infos.get_illness() }} </h3> <br>
   <p style="width: 600px;margin:auto"> {{ patient_infos.get_patientdesc() }}</p>
 </div>

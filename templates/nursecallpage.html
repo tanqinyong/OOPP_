@@ -1,5 +1,28 @@
 {% extends 'layout.html' %}
 {% block body %}
+    {% from "includes/_formhelper.html" import render_field %}
+    {% if nurse.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field_name, field_errors in nurse.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ nurse[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+    {% if orders.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field_name, field_errors in orders.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ orders[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
    <!-- Container (Services Section)(medical attention) -->
 <div id="about" class="container-fluid text-center">
   <h2>Medical attention</h2>
@@ -11,26 +34,15 @@
       <h4>MEDICAL CARE</h4>
       <p> Your online guardian angel.</p>
       </div>
-
       <!-- nurse call form -->
-      <div class="col-sm-6">
-
+      <form method="POST" action="/nursecallpage/">
+      <div class="col-sm-9">
               <div>
-                  <h4><strong> Description : </strong></h4>
-                  <textarea rows="4" cols="50">
-                  </textarea>
+                  {{  render_field(nurse.problem,style="margin:") }}
               </div>
+                  {{ nurse.submit(class="btn-primary") }}
       </div>
-
-      <div class="col-sm-3">
-          <h4><strong> Urgency: </strong></h4>
-        <form action="">
-            <input type="radio" name="urgency" value="Urgent"> Urgent <br>
-            <input type="radio" name="urgency" value="Moderate urgency"> Moderate urgency <br>
-            <input type="radio" name="urgency" value="Not urgent at all"> Not urgent at all <br> <br>
-            <button class="button" style="vertical-align:middle;height:40px;width:80px;font-size:17px;text-align:center;background-color:#f4511e;border-radius:10px;color:white ">Submit</button>
-        </form>
-      </div>
+      </form>
 
   </div>
 </div>
@@ -60,9 +72,13 @@
                     <p> Name: {{ order.get_foodname() }}</p>
                     <p> Quantity: {{ order.get_price() }}</p>
                     <p> Price: {{ order.get_quantity() }}</p>
-                    <a href="/update_order/{{order.get_food_id()}}" class="btn btn-warning">Update</a>
+
+{#                    <a href="/update_order/{{order.get_food_id()}}" class="btn btn-warning">Update</a>#}
+
                     <form action="{{url_for('delete_order', id=order.get_food_id())}}" method="post">
-                        <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"></form>
+                        <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
+                    </form>
+
                 {% endif %}
             {% endfor %}
             <button type="button" class="btn btn-success" style="display:inline;width:80px;text-align:center;background-color: #f4511e;">Submit</button>
