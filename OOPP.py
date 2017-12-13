@@ -141,6 +141,12 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
 
+@app.route('/staff_logout')
+def logout_staff():
+    session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
+    flash('You are now logged out', 'success')
+    return redirect(url_for('render_nurse'))
+
 
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
@@ -241,49 +247,6 @@ def render_patient_info_editor():
     return render_template('patient_info_editor.html', form=form)
 
 
-#FOR UPDATING PATIENT INFO (MIGHT NEED IT)
-# @app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
-# def update_patient(id):
-#     form = Patient_Info(request.form)
-#     if request.method == "POST" and form.validate():
-#         name = form.name.data
-#         illness = form.illness.data
-#         patientdesc = form.patientdesc.data
-#         medicinedesc = form.medicinedesc.data
-#         med1 = form.med1.data
-#         med2 = form.med2.data
-#         med3 = form.med3.data
-#
-#         pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
-#         pat_db = root.child('patient_info/' + id)
-#         pat_db.set({
-#             "name": pat.get_name(),
-#             "illness": pat.get_illness(),
-#             "patientdesc": pat.get_patientdesc(),
-#             "medicinedesc": pat.get_medicinedesc(),
-#             "med1": pat.get_med1(),
-#             "med2": pat.get_med2(),
-#             "med3": pat.get_med3(),
-#         })
-#
-#         flash("Patient Information Successfully Updated.", "success")
-#         return redirect(url_for("render_patient_info"))
-#
-#     else:
-#         url = "patient_info/" + id
-#         eachpat = root.child(url).get()
-#         patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"], eachpat["med1"], eachpat["med2"], eachpat["med3"])
-#
-#         patients.set_patid(id)
-#         form.name.data = patients.get_name()
-#         form.illness.data = patients.get_illness()
-#         form.patientdesc.data = patients.get_patientdesc()
-#         form.medicinedesc.data = patients.get_medicinedesc()
-#         form.med1.data = patients.get_med1()
-#         form.med2.data = patients.get_med2()
-#         form.med3.data = patients.get_med3()
-#
-#     return render_template("patient_edit.html", form=form)
 
 @app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
 def update_patient(id):
