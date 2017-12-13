@@ -4,6 +4,7 @@
   <title>My Company</title>
   <meta charset="utf-8">
   <script type='text/javascript' src='https://cdn.scaledrone.com/scaledrone.min.js'></script>
+  <script type='text/javascript' src='http://0.0.0.0:8080/scaledrone.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
@@ -42,10 +43,12 @@
   <h1>iCare</h1>
   <p>Helping you always!</p>
 </div>
-<div class="container-fluid">
-    {% include 'includes/_message.html' %}
-</div>
+
 
     {% block body %}{% endblock %}
 </body>
 </html>
+
+<div class="container-fluid">
+    {% include 'includes/_message.html' %}
+</div>
