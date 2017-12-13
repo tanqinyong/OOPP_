@@ -53,6 +53,10 @@ def render_login():
     return render_template('login.html')
 
 
+@app.route('/Admin/')
+def render_admin():
+    return render_template('Admin.html')
+
 @app.route('/patient_info/')
 def render_patient_info():
     try:
@@ -92,24 +96,24 @@ def render_speech_to_text():
 @app.route('/nursecallpage/',methods=['GET','POST'])
 def render_nurse():
     # FOOD ORDER
-    Food_Order = root.child('Food_Order').get()
-    list = []
-    for food_id in Food_Order:
-        eachorder = Food_Order[food_id]
-        order = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['price'],eachorder['quantity'])
-        order.set_foodid(food_id)
-        list.append(order)
+        Food_Order = root.child('Food_Order').get()
+        list = []
+        for food_id in Food_Order:
+            eachorder = Food_Order[food_id]
+            order = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['price'],eachorder['quantity'])
+            order.set_foodid(food_id)
+            list.append(order)
 
     # NURSE CALL
-    nurse_form = NurseCallForm(request.form)
-    if request.method == 'POST' and nurse_form.validate():
-        newcall = NurseCall(nurse_form.problem.data)
-        newcall_db = root.child('Nurse Call')
-        newcall_db.push ({
-            'symptom': newcall.get_reason()
-        })
-        flash('A nurse will attend to you shortly.','success')
-    return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
+        nurse_form = NurseCallForm(request.form)
+        if request.method == 'POST' and nurse_form.validate():
+            newcall = NurseCall(nurse_form.problem.data)
+            newcall_db = root.child('Nurse Call')
+            newcall_db.push ({
+               'symptom': newcall.get_reason()
+             })
+            flash('A nurse will attend to you shortly.','success')
+        return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
