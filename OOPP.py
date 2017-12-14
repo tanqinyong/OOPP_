@@ -1,3 +1,8 @@
+#for Scaledrone - Trainee page messaging API
+from scaledrone import ScaleDrone
+
+drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+
 # Flask, WTForms and cool shit
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField
