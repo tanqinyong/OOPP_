@@ -1,7 +1,64 @@
-#for Scaledrone - Trainee page messaging API
+# For Scaledrone - Trainee page messaging API
+
+import requests
+from requests.auth import HTTPBasicAuth
+
+BASE_URL = 'https://api2.scaledrone.com'
+
+class ScaleDrone:
+
+    def __init__(self, channel_id, secret_key, base_url=BASE_URL):
+        auth = HTTPBasicAuth(channel_id, secret_key)
+        self.auth = auth
+        self.base_url = base_url + '/' + channel_id + '/'
+
+    def publish(self, room, data = {}):
+        url = self.base_url + room + '/publish'
+        return requests.post(url, data=data, auth=self.auth)
+
+    def channel_stats(self):
+        url = self.base_url + 'stats'
+        return requests.get(url, auth=self.auth)
+
+    def users_list(self):
+        url = self.base_url + 'users'
+        return requests.get(url, auth=self.auth)
+
+
+import unittest
 from scaledrone import ScaleDrone
 
 drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+
+
+class Test(unittest.TestCase):
+
+    def test_publish(self):
+        r = drone.publish('notifications', {'foo': 'bar'})
+        self.assertEqual(r.status_code, 200)
+
+    def test_publish(self):
+        r = drone.channel_stats()
+        self.assertTrue('users_count' in r.json())
+        self.assertEqual(r.status_code, 200)
+
+    def users_list(self):
+        r = drone.users_list()
+        self.assertTrue('users' in r.json())
+        self.assertEqual(r.status_code, 200)
+
+
+room = 'notifications'
+message = {'foo': 'bar'}
+response = drone.publish(room, message)
+response = drone.channel_stats()
+response = drone.users_list()
+
+
+
+
+
+
 
 # Flask, WTForms and cool shit
 from flask import Flask, render_template, request, flash, redirect, url_for, session
