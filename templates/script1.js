@@ -1,12 +1,11 @@
 const CLIENT_ID = 'SNazg8KrKdwSphWf';
-//const CLIENT_ID = '2BQI1Uc8yaEAnupY';
 
 const drone = new ScaleDrone(CLIENT_ID, {
   data: { // Will be sent out as clientData via events
     name: getRandomName(),
     color: getRandomColor(),
   },
-  //url: 'ws://localhost:9000/websocket'
+  url: 'http://127.0.0.1:5000/trainee_notes/'
 });
 
 let members = [];
