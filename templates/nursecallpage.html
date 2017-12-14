@@ -1,5 +1,10 @@
 {% extends 'layout.html' %}
 {% block body %}
+    <style>
+    #symptoms {
+        list-style:none;
+    }
+    </style>
     {% from "includes/_formhelper.html" import render_field %}
     {% if nurse.errors %}
 <div class="alert alert-danger">
@@ -36,12 +41,24 @@
       </div>
       <!-- nurse call form -->
       <form method="POST" action="/nursecallpage/">
-      <div class="col-sm-9">
-              <div>
-                  {{  render_field(nurse.problem,style="margin:") }}
-              </div>
+      <div class="col-sm-2" style="text-align:left">
+              <div class="form-group">
+                  {{  render_field(nurse.problem,id="symptoms")}}
                   {{ nurse.submit(class="btn-primary") }}
+              </div>
+
       </div>
+          <div class="col-sm-7" style="text-align:left">
+              <ul style="list-style:none">
+                  <br>
+                 <li><img src="http://allan-kelli.com/br/wp-content/uploads/sites/2/2016/01/cropped-heart.png" style="height:35px;width:35px"/></li>
+                  <li><img src="http://www.anatomy-resources.com/human-anatomy/images/sh240-joints.gif" style="height:35px;width:35px"/></li>
+                  <li><img src="https://d30y9cdsu7xlg0.cloudfront.net/png/638283-200.png" style="height:35px;width:35px"/></li>
+                  <li><img src="https://png.icons8.com/metro/540/stomach.png" style="height:35px;width:35px"/></li>
+                  <li><img src="https://cdn0.iconfinder.com/data/icons/medical-5/450/spit-512.png" style="height:35px;width:35px"/></li>
+                  <li><img src="https://cdn0.iconfinder.com/data/icons/brain-activity-outline-style/150/smell-512.png" style="height:35px;width:35px"/></li>
+              </ul>
+          </div>
       </form>
 
   </div>

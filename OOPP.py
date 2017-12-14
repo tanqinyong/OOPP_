@@ -28,14 +28,14 @@ class LoginForm(Form):
 
 
 class NurseCallForm(Form):
-    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")], option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
+    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
     submit = SubmitField('Enter')
 
 
 class FoodOrderForm(Form):
     foodname = RadioField('Food Choices', choices = [('Chicken','Chicken'),('Fish','Fish'),('Beef','Beef'),('Pork','Pork')],default='Chicken')
     patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
-    qty = SelectField('Qty', choices=[('1', '1'), ('2', '2')], default='')
+    qty = SelectField('Qty', choices=[('1', '1'), ('2', '2'),('3','3'),('4','4'),('5','5')], default='')
     submit = SubmitField('Enter')
 
 
@@ -54,9 +54,36 @@ class AdminForm(Form):
     password = PasswordField('Password', [validators.DataRequired()])
 
 
-@app.route('/')
-def render_login():
-    return render_template('login.html')
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+    print(request.method)
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        password = form.password.data
+        if username == 'admin' and password == 'P@ssw0rd':  # harcoded username and password
+            session['logged_in'] = True  # this is to set a session to indicate the user is login into the system.
+            return redirect(url_for('render_nurse'))
+        else:
+            error = 'Invalid login'
+            flash(error, 'danger')
+            return render_template('StaffLogin.html', form=form)
+
+    return render_template('StaffLogin.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
+
+
+@app.route('/staff_logout')
+def logout_staff():
+    session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
+    flash('You are now logged out', 'success')
+    return redirect(url_for('render_nurse'))
 
 
 @app.route('/Admin/',methods=['GET','POST'])
@@ -69,7 +96,8 @@ def render_admin():
             new_staff_db = root.child('Staff')
             new_staff_db.push ({
                 'username': new_staff.get_username(),
-                'password': new_staff.get_password()
+                'password': new_staff.get_password(),
+                
             })
             flash('Staff added!'+ ' User = '+username + ' Password = '+new_staff.get_password(), 'success')
 
@@ -101,6 +129,11 @@ def render_patient_info():
     except TypeError:
         flash("No patient left in the database!", "danger")
         return redirect(url_for("render_patient_info_editor"))
+
+
+@app.route('/new 1/')
+def render_new1():
+    return render_template('new 1.html')
 
 
 @app.route('/trainee_notes/')
@@ -144,38 +177,6 @@ def render_nurse():
              })
             flash('A nurse will attend to you shortly.','success')
         return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm(request.form)
-    print(request.method)
-    if request.method == 'POST' and form.validate():
-        username = form.username.data
-        password = form.password.data
-        if username == 'admin' and password == 'P@ssw0rd':  # harcoded username and password
-            session['logged_in'] = True  # this is to set a session to indicate the user is login into the system.
-            return redirect(url_for('render_nurse'))
-        else:
-            error = 'Invalid login'
-            flash(error, 'danger')
-            return render_template('StaffLogin.html', form=form)
-
-    return render_template('StaffLogin.html', form=form)
-
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
-
-
-@app.route('/staff_logout')
-def logout_staff():
-    session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
-    flash('You are now logged out', 'success')
-    return redirect(url_for('render_nurse'))
 
 
 @app.route('/menu/', methods = ['GET','POST'])
