@@ -5,7 +5,7 @@ const drone = new ScaleDrone(CLIENT_ID, {
     name: getRandomName(),
     color: getRandomColor(),
   },
-  url: 'http://127.0.0.1:5000/trainee_notes'
+  url: 'http://127.0.0.1:5000/trainee_notes/'
 });
 
 let members = [];
