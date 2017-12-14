@@ -17,6 +17,29 @@
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
 
 <!-- navbar & jumbotron -->
+{%  if session["logged_in_staff"] == True %}
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#myPage"></a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+         <li><a href="/patient_info/" class="navbarli">PATIENT INFO</a></li>
+        <li><a href="/trainee_notes/" class="navbarli">TRAINEE NOTES</a></li>
+        <li><a href="/remote_doctor/" class="navbarli">REMOTE DOCTOR</a></li>
+        <li><a href="/staff_logout/">Logout</a></li>
+        <li><a href="/logout/">Logout Patient</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% else %}
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
@@ -29,26 +52,26 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
-         <li><a href="/nursecallpage/">NURSE CALL</a></li>
+        <li><a href="/nursecallpage/">NURSE CALL</a></li>
         <li><a href="/patient_info/">PATIENT'S INFORMATION</a></li>
         <li><a href="/billing/">BILLING</a></li>
         <li><a href="/remote_doctor/">REMOTE DOCTOR</a></li>
         <li><a href="/speech_to_text/">SPEECH-TO-TEXT</a></li>
+        <li><a href="/login/">Staff Login</a></li>
       </ul>
     </div>
   </div>
 </nav>
-
+{% endif %}
 <div class="jumbotron text-center">
   <h1>iCare</h1>
   <p>Helping you always!</p>
 </div>
-
+<div class="container-fluid">
+    {% include 'includes/_message.html' %}
+</div>
 
     {% block body %}{% endblock %}
 </body>
 </html>
 
-<div class="container-fluid">
-    {% include 'includes/_message.html' %}
-</div>

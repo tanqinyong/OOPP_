@@ -44,7 +44,12 @@
         }
     </style>
 </head>
+{% from "includes/_formhelper.html" import render_field %}
+
 <body>
+<div class="container-fluid">
+    {% include 'includes/_message.html' %}
+</div>
 <div id="login" class="container">
     <div id="description" class="container">
         <img src="../static/images/iCAre.jpeg" style="float:left;height:200px;width:250px;" />
@@ -59,11 +64,13 @@
         <h3 style="display:inline;"> We will need... </h3> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
         <button type="button" class="btn btn-primary" style="display:inline;width:80px;text-align:center;">Staff</button>
         <button type="button" class="btn btn-success" style="display:inline;width:80px;text-align:center;">Patient</button>
+        <form action="" method="POST">
         <div id="idpass">
-            <h2> ID: </h2> <input type="text" size="30" placeholder="Your ID...">
-            <h2> Password: </h2> <input type="text" size="30" placeholder="Your password..."> <br> <br>
-            <button type="button" class="btn btn-success" style="width:80px;">Submit</button>
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            <input type="submit" class="btn btn-success" value="Submit" style="width:80px;"/>
         </div>
+        </form>
     </div>
 
 </div>
