@@ -4,8 +4,6 @@
   body {
       box-sizing: border-box;
       margin: 0;
-      padding: 13px;
-      display: flex;
       flex-direction: column;
       max-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -49,18 +47,44 @@
     .message-form__button {
       margin: 10px;
     }
+    #name {
+
+    }
+    #comment {
+
+    }
+    #submit {
+
+    }
   </style>
+      {% from "includes/_formhelper.html" import render_field %}
+        {% if comments.errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for field_name, field_errors in comments.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ comments[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+    <div style="">
+                {% for comment in comments %}
+                    <p> Name: {{ comment.get_name() }}</p>
+                    <p> Comment: {{ comment.get_comment() }}</p>
+
+
+                {% endfor %}
+    </div>
 <h3>Consultation:</h3>
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+<form action="" method="post">
+{{ render_field(form.name,id="name") }} <br> <br>
+{{ render_field(form.comment,id="comment") }} <br> <br>
+{{ render_field(form.submit,class="btn btn-primary") }} <br> <br>
+    </form>
 
-  <div class="members-count">-</div>
-  <div class="members-list">-</div>
-  <div class="messages"></div>
-  <form class="message-form" onsubmit="return false;">
-    <input class="message-form__input" placeholder="Type a message.." type="text"/>
-    <input class="message-form__button" value="Send" type="submit"/>
-  </form>
-  <script src="./script1.js"></script>
 </body>
 
 {% endblock %}
