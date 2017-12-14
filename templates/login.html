@@ -1,13 +1,14 @@
-{% block additionalscripts %}
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
-<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<title>Login</title>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>login</title>
     <style>
         body {
             background-color: #f4511e;
@@ -42,20 +43,10 @@
 
         }
     </style>
-{%  endblock %}
-{% block body %}
-    {% from "includes/_formhelper.html" import render_field %}
-{% if form.errors %}
-<div class="alert alert-danger">
-    <ul>
-        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-            {% for error in field_errors %}
-                <li>{{ form[field_name].label }}: {{ error }}</li>
-            {% endfor %}
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+</head>
+{% from "includes/_formhelper.html" import render_field %}
+
+<body>
 <div class="container-fluid">
     {% include 'includes/_message.html' %}
 </div>
@@ -67,17 +58,22 @@
         </div>
     </div>
     <img src="https://www.bforball.com/images/geometry/vertical-line.png" style="float:left;height:500px;width:50px;"/>
-    <form action="" method="POST">
     <div id="loginside">
         <br> <br> <br>
         <h1 > Login </h1>
-        <h3 style="display:inline;"> We will need... </h3>
+        <h3 style="display:inline;"> We will need... </h3> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+        <button type="button" class="btn btn-primary" style="display:inline;width:80px;text-align:center;">Staff</button>
+        <button type="button" class="btn btn-success" style="display:inline;width:80px;text-align:center;">Patient</button>
+        <form action="" method="POST">
         <div id="idpass">
-            {{  render_field(form.username) }} <br>
-            {{  render_field(form.password) }} <br>
-            {{ form.submit(class="btn-primary") }}
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            <input type="submit" class="btn btn-success" value="Submit" style="width:80px;"/>
         </div>
+        </form>
     </div>
-    </form>
+
 </div>
-{%  endblock %}
+</body>
+</html>
+

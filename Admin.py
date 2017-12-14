@@ -1,43 +1,55 @@
-#
+
 class Staff:
-    def __init__(self,username,password):
+    def __init__(self, name, nric, username):
+        self.__name = name
+        self.__nric = nric
         self.__username = username
-        self.__password = password
 
     # Accessors
 
+    def get_name(self):
+        return self.__name
+
+    def get_nric(self):
+        return self.__nric
+
     def get_username(self):
         return self.__username
-
-    def get_password(self):
-        return self.__password
-
     # Mutators
+
+    def set_name(self, name):
+        self.__name = name
+
+    def set_nric(self, nric):
+        self.__nric = nric
 
     def set_username(self,username):
         self.__username = username
-
-    def set_password(self,password):
-        self.__password = password
-
 
 class Patient:
-    def __init__(self,username,password):
+    def __init__(self, name, nric, username):
+        self.__name = name
+        self.__nric = nric
         self.__username = username
-        self.__password = password
 
     # Accessors
+
+    def get_name(self):
+        return self.__name
+
+    def get_nric(self):
+        return self.__nric
 
     def get_username(self):
         return self.__username
 
-    def get_password(self):
-        return self.__password
-
     # Mutators
 
-    def set_username(self,username):
-        self.__username = username
+    def set_name(self, name):
+        self.__name = name
 
-    def set_password(self,password):
-        self.__password = password
+    def set_nric(self, nric):
+        self.__nric = nric
+
+    def set_username(self, username):
+        self.__username = username

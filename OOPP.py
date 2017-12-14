@@ -51,39 +51,32 @@ class Patient_Info(Form):
 
 class AdminForm(Form):
     type = RadioField('Type: ', choices=[('Staff','Staff'),('Patient','Patient')])
-    password = PasswordField('Password', [validators.DataRequired()])
+    nric = StringField("NRIC: ", [validators.Length(min=1, max=9), validators.DataRequired()])
+    name = StringField("Name: ", [validators.Length(min=1, max=30), validators.DataRequired()])
 
+class PatientLogin(Form):
+    username = StringField("Patient ID: ",[validators.Length(min=1, max=7), validators.DataRequired()])
+    password = StringField("Password: ",[validators.Length(min=1, max=9), validators.DataRequired()])
 
-@app.route('/', methods=['GET', 'POST'])
-def login():
-    form = LoginForm(request.form)
-    print(request.method)
-    if request.method == 'POST' and form.validate():
+@app.route('/', methods=['GET','POST'])
+def render_login():
+    form = PatientLogin(request.form)
+    if request.method == "POST" and form.validate():
         username = form.username.data
         password = form.password.data
-        if username == 'admin' and password == 'P@ssw0rd':  # harcoded username and password
-            session['logged_in'] = True  # this is to set a session to indicate the user is login into the system.
+
+        validate = root.child('Patient').order_by_child("username").equal_to(username).get()
+
+        for i, j in validate:
+            print(i, j)
+
+        if username == j['username'] and password == j['password']:
+            session['logged_in'] = True
             return redirect(url_for('render_nurse'))
         else:
-            error = 'Invalid login'
-            flash(error, 'danger')
-            return render_template('StaffLogin.html', form=form)
-
-    return render_template('StaffLogin.html', form=form)
-
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
-
-
-@app.route('/staff_logout')
-def logout_staff():
-    session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
-    flash('You are now logged out', 'success')
-    return redirect(url_for('render_nurse'))
+            error = "Invalid Login"
+            flash(error, "danger")
+    return render_template('login.html', form=form)
 
 
 @app.route('/Admin/',methods=['GET','POST'])
@@ -92,24 +85,25 @@ def render_admin():
     if request.method == 'POST' and admin_form.validate():
         if admin_form.type.data == 'Staff':
             username = 'S' + str(random.randint(10000, 99999))
-            new_staff = Staff(username,admin_form.password.data)
+            new_staff = Staff(admin_form.name.data,admin_form.nric.data,username)
             new_staff_db = root.child('Staff')
             new_staff_db.push ({
-                'username': new_staff.get_username(),
-                'password': new_staff.get_password(),
-                
+                'name': new_staff.get_name(),
+                'password': new_staff.get_nric(),
+                'username': new_staff.get_username()
             })
-            flash('Staff added!'+ ' User = '+username + ' Password = '+new_staff.get_password(), 'success')
+            flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+new_staff.get_nric(), 'success')
 
         elif admin_form.type.data == 'Patient':
             username = 'P' + str(random.randint(10000, 99999))
-            new_patient = Patient(username,admin_form.password.data)
+            new_patient = Patient(admin_form.name.data,admin_form.nric.data,username)
             new_patient_db = root.child('Patient')
             new_patient_db.push({
-                'username': new_patient.get_username(),
-                'password': new_patient.get_password()
+                'name': new_patient.get_name(),
+                'password': new_patient.get_nric(),
+                'username': new_patient.get_username()
             })
-            flash('Patient added!'+ ' User = '+username + ' Password = '+new_patient.get_password(), 'success')
+            flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+new_patient.get_nric(), 'success')
 
     return render_template('Admin.html',form=admin_form)
 
@@ -177,6 +171,38 @@ def render_nurse():
              })
             flash('A nurse will attend to you shortly.','success')
         return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
+
+
+@app.route('/login/', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+    print(request.method)
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        password = form.password.data
+        if username == 'admin' and password == 'P@ssw0rd':  # harcoded username and password
+            session['logged_in_staff'] = True  # this is to set a session to indicate the user is login into the system.
+            return redirect(url_for('render_patient_info'))
+        else:
+            error = 'Invalid login'
+            flash(error, 'danger')
+            return render_template('StaffLogin.html', form=form)
+
+    return render_template('StaffLogin.html', form=form)
+
+
+@app.route('/logout/')
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
+
+
+@app.route('/staff_logout/')
+def logout_staff():
+    session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
+    flash('You are now logged out', 'success')
+    return redirect(url_for('render_nurse'))
 
 
 @app.route('/menu/', methods = ['GET','POST'])
