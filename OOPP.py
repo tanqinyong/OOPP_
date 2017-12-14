@@ -22,8 +22,8 @@ app = Flask(__name__)
 
 
 class LoginForm(Form):
-    username = StringField('Username', [validators.DataRequired()])
-    password = PasswordField('Password', [validators.DataRequired()])
+    username = StringField('Staff ID:', [validators.DataRequired()])
+    password = PasswordField('Password:', [validators.DataRequired()])
     submit = SubmitField('Login')
 
 
@@ -42,11 +42,11 @@ class FoodOrderForm(Form):
 class Patient_Info(Form):
     name = StringField("Name", [validators.Length(min=1, max=50), validators.DataRequired()])
     illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
-    patientdesc = TextAreaField("Patient Description", [validators.DataRequired()])
+    patientdesc = TextAreaField("Illness Description", [validators.DataRequired()])
     medicinedesc = TextAreaField("Medicine Description", [validators.DataRequired()])
     med1 = StringField("Medicine 1", [validators.Length(min=1, max=30), validators.DataRequired()])
-    med2 = StringField("Medicine 2", [validators.Length(min=1, max=30), validators.DataRequired()])
-    med3 = StringField("Medicine 3", [validators.Length(min=1, max=30), validators.DataRequired()])
+    med2 = StringField("Medicine 2")
+    med3 = StringField("Medicine 3")
 
 
 class AdminForm(Form):
@@ -54,9 +54,11 @@ class AdminForm(Form):
     nric = StringField("NRIC: ", [validators.Length(min=1, max=9), validators.DataRequired()])
     name = StringField("Name: ", [validators.Length(min=1, max=30), validators.DataRequired()])
 
+
 class PatientLogin(Form):
     username = StringField("Patient ID: ",[validators.Length(min=1, max=7), validators.DataRequired()])
-    password = StringField("Password: ",[validators.Length(min=1, max=9), validators.DataRequired()])
+    password = PasswordField("Password: ",[validators.Length(min=1, max=9), validators.DataRequired()])
+
 
 @app.route('/', methods=['GET','POST'])
 def render_login():
@@ -67,15 +69,15 @@ def render_login():
 
         validate = root.child('Patient').order_by_child("username").equal_to(username).get()
 
-        for i, j in validate:
+        for i, j in validate.items():
             print(i, j)
-
-        if username == j['username'] and password == j['password']:
-            session['logged_in'] = True
-            return redirect(url_for('render_nurse'))
-        else:
-            error = "Invalid Login"
-            flash(error, "danger")
+            print(j['username'])
+            if username == j['username'] and password == j['password']:
+                session['logged_in'] = True
+                return redirect(url_for('render_nurse'))
+            else:
+                error = "Invalid Login"
+                flash(error, "danger")
     return render_template('login.html', form=form)
 
 
@@ -88,9 +90,11 @@ def render_admin():
             new_staff = Staff(admin_form.name.data,admin_form.nric.data,username)
             new_staff_db = root.child('Staff')
             new_staff_db.push ({
+
+                'username': new_staff.get_username(),
                 'name': new_staff.get_name(),
-                'password': new_staff.get_nric(),
-                'username': new_staff.get_username()
+                'password': new_staff.get_nric()
+
             })
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+new_staff.get_nric(), 'success')
 
@@ -180,13 +184,17 @@ def login():
     if request.method == 'POST' and form.validate():
         username = form.username.data
         password = form.password.data
-        if username == 'admin' and password == 'P@ssw0rd':  # harcoded username and password
-            session['logged_in_staff'] = True  # this is to set a session to indicate the user is login into the system.
-            return redirect(url_for('render_patient_info'))
-        else:
-            error = 'Invalid login'
-            flash(error, 'danger')
-            return render_template('StaffLogin.html', form=form)
+        validate = root.child('Staff').order_by_child("username").equal_to(username).get()
+
+        for i, j in validate.items():
+            print(i, j)
+            print(j['username'])
+            if username == j['username'] and password == j['password']:
+                session['logged_in_staff'] = True
+                return redirect(url_for('render_patient_info'))
+            else:
+                error = "Invalid Login"
+                flash(error, "danger")
 
     return render_template('StaffLogin.html', form=form)
 
@@ -195,7 +203,7 @@ def login():
 def logout():
     session.clear()
     flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('render_login'))
 
 
 @app.route('/staff_logout/')
