@@ -41,6 +41,12 @@
         #idpass {
 
         }
+        .loginform {
+            width:50%;
+            border-radius: 5px;
+            box-shadow: 0.1em 0.1em 0.1em 0.1em #ccc;
+
+        }
     </style>
 {%  endblock %}
 {% block body %}
@@ -72,10 +78,10 @@
         <br> <br> <br>
         <h1 > Login </h1>
         <h3 style="display:inline;"> We will need... </h3>
-        <div id="idpass">
-            {{  render_field(form.username) }} <br>
-            {{  render_field(form.password) }} <br>
-            {{ form.submit(class="btn-primary") }}
+        <div id="idpass"> <br>
+            {{  render_field(form.username,class="loginform") }} <br> <br>
+            {{  render_field(form.password,class="loginform") }} <br> <br>
+            {{ form.submit(class="btn btn-success",style="width:80px") }}
         </div>
     </div>
     </form>
