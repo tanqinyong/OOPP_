@@ -66,12 +66,13 @@
     <div id="loginside">
         <br> <br> <br>
         <h1 > Login </h1>
-        <h3 style="display:inline;"> We will need... </h3>
+        <h3 style="display:inline;"> We will need... </h3> <br> <br> <br>
+        <a href="/login/">  Staff </a>
         <form action="" method="POST">
         <div id="idpass"><br>
             {{ render_field(form.username, class="loginform") }} <br> <br>
             {{ render_field(form.password, class="loginform") }} <br> <br>
-            <input type="submit" class="btn btn-success" value="Submit" style="width:80px;"/>
+            <input type="submit" class="btn btn-success" value="Login" style="width:80px;"/>
         </div>
         </form>
     </div>

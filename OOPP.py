@@ -70,6 +70,7 @@ from Food_Order import FoodOrder
 from Nurse_call import NurseCall
 from Patient_Info import Edit_Patient
 from Admin import Staff, Patient
+from trainee_notes import comment
 
 # Database shit
 import firebase_admin
@@ -98,6 +99,12 @@ class FoodOrderForm(Form):
     foodname = RadioField('Food Choices', choices = [('Chicken','Chicken'),('Fish','Fish'),('Beef','Beef'),('Pork','Pork')],default='Chicken')
     patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
     qty = SelectField('Qty', choices=[('1', '1'), ('2', '2'),('3','3'),('4','4'),('5','5')], default='')
+    submit = SubmitField('Enter')
+
+
+class TraineeForm(Form):
+    name = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
+    comment = TextAreaField('Comment:')
     submit = SubmitField('Enter')
 
 
@@ -152,11 +159,9 @@ def render_admin():
             new_staff = Staff(admin_form.name.data,admin_form.nric.data,username)
             new_staff_db = root.child('Staff')
             new_staff_db.push ({
-
                 'username': new_staff.get_username(),
                 'name': new_staff.get_name(),
                 'password': new_staff.get_nric()
-
             })
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+new_staff.get_nric(), 'success')
 
@@ -167,7 +172,7 @@ def render_admin():
             new_patient_db.push({
                 'name': new_patient.get_name(),
                 'password': new_patient.get_nric(),
-                'username': new_patient.get_username()
+                'username': new_patient.get_username(),
             })
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+new_patient.get_nric(), 'success')
 
@@ -196,9 +201,27 @@ def render_new1():
     return render_template('new 1.html')
 
 
-@app.route('/trainee_notes/')
+@app.route('/trainee_notes/',methods=['POST',"GET"])
 def render_trainee_notes():
-    return render_template('trainee_notes.html')
+    form = TraineeForm(request.form)
+    if request.method == "POST" and form.validate():
+        newcomment = comment(form.name.data,form.comment.data)
+        newcomment_db = root.child('comment')
+        newcomment_db.push ({
+            'name': newcomment.get_name(),
+            'comment':newcomment.get_comment()
+        })
+        flash('Comment posted successfully.', 'success')
+    comments = root.child('comment').get()
+    list = []
+    for commentid in comments:
+
+        eachcomment = comments[commentid]
+        thatcomment = comment(eachcomment['name'],eachcomment['comment'])
+        list.append(thatcomment)
+    return render_template('trainee_notes.html', comments=list,form=form)
+
+
 
 @app.route('/billing/')
 def render_billing():
