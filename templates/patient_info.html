@@ -62,13 +62,13 @@
 <div id="services" class="container-fluid text-center">
 <div id="patientinfo" class="container-fluid text-center" style="position:relative;">
     <div id="authen" style="visibility:hidden; position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a>
-        <br/> <a href="/patient_edit/{{patient_infos.get_patid()}}">(update)</a> <br/>
-        <form action="{{url_for('delete_patient', id=patient_infos.get_patid())}}" method="post">
+        <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>
+        <form action="{{url_for('delete_patient', id=eachpat.get_patient_id())}}" method="post">
             <input type="submit" value="(delete)" id="delete" style="background:none; border:none; color:red;" onclick="return confirm('Are you sure you want to delete this patient\'s details?');"></form></div>
 
-  <h2> {{ patient_infos.get_name() }} </h2>
-  <h3> {{ patient_infos.get_illness() }} </h3> <br>
-  <p style="width: 600px;margin:auto"> {{ patient_infos.get_patientdesc() }}</p>
+  <h2> {{ eachpat.get_name() }} </h2>
+  <h3> {{ eachpat.get_illness() }} </h3> <br>
+  <p style="width: 600px;margin:auto"> {{ eachpat.get_patientdesc() }}</p>
 </div>
 
 
@@ -85,13 +85,13 @@
 
     <div class="col-sm-6">
       <br>
-      <p>{{ patient_infos.get_medicinedesc() }} </p>
+      <p>{{ eachpat.get_medicinedesc() }} </p>
     </div>
     <div class="col-sm-3">
       <ul>
-        <li>{{ patient_infos.get_med1() }}</li>
-        <li>{{ patient_infos.get_med2() }}</li>
-        <li>{{ patient_infos.get_med3() }}</li>
+        <li>{{ eachpat.get_med1() }}</li>
+        <li>{{ eachpat.get_med2() }}</li>
+        <li>{{ eachpat.get_med3() }}</li>
       </ul>
     </div>
   </div>
