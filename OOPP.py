@@ -97,11 +97,17 @@ def render_login():
         #https://firebase.google.com/docs/database/admin/retrieve-data
         validate = root.child('Patient').order_by_child("username").equal_to(username).get()
 
+
         for key, val in validate.items():
             if username == val['username'] and password == val['password']:
                 session['logged_in'] = True
                 session['db_id'] = key
                 session['user_id'] = username
+
+                pat_url = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
+                for pat, url in pat_url.items():
+                    if session["user_id"] == url['newthing']:
+                        session["patient_url"] = pat
                 return redirect(url_for('render_nurse'))
             else:
                 error = "Invalid Login"
@@ -473,7 +479,7 @@ def login():
         for key, val in validate.items():
             if username == val['username'] and password == val['password']:
                 session['logged_in_staff'] = True
-                return redirect(url_for('render_patient_info'))
+                return redirect(url_for('render_patient_info', id=session["patient_url"]))
             else:
                 error = "Invalid Login"
                 flash(error, "danger")
