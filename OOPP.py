@@ -259,34 +259,70 @@ def render_patient_info_editor():
         med1 = form.med1.data
         med2 = form.med2.data
         med3 = form.med3.data
-        pray = root.child("Patient").order_by_child("username").equal_to(session["login_session"]).get()
-        print(session["login_session"]+" (1)")
+        pray = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
+        print(session["user_id"])
         for key, val in pray.items():
-            if session["login_session"] == val['username']:
+            if session["user_id"] == val['username']:
                 pat_name = val["name"]
-                print(pat_name)
             else:
                 pat_name = name
         pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
-        pat_db = root.child('patient_info')
 
-        pat_db.push({
-            "name": pat_name,
-            "illness": pat.get_illness(),
-            "patientdesc": pat.get_patientdesc(),
-            "medicinedesc": pat.get_medicinedesc(),
-            "med1": pat.get_med1(),
-            "med2": pat.get_med2(),
-            "med3": pat.get_med3(),
-        })
-        pat_db2 = root.child('patient_info').order_by_child('name').equal_to(pat_name).get()
-        for key2, val2, in enumerate(pat_db2):
-            if key2 == len(pat_db2)-1:
-                print(key2)
-                print(val2)
-                id = val2
+        #find patient_info if there's same "newthing" in the firebase
+        pat_db3 = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
+        for test, testing in pat_db3.items():
+            if session["user_id"] == testing['newthing']:
+                #if it exists, set the "session url" to the "-L0spKVkqG0t9WeLaHvq"
+                session["patient_url"] = test
+
+        #check if there any patient with the same "newthing"
+        if len(pat_db3) > 0:
+            #if there is, update it
+            pat_db = root.child("patient_info/" + session["patient_url"])
+            pat_db.set({
+                "name": pat_name,
+                "illness": pat.get_illness(),
+                "patientdesc": pat.get_patientdesc(),
+                "medicinedesc": pat.get_medicinedesc(),
+                "med1": pat.get_med1(),
+                "med2": pat.get_med2(),
+                "med3": pat.get_med3(),
+                "newthing": session["user_id"]
+            })
+            print("Patient Info Updated!")
+        else:
+            #if not, add it in
+            pat_db = root.child('patient_info')
+            pat_db.push({
+                "name": pat_name,
+                "illness": pat.get_illness(),
+                "patientdesc": pat.get_patientdesc(),
+                "medicinedesc": pat.get_medicinedesc(),
+                "med1": pat.get_med1(),
+                "med2": pat.get_med2(),
+                "med3": pat.get_med3(),
+                "newthing": session["user_id"]
+                })
+            print("New Patient Added!")
+
+        # pat_db2 = root.child('patient_info').order_by_child('name').equal_to(pat_name).get()
+        # for key2, val2, in enumerate(pat_db2):
+        #     if key2 == len(pat_db2)-1:
+        #         print(key2)
+        #         print("key 2 ^")
+        #         print(val2)
+        #         print("val 2 ^")
+        #         id = val2
+
+        #loop through the firebase again to check for the UPDATED "newthing"
+        pat_db4 = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
+        for key3, val3 in pat_db4.items():
+            if session["user_id"] == val3['newthing']:
+                #assign the id/url as the "-L0spKVkqG0t9WeLaHvq" because the previous "session["patient_url"]" does not exist for the newly added patient
+                session["patient_url"] = key3
+
         flash("Patient Information Successfully Updated.", "success")
-        return redirect(url_for("render_patient_info", id=id))
+        return redirect(url_for("render_patient_info", id=session["patient_url"]))
     return render_template('patient_info_editor.html', form=form)
 
 
