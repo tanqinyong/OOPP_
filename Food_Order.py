@@ -6,7 +6,6 @@ class FoodOrder:
         self.__quantity = quantity
         self.__price = price
 
-
     # Accessor methods
 
     def get_food_id(self):

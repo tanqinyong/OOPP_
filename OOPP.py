@@ -5,9 +5,9 @@ import random
 
 # Classes and shit
 from Food_Order import FoodOrder
-from Nurse_call import NurseCall
+# from Nurse_call import NurseCall
 # from Patient_Info import Edit_Patient
-from Hospital import Hospital, Edit_Patient, Staff, Admin_Work
+from Hospital import Hospital, Edit_Patient, Staff, Admin_Work, NurseCall
 # from Admin import Staff, Patient
 from trainee_notes import comment
 
@@ -23,17 +23,29 @@ root = db.reference()
 app = Flask(__name__)
 
 
+# GLOBAL VARIABLE DATABASE ID THAT EVERYTHING SHOULD HAVE
+# user_id = "" # user ID generated - connected to db_id
+# db_id = "" # weird string ID in the database
+# Login Page
 class LoginForm(Form):
     username = StringField('Staff ID:', [validators.DataRequired()])
     password = PasswordField('Password:', [validators.DataRequired()])
     submit = SubmitField('Login')
 
 
+# Login Page
+class PatientLogin(Form):
+    username = StringField("Patient ID: ",[validators.Length(min=1, max=7), validators.DataRequired()])
+    password = PasswordField("Password: ",[validators.Length(min=1, max=9), validators.DataRequired()])
+
+
+# Nurse Call Page
 class NurseCallForm(Form):
     problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
     submit = SubmitField('Enter')
 
 
+# Menu Page
 class FoodOrderForm(Form):
     foodname = RadioField('Food Choices', choices = [('Chicken','Chicken'),('Fish','Fish'),('Beef','Beef'),('Pork','Pork')],default='Chicken')
     patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
@@ -41,12 +53,14 @@ class FoodOrderForm(Form):
     submit = SubmitField('Enter')
 
 
+# Trainee page
 class TraineeForm(Form):
     name = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
     comment = TextAreaField('Comment:')
     submit = SubmitField('Enter')
 
 
+# Patient info page
 class Patient_Info(Form):
     name = StringField("Name", [validators.Length(min=1, max=50), validators.DataRequired()])
     illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
@@ -56,7 +70,9 @@ class Patient_Info(Form):
     med2 = StringField("Medicine 2")
     med3 = StringField("Medicine 3")
 
-#validations not yet done for AdminForm
+
+# Admin Page
+# validations not yet done for AdminForm
 class AdminForm(Form):
     type = RadioField('Type: ', choices=[('Staff','Staff'),('Patient','Patient')])
     name = StringField("Name: ", [validators.Length(min=1, max=30), validators.DataRequired()])
@@ -75,10 +91,6 @@ class AdminForm(Form):
     emergency_contact_relationship = StringField("Emergency Contact Relationship: ")
     maritalstatus = SelectField("Marital Status: ", choices=[("M", "Married"), ("S", "Single"), ("D", "Divorced"), ("W", "Widowed")], default="")
 
-class PatientLogin(Form):
-    username = StringField("Patient ID: ",[validators.Length(min=1, max=7), validators.DataRequired()])
-    password = PasswordField("Password: ",[validators.Length(min=1, max=9), validators.DataRequired()])
-
 
 @app.route('/', methods=['GET','POST'])
 def render_login():
@@ -86,12 +98,22 @@ def render_login():
     if request.method == "POST" and form.validate():
         username = form.username.data
         password = form.password.data
-#https://firebase.google.com/docs/database/admin/retrieve-data
+# https://firebase.google.com/docs/database/admin/retrieve-data
         validate = root.child('Patient').order_by_child("username").equal_to(username).get()
 
         for key, val in validate.items():
             if username == val['username'] and password == val['password']:
                 session['logged_in'] = True
+                # ASSIGN DB_ID & USER_ID
+                user = root.child('Patient').get()
+                for key in user:
+                    print(key)
+                    session['db_id'] = key
+                    db_id = key
+                    if user[key]['username'] == username:
+                        session['user_id'] = user[key]['username']
+                        print(session['user_id'])
+                # ASSIGN DB_ID & USER_ID
                 return redirect(url_for('render_nurse'))
             else:
                 error = "Invalid Login"
@@ -166,7 +188,7 @@ def render_admin():
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"], datainfo["password"])
                 setid.set_patient_id(data)
                 print(data)
-            flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
+            flash(new_patient.get_name() + ' added!(Patient)' + ' User = '+username + ' Password = '+nric, 'success')
 
     return render_template('Admin.html',form=admin_form)
 
@@ -194,11 +216,98 @@ def render_patient_info(id):
     #     return redirect(url_for("render_patient_info_editor"))
 
 
-@app.route('/new 1/')
-def render_new1():
-    return render_template('new 1.html')
+@app.route('/patient_info_editor/', methods=["GET", "POST"])
+def render_patient_info_editor():
+    form = Patient_Info(request.form)
+    if request.method == "POST" and form.validate():
+        name = form.name.data
+        illness = form.illness.data
+        patientdesc = form.patientdesc.data
+        medicinedesc = form.medicinedesc.data
+        med1 = form.med1.data
+        med2 = form.med2.data
+        med3 = form.med3.data
+        login_session = "P19603"
+        pray = root.child("Patient").order_by_child("username").equal_to(login_session).get()
+        for key, val in pray.items():
+            if login_session == val['username']:
+                pat_name = val["name"]
+            else:
+                pat_name = name
+        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
+        pat_db = root.child('patient_info')
+
+        pat_db.push({
+            "name": pat_name,
+            "illness": pat.get_illness(),
+            "patientdesc": pat.get_patientdesc(),
+            "medicinedesc": pat.get_medicinedesc(),
+            "med1": pat.get_med1(),
+            "med2": pat.get_med2(),
+            "med3": pat.get_med3(),
+        })
+        pat_db2 = root.child('patient_info').order_by_child('name').equal_to(pat_name).get()
+        for key2, val2, in enumerate(pat_db2):
+            if key2 == len(pat_db2)-1:
+                print(key2)
+                print(val2)
+                id = val2
+        flash("Patient Information Successfully Updated.", "success")
+        return redirect(url_for("render_patient_info", id=id))
+    return render_template('patient_info_editor.html', form=form)
 
 
+@app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
+def update_patient(id):
+    form = Patient_Info(request.form)
+    if request.method == "POST" and form.validate():
+        name = form.name.data
+        illness = form.illness.data
+        patientdesc = form.patientdesc.data
+        medicinedesc = form.medicinedesc.data
+        med1 = form.med1.data
+        med2 = form.med2.data
+        med3 = form.med3.data
+
+        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
+        pat_db = root.child('patient_info/' + id)
+        pat_db.set({
+            "name": pat.get_name(),
+            "illness": pat.get_illness(),
+            "patientdesc": pat.get_patientdesc(),
+            "medicinedesc": pat.get_medicinedesc(),
+            "med1": pat.get_med1(),
+            "med2": pat.get_med2(),
+            "med3": pat.get_med3(),
+        })
+
+        flash("Patient Information Successfully Updated.", "success")
+        return redirect(url_for("render_patient_info"))
+
+    else:
+        url = "patient_info/" + id
+        eachpat = root.child(url).get()
+        patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"], eachpat["med1"], eachpat["med2"], eachpat["med3"])
+
+        patients.set_patient_id(id)
+        form.name.data = patients.get_name()
+        form.illness.data = patients.get_illness()
+        form.patientdesc.data = patients.get_patientdesc()
+        form.medicinedesc.data = patients.get_medicinedesc()
+        form.med1.data = patients.get_med1()
+        form.med2.data = patients.get_med2()
+        form.med3.data = patients.get_med3()
+
+    return render_template("patient_edit.html", form=form)
+
+
+@app.route("/patient_delete/<string:id>", methods=["POST"])
+def delete_patient(id):
+    pat_db = root.child("patient_info/" + id)
+    pat_db.delete()
+    flash("Patient's information has been delete", "success")
+
+    return redirect(url_for("render_patient_info"))
 @app.route('/trainee_notes/',methods=['POST',"GET"])
 def render_trainee_notes():
     form = TraineeForm(request.form)
@@ -220,7 +329,6 @@ def render_trainee_notes():
     return render_template('trainee_notes.html', comments=list,form=form)
 
 
-
 @app.route('/billing/')
 def render_billing():
     return render_template('billing.html')
@@ -238,7 +346,7 @@ def render_speech_to_text():
 
 @app.route('/nursecallpage/',methods=['GET','POST'])
 def render_nurse():
-    # FOOD ORDER
+        # FOOD ORDER
         Food_Order = root.child('Food_Order').get()
         list = []
         for food_id in Food_Order:
@@ -247,13 +355,14 @@ def render_nurse():
             order.set_foodid(food_id)
             list.append(order)
 
-    # NURSE CALL
+        # NURSE CALL
         nurse_form = NurseCallForm(request.form)
         if request.method == 'POST' and nurse_form.validate():
-            newcall = NurseCall(nurse_form.problem.data)
+            newcall = NurseCall(nurse_form.problem.data,session['user_id'])
             newcall_db = root.child('Nurse Call')
             newcall_db.push ({
-               'symptom': newcall.get_reason()
+               'symptom': newcall.get_reason(),
+               'id': newcall.get_user_id()
              })
             flash('A nurse will attend to you shortly.','success')
         return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
@@ -362,100 +471,6 @@ def delete_order(id):
     flash('Order Deleted', 'success')
 
     return redirect(url_for('render_nurse'))
-
-
-@app.route('/patient_info_editor/', methods=["GET", "POST"])
-def render_patient_info_editor():
-    form = Patient_Info(request.form)
-    if request.method == "POST" and form.validate():
-        name = form.name.data
-        illness = form.illness.data
-        patientdesc = form.patientdesc.data
-        medicinedesc = form.medicinedesc.data
-        med1 = form.med1.data
-        med2 = form.med2.data
-        med3 = form.med3.data
-        login_session = "P19603"
-        pray = root.child("Patient").order_by_child("username").equal_to(login_session).get()
-        for key, val in pray.items():
-            if login_session == val['username']:
-                pat_name = val["name"]
-            else:
-                pat_name = name
-        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
-        pat_db = root.child('patient_info')
-
-        pat_db.push({
-            "name": pat_name,
-            "illness": pat.get_illness(),
-            "patientdesc": pat.get_patientdesc(),
-            "medicinedesc": pat.get_medicinedesc(),
-            "med1": pat.get_med1(),
-            "med2": pat.get_med2(),
-            "med3": pat.get_med3(),
-        })
-        pat_db2 = root.child('patient_info').order_by_child('name').equal_to(pat_name).get()
-        for key2, val2, in enumerate(pat_db2):
-            if key2 == len(pat_db2)-1:
-                print(key2)
-                print(val2)
-                id = val2
-        flash("Patient Information Successfully Updated.", "success")
-        return redirect(url_for("render_patient_info", id=id))
-    return render_template('patient_info_editor.html', form=form)
-
-
-@app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
-def update_patient(id):
-    form = Patient_Info(request.form)
-    if request.method == "POST" and form.validate():
-        name = form.name.data
-        illness = form.illness.data
-        patientdesc = form.patientdesc.data
-        medicinedesc = form.medicinedesc.data
-        med1 = form.med1.data
-        med2 = form.med2.data
-        med3 = form.med3.data
-
-        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
-        pat_db = root.child('patient_info/' + id)
-        pat_db.set({
-            "name": pat.get_name(),
-            "illness": pat.get_illness(),
-            "patientdesc": pat.get_patientdesc(),
-            "medicinedesc": pat.get_medicinedesc(),
-            "med1": pat.get_med1(),
-            "med2": pat.get_med2(),
-            "med3": pat.get_med3(),
-        })
-
-        flash("Patient Information Successfully Updated.", "success")
-        return redirect(url_for("render_patient_info"))
-
-    else:
-        url = "patient_info/" + id
-        eachpat = root.child(url).get()
-        patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"], eachpat["med1"], eachpat["med2"], eachpat["med3"])
-
-        patients.set_patient_id(id)
-        form.name.data = patients.get_name()
-        form.illness.data = patients.get_illness()
-        form.patientdesc.data = patients.get_patientdesc()
-        form.medicinedesc.data = patients.get_medicinedesc()
-        form.med1.data = patients.get_med1()
-        form.med2.data = patients.get_med2()
-        form.med3.data = patients.get_med3()
-
-    return render_template("patient_edit.html", form=form)
-
-
-@app.route("/patient_delete/<string:id>", methods=["POST"])
-def delete_patient(id):
-    pat_db = root.child("patient_info/" + id)
-    pat_db.delete()
-    flash("Patient's information has been delete", "success")
-
-    return redirect(url_for("render_patient_info"))
 
 
 if __name__ == '__main__':

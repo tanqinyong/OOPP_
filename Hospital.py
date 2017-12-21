@@ -13,6 +13,8 @@ class Hospital():
     def set_name(self, name):
         self.__name = name
 
+
+# This is for Patients!
 class Admin_Work(Hospital):
     def __init__(self, name, nric, dob, email, address, gender, occupation, income, bloodtype, race, phone_no, emergency_contact_no, emergency_contact_address, emergency_contact_relationship, maritalstatus, username, password):
         super().__init__(name)
@@ -32,6 +34,7 @@ class Admin_Work(Hospital):
         self.__maritalstatus = maritalstatus
         self.__username = username
         self.__password = password
+
 
     def get_nric(self):
         return self.__nric
@@ -114,6 +117,7 @@ class Admin_Work(Hospital):
         self.__password = password
 
 
+# This is to edit Patients
 class Edit_Patient(Hospital):
     def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3):
         super().__init__(name)
@@ -160,6 +164,8 @@ class Edit_Patient(Hospital):
     def set_med3(self, med3):
         self.__med3 = med3
 
+
+# This is for staff
 class Staff(Hospital):
     def __init__(self, name, nric, username, password):
         super().__init__(name)
@@ -184,3 +190,20 @@ class Staff(Hospital):
 
     def set_password(self, password):
         self.__password = password
+
+
+class NurseCall:
+    def __init__(self, reason,user_id):
+        self.__reason = reason
+        self.__id = user_id
+
+    # Accessor methods
+    def get_reason(self):
+        return self.__reason
+
+    def get_user_id(self):
+        return self.__id
+
+    # Mutator methods
+    def set_reason(self, reason):
+        self.__reason = reason
