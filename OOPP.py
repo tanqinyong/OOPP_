@@ -100,16 +100,8 @@ def render_login():
         for key, val in validate.items():
             if username == val['username'] and password == val['password']:
                 session['logged_in'] = True
-                # ASSIGN DB_ID & USER_ID
-                user = root.child('Patient').get()
-                for key in user:
-                    print(key)
-                    session['db_id'] = key
-                    db_id = key
-                    if user[key]['username'] == username:
-                        session['user_id'] = user[key]['username']
-                        print(session['user_id'])
-                # ASSIGN DB_ID & USER_ID
+                session['db_id'] = key
+                session['user_id'] = username
                 return redirect(url_for('render_nurse'))
             else:
                 error = "Invalid Login"
