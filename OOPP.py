@@ -253,6 +253,9 @@ def render_patient_info(id):
     #     flash("No patient left in the database!", "danger")
     #     return redirect(url_for("render_patient_info_editor"))
 
+@app.route('/patient_info/')
+def point_p():
+    return render_template("point_p.html")
 
 @app.route('/patient_info_editor/', methods=["GET", "POST"])
 def render_patient_info_editor():
