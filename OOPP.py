@@ -275,6 +275,27 @@ def render_patient_info_editor():
                 #if it exists, set the "session url" to the "-L0spKVkqG0t9WeLaHvq"
                 session["patient_url"] = test
 
+                #trying to keep old info
+                arc_pat_db = root.child("archived_patient_info")
+                arc_name = testing["name"]
+                arc_illness = testing["illness"]
+                arc_patientdesc = testing["patientdesc"]
+                arc_medicinedesc = testing["medicinedesc"]
+                arc_med1 = testing["med1"]
+                arc_med2 = testing["med2"]
+                arc_med3 = testing["med3"]
+
+                arc_pat_db.push({
+                    "name": arc_name,
+                    "illness": arc_illness,
+                    "patientdesc": arc_patientdesc,
+                    "medicinedesc": arc_medicinedesc,
+                    "med1": arc_med1,
+                    "med2": arc_med2,
+                    "med3": arc_med3,
+                    "newthing": session["user_id"]
+                })
+
         #check if there any patient with the same "newthing"
         if len(pat_db3) > 0:
             #if there is, update it
