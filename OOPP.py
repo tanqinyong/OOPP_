@@ -23,10 +23,6 @@ root = db.reference()
 app = Flask(__name__)
 
 
-# GLOBAL VARIABLE DATABASE ID THAT EVERYTHING SHOULD HAVE
-# user_id = "" # user ID generated - connected to db_id
-# db_id = "" # weird string ID in the database
-# Login Page
 class LoginForm(Form):
     username = StringField('Staff ID:', [validators.DataRequired()])
     password = PasswordField('Password:', [validators.DataRequired()])
@@ -98,7 +94,7 @@ def render_login():
     if request.method == "POST" and form.validate():
         username = form.username.data
         password = form.password.data
-# https://firebase.google.com/docs/database/admin/retrieve-data
+        #https://firebase.google.com/docs/database/admin/retrieve-data
         validate = root.child('Patient').order_by_child("username").equal_to(username).get()
 
         for key, val in validate.items():
@@ -128,13 +124,57 @@ def render_admin():
         if admin_form.type.data == 'Staff':
             username = 'S' + str(random.randint(10000, 99999))
             password = "S" + str(random.randint(10000, 99999))
-            new_staff = Staff(admin_form.name.data, admin_form.nric.data, username, password)
+            name = admin_form.name.data
+            nric = admin_form.nric.data
+            dob = admin_form.dob.data
+            email = admin_form.email.data
+            address = admin_form.address.data
+            gender = admin_form.gender.data
+            occupation = admin_form.occupation.data
+            income = admin_form.income.data
+            bloodtype = admin_form.bloodtype.data
+            race = admin_form.race.data
+            phone_no = admin_form.phone_no.data
+            emergency_contact_no = admin_form.emergency_contact_no.data
+            emergency_contact_address = admin_form.emergency_contact_address.data
+            emergency_contact_relationship = admin_form.emergency_contact_relationship.data
+            maritalstatus = admin_form.maritalstatus.data
+            new_staff = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
+                                     bloodtype, race, phone_no,
+                                     emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
+                                     maritalstatus, username, password)
+
             new_staff_db = root.child('Staff')
-            new_staff_db.push ({
-                'username': new_staff.get_username(),
+            new_staff_db.push({
                 'name': new_staff.get_name(),
-                'password': new_staff.get_nric()
+                'nric': new_staff.get_nric(),
+                'dob': new_staff.get_dob(),
+                'email': new_staff.get_email(),
+                'address': new_staff.get_address(),
+                'gender': new_staff.get_gender(),
+                'occupation': new_staff.get_occupation(),
+                'income': new_staff.get_income(),
+                'bloodtype': new_staff.get_bloodtype(),
+                'race': new_staff.get_race(),
+                'phone_no': new_staff.get_phone_no(),
+                'emergency_contact_no': new_staff.get_emergency_contact_no(),
+                'emergency_contact_address': new_staff.get_emergency_contact_address(),
+                'emergency_contact_relationship': new_staff.get_emergency_contact_relationship(),
+                'maritalstatus': new_staff.get_maritalstatus(),
+                'username': new_staff.get_username(),
+                'password': new_staff.get_password()
             })
+            hospital_admin = root.child("Staff").get()
+            for data in hospital_admin:
+                datainfo = hospital_admin[data]
+                setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"],
+                                   datainfo["address"], datainfo["gender"], datainfo["occupation"],
+                                   datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
+                                   datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
+                                   datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
+                                   datainfo["username"], datainfo["password"])
+                setid.set_patient_id(data)
+                print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+new_staff.get_nric(), 'success')
 
         elif admin_form.type.data == 'Patient':
@@ -188,7 +228,7 @@ def render_admin():
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"], datainfo["password"])
                 setid.set_patient_id(data)
                 print(data)
-            flash(new_patient.get_name() + ' added!(Patient)' + ' User = '+username + ' Password = '+nric, 'success')
+            flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
 
     return render_template('Admin.html',form=admin_form)
 
@@ -227,11 +267,12 @@ def render_patient_info_editor():
         med1 = form.med1.data
         med2 = form.med2.data
         med3 = form.med3.data
-        login_session = "P19603"
-        pray = root.child("Patient").order_by_child("username").equal_to(login_session).get()
+        pray = root.child("Patient").order_by_child("username").equal_to(session["login_session"]).get()
+        print(session["login_session"]+" (1)")
         for key, val in pray.items():
-            if login_session == val['username']:
+            if session["login_session"] == val['username']:
                 pat_name = val["name"]
+                print(pat_name)
             else:
                 pat_name = name
         pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
@@ -301,6 +342,7 @@ def update_patient(id):
     return render_template("patient_edit.html", form=form)
 
 
+
 @app.route("/patient_delete/<string:id>", methods=["POST"])
 def delete_patient(id):
     pat_db = root.child("patient_info/" + id)
@@ -308,6 +350,8 @@ def delete_patient(id):
     flash("Patient's information has been delete", "success")
 
     return redirect(url_for("render_patient_info"))
+
+
 @app.route('/trainee_notes/',methods=['POST',"GET"])
 def render_trainee_notes():
     form = TraineeForm(request.form)
@@ -377,10 +421,8 @@ def login():
         password = form.password.data
         validate = root.child('Staff').order_by_child("username").equal_to(username).get()
 
-        for i, j in validate.items():
-            print(i, j)
-            print(j['username'])
-            if username == j['username'] and password == j['password']:
+        for key, val in validate.items():
+            if username == val['username'] and password == val['password']:
                 session['logged_in_staff'] = True
                 return redirect(url_for('render_patient_info'))
             else:
@@ -471,7 +513,6 @@ def delete_order(id):
     flash('Order Deleted', 'success')
 
     return redirect(url_for('render_nurse'))
-
 
 if __name__ == '__main__':
     app.secret_key = 'icare1729'
