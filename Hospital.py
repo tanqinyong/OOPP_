@@ -119,7 +119,7 @@ class Admin_Work(Hospital):
 
 # This is to edit Patients
 class Edit_Patient(Hospital):
-    def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3):
+    def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3, time):
         super().__init__(name)
         self.__illness = illness
         self.__patientdesc = patientdesc
@@ -127,6 +127,13 @@ class Edit_Patient(Hospital):
         self.__med1 = med1
         self.__med2 = med2
         self.__med3 = med3
+        self.__time = time
+
+    def get_time(self):
+        return self.__time
+
+    def set_time(self, time):
+        self.__time = time
 
     def get_illness(self):
         return self.__illness

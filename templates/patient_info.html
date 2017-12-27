@@ -1,48 +1,48 @@
 {% extends 'layout.html' %}
 {% block body %}
-    <style>
-        th,td
-    {
-        margin: 0;
-        text-align: center;
-        border-collapse: collapse;
-        outline: 1px solid #e3e3e3;
-    }
+<style>
+    th,td
+{
+    margin: 0;
+    text-align: center;
+    border-collapse: collapse;
+    outline: 1px solid #e3e3e3;
+}
 
-    td
-    {
-        padding: 5px 10px;
-    }
+td
+{
+    padding: 5px 10px;
+}
 
-    th
-    {
-        background: #f4511e;
-        color: white;
-        padding: 5px 10px;
-    }
+th
+{
+    background: #f4511e;
+    color: white;
+    padding: 5px 10px;
+}
 
-    td:hover
-    {
-        cursor: pointer;
-        background: #f4511e;
-        color: white;
-    }
-    .toprow {
-      padding:50px;
-    }
-  #patientinfo {
-      background-color: #ffffff;
-  }
-  #medicine {
-      background-color: #f8f8ff;
-  }
-  #schedule {
-      background-color: #f5f5f5;
-  }
-    #delete:hover {
-        text-decoration: underline;
-    }
-    </style>
+td:hover
+{
+    cursor: pointer;
+    background: #f4511e;
+    color: white;
+}
+.toprow {
+  padding:50px;
+}
+#patientinfo {
+  background-color: #ffffff;
+}
+#medicine {
+  background-color: #f8f8ff;
+}
+#schedule {
+  background-color: #f5f5f5;
+}
+#delete:hover {
+    text-decoration: underline;
+}
+</style>
     {% if session['logged_in_staff'] == True %}
         <script type=text/javascript>
         document.addEventListener("DOMContentLoaded",docIsReady);
@@ -58,135 +58,141 @@
         }
         </script>
     {% endif %}
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#home">Info</a></li>
+    <li><a data-toggle="tab" href="#menu1">History</a></li>
+</ul>
+
+<div class="tab-content">
 <!-- PATIENT MEDICINE & DESCRIPTION -->
-<div id="services" class="container-fluid text-center">
-<div id="patientinfo" class="container-fluid text-center" style="position:relative;">
-    <div id="authen" style="visibility:hidden; position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a>
-        <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>
-        <form action="{{url_for('delete_patient', id=eachpat.get_patient_id())}}" method="post">
-            <input type="submit" value="(delete)" id="delete" style="background:none; border:none; color:red;" onclick="return confirm('Are you sure you want to delete this patient\'s details?');"></form></div>
+<div id="home" class="tab-pane fade in active">
+    <div id="services" class="container-fluid text-center">
+        <div id="patientinfo" class="container-fluid text-center" style="position:relative;">
+            <div id="authen" style="visibility:hidden; position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a>
+                <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>
+                <form action="{{url_for('delete_patient', id=eachpat.get_patient_id())}}" method="post">
+                    <input type="submit" value="(delete)" id="delete" style="background:none; border:none; color:red;" onclick="return confirm('Are you sure you want to delete this patient\'s details?');"></form></div>
 
-  <h2> {{ eachpat.get_name() }} </h2>
-  <h3> {{ eachpat.get_illness() }} </h3> <br>
-  <p style="width: 600px;margin:auto"> {{ eachpat.get_patientdesc() }}</p>
-</div>
-
-
-
-<div id="medicine" class="container-fluid text-center">
-  <h2> Treatments & Medicine </h2>
-  <h4> Possible treatments and medicine for your diagnosis. </h4>
-  <h2> Possible medicines: </h2>
-  <div class="row slideanim">
-
-    <div class="col-sm-3">
-      <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
-    </div>
-
-    <div class="col-sm-6">
-      <br>
-      <p>{{ eachpat.get_medicinedesc() }} </p>
-    </div>
-    <div class="col-sm-3">
-      <ul>
-        <li>{{ eachpat.get_med1() }}</li>
-        <li>{{ eachpat.get_med2() }}</li>
-        <li>{{ eachpat.get_med3() }}</li>
-      </ul>
-    </div>
-  </div>
-</div>
+          <h2> {{ eachpat.get_name() }} </h2>
+          <h3> {{ eachpat.get_illness() }} </h3> <br>
+              <p style="width: 600px;margin:auto"> {{ eachpat.get_patientdesc() }}</p>
+        </div>
 
 
-<!-- schedule -->
-<div id="schedule" class="container-fluid text-center">
 
-    <h2> Schedule </h2>
-    <h4> Your timings </h4>
-    <div class="row slideanim">
+        <div id="medicine" class="container-fluid text-center">
+            <h2> Treatments & Medicine </h2>
+            <h4> Possible treatments and medicine for your diagnosis. </h4>
+            <h2> Possible medicines: </h2>
 
+            <div class="row slideanim">
 
-    <table width="80%" align="center" >
-    <div id="head_nav">
-    <tr>
-        <th class="toprow">Time</th>
-        <th class="toprow">Monday</th>
-        <th class="toprow">Tuesday</th>
-        <th class="toprow">Wednesday</th>
-        <th class="toprow">Thursday</th>
-        <th class="toprow">Friday</th>
-        <th class="toprow">Saturday</th>
-    </tr>
-    </div>
+                <div class="col-sm-3">
+                  <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
+                </div>
 
-    <tr>
-        <th style="text-align:center;">10:00 - 11:00</th>
-
-            <td>Breakfast</td>
-            <td>Breakfast</td>
-            <td>Breakfast</td>
-            <td>Breakfast</td>
-            <td>Breakfast</td>
-            <td>Breakfast</td>
-
-    </tr>
-
-    <tr>
-        <th style="text-align:center;">11:00 - 12:00</td>
-
-            <td>Take Medicine (A)</td>
-            <td>Take Medicine (A)</td>
-            <td>Take Medicine (A)</td>
-            <td>Take Medicine (A)</td>
-            <td>Take Medicine (A)</td>
-            <td>Take Medicine (A)</td>
-
-    </tr>
-
-    <tr>
-        <th style="text-align:center;">12:00 - 01:00</td>
-
-            <td>Lunch</td>
-            <td>Lunch</td>
-            <td>Lunch</td>
-            <td>Lunch</td>
-            <td>Lunch</td>
-            <td>Lunch</td>
+                <div class="col-sm-6">
+                <br>
+                    <p>{{ eachpat.get_medicinedesc() }} </p>
+                </div>
+                <div class="col-sm-3">
+                    <ul>
+                      <li>{{ eachpat.get_med1() }}</li>
+                      <li>{{ eachpat.get_med2() }}</li>
+                      <li>{{ eachpat.get_med3() }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
 
-    </tr>
+        <!-- schedule -->
+        <div id="schedule" class="container-fluid text-center">
+            <h2> Schedule </h2>
+            <h4> Your timings </h4>
+            <div class="row slideanim">
+                <table width="80%" align="center" >
+                    <div id="head_nav">
+                        <tr>
+                            <th class="toprow">Time</th>
+                            <th class="toprow">Monday</th>
+                            <th class="toprow">Tuesday</th>
+                            <th class="toprow">Wednesday</th>
+                            <th class="toprow">Thursday</th>
+                            <th class="toprow">Friday</th>
+                            <th class="toprow">Saturday</th>
+                        </tr>
+                    </div>
 
-    <tr>
-        <th style="text-align:center;">01:00 - 02:00</td>
+                    <tr>
+                        <th style="text-align:center;">10:00 - 11:00</th>
+                            <td>Breakfast</td>
+                            <td>Breakfast</td>
+                            <td>Breakfast</td>
+                            <td>Breakfast</td>
+                            <td>Breakfast</td>
+                            <td>Breakfast</td>
+                    </tr>
 
-            <td>Take Medicine (A&B)</td>
-            <td>Take Medicine (A&B)</td>
-            <td>Take Medicine (A&B)</td>
-            <td>Take Medicine (A&B)</td>
-            <td>Take Medicine (A&B)</td>
-            <td>Take Medicine (A&B)</td>
+                    <tr>
+                        <th style="text-align:center;">11:00 - 12:00</th>
+                            <td>Take Medicine (A)</td>
+                            <td>Take Medicine (A)</td>
+                            <td>Take Medicine (A)</td>
+                            <td>Take Medicine (A)</td>
+                            <td>Take Medicine (A)</td>
+                            <td>Take Medicine (A)</td>
+                    </tr>
 
+                    <tr>
+                        <th style="text-align:center;">12:00 - 01:00</th>
+                            <td>Lunch</td>
+                            <td>Lunch</td>
+                            <td>Lunch</td>
+                            <td>Lunch</td>
+                            <td>Lunch</td>
+                            <td>Lunch</td>
+                    </tr>
 
-    </tr>
+                    <tr>
+                        <th style="text-align:center;">01:00 - 02:00</th>
+                            <td>Take Medicine (A&B)</td>
+                            <td>Take Medicine (A&B)</td>
+                            <td>Take Medicine (A&B)</td>
+                            <td>Take Medicine (A&B)</td>
+                            <td>Take Medicine (A&B)</td>
+                            <td>Take Medicine (A&B)</td>
+                    </tr>
 
-    <tr>
-        <th style="text-align:center;">02:00 - 03:00</td>
-
-            <td>Toe surgery</td>
-            <td>-----</td>
-            <td>Medical checkup</td>
-            <td>-----</td>
-            <td>Medical checkup</td>
-            <td>-----</td>
-
-    </tr>
-</table>
-
+                    <tr>
+                        <th style="text-align:center;">02:00 - 03:00</th>
+                            <td>Toe surgery</td>
+                            <td>-----</td>
+                            <td>Medical checkup</td>
+                            <td>-----</td>
+                            <td>Medical checkup</td>
+                            <td>-----</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+<div id="menu1" class="tab-pane fade">
+    {% for his in history %}
+        <div class="container-fluid" style="color:black;">
+            <span style="font-style: italic; color:gray;">{{ his.get_time() }}</span><br/>
+            Name: {{ his.get_name() }} <br/>
+            Illness: {{ his.get_illness() }} <br/>
+            Description: {{ his.get_patientdesc() }} <br/>
+            Medicine Info: {{ his.get_medicinedesc() }} <br/>
+            Medicine: {{ his.get_med1() }} <br/>
+            Medicine: {{ his.get_med2() }} <br/>
+            Medicine: {{ his.get_med3() }}
+        </div>
+    {% endfor %}
+    </div>
 </div>
-
-
 
 
 <script>

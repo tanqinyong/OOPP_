@@ -57,176 +57,175 @@ td:hover
 }
 </style>
 
+
 <!-- PATIENT MEDICINE & DESCRIPTION -->
 <form method="POST" action ="">
     <div id="services" class="container-fluid text-center">
-    <div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
-    <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/">(exit)</a></div>
-        <div class="form-group">
-            {{  render_field(form.name, class_="form-control", placeholder="Patient Name") }}
+        <div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
+            <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/">(exit)</a></div>
+                <div class="form-group">
+                    {{  render_field(form.name, class_="form-control", placeholder="Patient Name") }}
+                </div>
+
+                <div class="form-group">
+                   {{  render_field(form.illness, class="form-control", placeholder="E.g. Atherosclerosis (Coronary heart disease)") }}
+                </div>
+
+
+                <div class="form-group">
+                    {{ render_field(form.patientdesc, class_="form-control", cols="5", rows="10") }}
+                </div>
         </div>
 
-        <div class="form-group">
-           {{  render_field(form.illness, class="form-control", placeholder="E.g. Atherosclerosis (Coronary heart disease)") }}
-        </div>
+        <div id="medicine" class="container-fluid text-center">
+            <h2> Treatments & Medicine </h2>
+            <h4> Possible treatments and medicine for your diagnosis. </h4>
+            <h2> Possible medicines: </h2>
 
 
-        <div class="form-group">
-            {{ render_field(form.patientdesc, class_="form-control", cols="5", rows="10") }}
-        </div>
-    </div>
+            <div class="col-sm-3">
+              <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
+            </div>
 
-    <div id="medicine" class="container-fluid text-center">
-      <h2> Treatments & Medicine </h2>
-      <h4> Possible treatments and medicine for your diagnosis. </h4>
-      <h2> Possible medicines: </h2>
+            <div class="col-sm-6">
+                <div class="form-group">
+                  {{ render_field(form.medicinedesc, class="form-control", cols="5", rows="10") }}
+                </div>
+            </div>
 
-
-        <div class="col-sm-3">
-          <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
-        </div>
-
-        <div class="col-sm-6">
-            <div class="form-group">
-              {{ render_field(form.medicinedesc, class="form-control", cols="5", rows="10") }}
+            <div class="col-sm-3">
+                <div id="meds">
+                  <div class="form-group">
+                    {{  render_field(form.med1, class="form-control") }}
+                  </div>
+                  <div class="form-group">
+                    {{  render_field(form.med2, class="form-control") }}
+                  </div>
+                  <div class="form-group">
+                   {{  render_field(form.med3, class="form-control") }}
+                  </div>
+                </div>
+              <button class="btn btn-primary" type="button" onclick="addMed();">Add row</button>
+              <button class="btn btn-danger" type="button" onclick="removeMed()">Delete row = hover over press 'X' on the right >>?</button>
             </div>
         </div>
 
-        <div class="col-sm-3">
-            <div id="meds">
-              <div class="form-group">
-                {{  render_field(form.med1, class="form-control") }}
-              </div>
-              <div class="form-group">
-                {{  render_field(form.med2, class="form-control") }}
-              </div>
-              <div class="form-group">
-               {{  render_field(form.med3, class="form-control") }}
-              </div>
+
+        <!-- schedule -->
+        <div id="schedule" class="container-fluid text-center">
+
+            <h2> Schedule </h2>
+            <h4> Your timings </h4>
+
+
+            <table width="80%" align="center" id="scheduleTable">
+                <tr>
+                    <th class="toprow">Time</th>
+                    <th class="toprow">Monday</th>
+                    <th class="toprow">Tuesday</th>
+                    <th class="toprow">Wednesday</th>
+                    <th class="toprow">Thursday</th>
+                    <th class="toprow">Friday</th>
+                    <th class="toprow">Saturday</th>
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">10:00 - 11:00</th>
+
+                        <td>On</td>
+                        <td>click</td>
+                        <td>=</td>
+                        <td>change</td>
+                        <td>then</td>
+                        <td>Submit?</td>
+
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">11:00 - 12:00</th>
+
+                        <td>
+                            <div class="form-group">
+                                <label class="form-control-label" for="tableedit">Or:</label>
+                                <input type="text" name="Med" id="tableedit" class="form-control" placeholder="E.g. Activity"  size="40"/>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="form-group">
+                                <label class="form-control-label" for="tableedit1">Use:</label>
+                                <input type="text" name="Med" id="tableedit1" class="form-control" placeholder="E.g. Activity"  size="40"/>
+                            </div>
+                        </td><td>
+                            <div class="form-group">
+                                <label class="form-control-label" for="tableedit2">Input:</label>
+                                <input type="text" name="Med" id="tableedit2" class="form-control" placeholder="E.g. Activity"  size="40"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label class="form-control-label" for="tableedit3">To:</label>
+                                <input type="text" name="Med" id="tableedit3" class="form-control" placeholder="E.g. Activity"  size="40"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label class="form-control-label" for="tableedit4">Change:</label>
+                                <input type="text" name="Med" id="tableedit4" class="form-control" placeholder="E.g. Activity"  size="40"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label class="form-control-label" for="tableedit5">Them?:</label>
+                                <input type="text" name="Med" id="tableedit5" class="form-control" placeholder="E.g. Activity"  size="40"/>
+                            </div>
+                        </td>
+
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">12:00 - 01:00</th>
+
+                        <td>We</td>
+                        <td>can</td>
+                        <td>try</td>
+                        <td>contenteditable</td>
+                        <td>true</td>
+                        <td>too</td>
+
+
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">01:00 - 02:00</th>
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">02:00 - 03:00</th>
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                </tr>
+
+            </table>
+                <button class="btn btn-primary" type="button" style="margin-top:10px;" onclick="addRow()">More Row</button>
+                <button class="btn btn-danger" type="button" style="margin-top:10px;" onclick="removeRow()">Delete Row</button>
             </div>
-          <button class="btn btn-primary" type="button" onclick="addMed();">Add row</button>
-          <button class="btn btn-danger" type="button" onclick="removeMed()">Delete row = hover over press 'X' on the right >>?</button>
         </div>
-    </div>
-
-
-    <!-- schedule -->
-    <div id="schedule" class="container-fluid text-center">
-
-        <h2> Schedule </h2>
-        <h4> Your timings </h4>
-
-
-    <table width="80%" align="center" id="scheduleTable">
-        <tr>
-            <th class="toprow">Time</th>
-            <th class="toprow">Monday</th>
-            <th class="toprow">Tuesday</th>
-            <th class="toprow">Wednesday</th>
-            <th class="toprow">Thursday</th>
-            <th class="toprow">Friday</th>
-            <th class="toprow">Saturday</th>
-        </tr>
-
-        <tr>
-            <th style="text-align:center;">10:00 - 11:00</th>
-
-                <td>On</td>
-                <td>click</td>
-                <td>=</td>
-                <td>change</td>
-                <td>then</td>
-                <td>Submit?</td>
-
-        </tr>
-
-        <tr>
-            <th style="text-align:center;">11:00 - 12:00</th>
-
-                <td>
-                    <div class="form-group">
-                        <label class="form-control-label" for="tableedit">Or:</label>
-                        <input type="text" name="Med" id="tableedit" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                    </div>
-                </td>
-
-                <td>
-                    <div class="form-group">
-                        <label class="form-control-label" for="tableedit1">Use:</label>
-                        <input type="text" name="Med" id="tableedit1" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                    </div>
-                </td><td>
-                    <div class="form-group">
-                        <label class="form-control-label" for="tableedit2">Input:</label>
-                        <input type="text" name="Med" id="tableedit2" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="form-control-label" for="tableedit3">To:</label>
-                        <input type="text" name="Med" id="tableedit3" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="form-control-label" for="tableedit4">Change:</label>
-                        <input type="text" name="Med" id="tableedit4" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="form-control-label" for="tableedit5">Them?:</label>
-                        <input type="text" name="Med" id="tableedit5" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                    </div>
-                </td>
-
-        </tr>
-
-        <tr>
-            <th style="text-align:center;">12:00 - 01:00</th>
-
-                <td>We</td>
-                <td>can</td>
-                <td>try</td>
-                <td>contenteditable</td>
-                <td>true</td>
-                <td>too</td>
-
-
-        </tr>
-
-        <tr>
-            <th style="text-align:center;">01:00 - 02:00</th>
-
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-
-
-        </tr>
-
-        <tr>
-            <th style="text-align:center;">02:00 - 03:00</th>
-
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-
-        </tr>
-
-    </table>
-
-        <button class="btn btn-primary" type="button" style="margin-top:10px;" onclick="addRow()">More Row</button>
-        <button class="btn btn-danger" type="button" style="margin-top:10px;" onclick="removeRow()">Delete Row</button>
-        </div>
-    </div>
-
     <div class="form-group">
         <input type="submit" value="Submit" class="btn btn-info"/>
     </div>
