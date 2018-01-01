@@ -16,7 +16,7 @@ class Hospital():
 
 # This is for Patients!
 class Admin_Work(Hospital):
-    def __init__(self, name, nric, dob, email, address, gender, occupation, income, bloodtype, race, phone_no, emergency_contact_no, emergency_contact_address, emergency_contact_relationship, maritalstatus, username, password):
+    def __init__(self, name, nric, dob, email, address, gender, occupation, income, bloodtype, race, phone_no, emergency_contact_no, emergency_contact_address, emergency_contact_relationship, maritalstatus, username, password, image_name):
         super().__init__(name)
         self.__nric = nric
         self.__dob = dob
@@ -34,7 +34,12 @@ class Admin_Work(Hospital):
         self.__maritalstatus = maritalstatus
         self.__username = username
         self.__password = password
+        self.__image_name = image_name
 
+    def get_image_name(self):
+        return self.__image_name
+    def set_image_name(self, image_name):
+        self.__image_name = image_name
 
     def get_nric(self):
         return self.__nric
@@ -119,7 +124,7 @@ class Admin_Work(Hospital):
 
 # This is to edit Patients
 class Edit_Patient(Hospital):
-    def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3, time):
+    def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3, time, image_name):
         super().__init__(name)
         self.__illness = illness
         self.__patientdesc = patientdesc
@@ -128,6 +133,12 @@ class Edit_Patient(Hospital):
         self.__med2 = med2
         self.__med3 = med3
         self.__time = time
+        self.__image_name = image_name
+
+    def get_image_name(self):
+        return self.__image_name
+    def set_image_name(self, image_name):
+        self.__image_name = image_name
 
     def get_time(self):
         return self.__time

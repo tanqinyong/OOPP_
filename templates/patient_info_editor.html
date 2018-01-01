@@ -63,9 +63,11 @@ td:hover
     <div id="services" class="container-fluid text-center">
         <div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
             <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/">(exit)</a></div>
-                <div class="form-group">
-                    {{  render_field(form.name, class_="form-control", placeholder="Patient Name") }}
-                </div>
+                <h2>{{ something.get_name() }}</h2>
+                <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ something.get_image_name() }}" alt="{{ something.get_name() }}">
+{#                <div class="form-group">#}
+{#                    {{  render_field(form.name, class_="form-control", placeholder="Patient Name") }}#}
+{#                </div>#}
 
                 <div class="form-group">
                    {{  render_field(form.illness, class="form-control", placeholder="E.g. Atherosclerosis (Coronary heart disease)") }}
