@@ -1,8 +1,10 @@
 # Flask, WTForms and cool shit
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField
-import random
-
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField, FileField
+from werkzeug.utils import secure_filename
+import random, datetime, os
+now = datetime.datetime.now()
+print(now.strftime("%d/%m/%Y %H:%M"))
 # Classes and shit
 from Food_Order import FoodOrder
 # from Nurse_call import NurseCall
@@ -11,6 +13,8 @@ from Hospital import Hospital, Edit_Patient, Staff, Admin_Work, NurseCall
 # from Admin import Staff, Patient
 from trainee_notes import comment
 
+UPLOAD_FOLDER = 'static/images/'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 # Database shit
 import firebase_admin
 from firebase_admin import credentials, db
@@ -21,7 +25,7 @@ default_app = firebase_admin.initialize_app(cred, {
 root = db.reference()
 
 app = Flask(__name__)
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class LoginForm(Form):
     username = StringField('Staff ID:', [validators.DataRequired()])
@@ -58,17 +62,17 @@ class TraineeForm(Form):
 
 # Patient info page
 class Patient_Info(Form):
-    name = StringField("Name", [validators.Length(min=1, max=50), validators.DataRequired()])
+    name = StringField("Name")
     illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
     patientdesc = TextAreaField("Illness Description", [validators.DataRequired()])
     medicinedesc = TextAreaField("Medicine Description", [validators.DataRequired()])
     med1 = StringField("Medicine 1", [validators.Length(min=1, max=30), validators.DataRequired()])
     med2 = StringField("Medicine 2")
     med3 = StringField("Medicine 3")
-
+    #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
 # Admin Page
-# validations not yet done for AdminForm
+# validations not yet done for AdminForm!!!!!!!!!!
 class AdminForm(Form):
     type = RadioField('Type: ', choices=[('Staff','Staff'),('Patient','Patient')])
     name = StringField("Name: ", [validators.Length(min=1, max=30), validators.DataRequired()])
@@ -76,7 +80,7 @@ class AdminForm(Form):
     dob =  StringField("Date of Birth: ")#, format='%d/%m/%Y', validators=(validators.Optional(),))
     email = StringField("Email: ")
     address = StringField("Address: ")
-    gender = SelectField("Gender: ", choices=[("M", "Male"), ("F", "Female"), ("O", "Others")], default="")
+    gender = SelectField("Gender: ", choices=[("Male", "Male"), ("Female", "Female"), ("Others", "Others")], default="")
     occupation = StringField("Occupation: ")
     income = StringField("Household Income: ")
     bloodtype = SelectField("Blood Type: ", choices=[("O", "O"), ("A", "A"), ("B", "B"), ("AB", "AB")], default="")
@@ -85,8 +89,12 @@ class AdminForm(Form):
     emergency_contact_no = StringField("Emergency Contact No: ")
     emergency_contact_address = StringField("Emergency Contact Address: ")
     emergency_contact_relationship = StringField("Emergency Contact Relationship: ")
-    maritalstatus = SelectField("Marital Status: ", choices=[("M", "Married"), ("S", "Single"), ("D", "Divorced"), ("W", "Widowed")], default="")
+    maritalstatus = SelectField("Marital Status: ", choices=[("Married", "Married"), ("Single", "Single"), ("Divorced", "Divorced"), ("Widowed", "Widowed")], default="")
+    image_name = FileField("Patient's Image: ") #not even used
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET','POST'])
 def render_login():
@@ -97,11 +105,17 @@ def render_login():
         #https://firebase.google.com/docs/database/admin/retrieve-data
         validate = root.child('Patient').order_by_child("username").equal_to(username).get()
 
+
         for key, val in validate.items():
             if username == val['username'] and password == val['password']:
                 session['logged_in'] = True
                 session['db_id'] = key
                 session['user_id'] = username
+
+                pat_url = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
+                for pat, url in pat_url.items():
+                    if session["user_id"] == url['newthing']:
+                        session["patient_url"] = pat
                 return redirect(url_for('render_nurse'))
             else:
                 error = "Invalid Login"
@@ -131,10 +145,27 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
+
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files['file']
+            # if user does not select file, browser also
+            # submit a empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            image_name = file.filename
+
             new_staff = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
                                      bloodtype, race, phone_no,
                                      emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                     maritalstatus, username, password)
+                                     maritalstatus, username, password, image_name)
 
             new_staff_db = root.child('Staff')
             new_staff_db.push({
@@ -154,7 +185,8 @@ def render_admin():
                 'emergency_contact_relationship': new_staff.get_emergency_contact_relationship(),
                 'maritalstatus': new_staff.get_maritalstatus(),
                 'username': new_staff.get_username(),
-                'password': new_staff.get_password()
+                'password': new_staff.get_password(),
+                'image_name': new_staff.get_image_name()
             })
             hospital_admin = root.child("Staff").get()
             for data in hospital_admin:
@@ -164,10 +196,10 @@ def render_admin():
                                    datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
                                    datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
-                                   datainfo["username"], datainfo["password"])
+                                   datainfo["username"], datainfo["password"], datainfo["image_name"])
                 setid.set_patient_id(data)
                 print(data)
-            flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+new_staff.get_nric(), 'success')
+            flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
 
         elif admin_form.type.data == 'Patient':
             username = 'P' + str(random.randint(10000, 99999))
@@ -187,10 +219,27 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
+
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files['file']
+            # if user does not select file, browser also
+            # submit a empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            image_name = file.filename
+
             new_patient = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
                                    bloodtype, race, phone_no,
                                    emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                   maritalstatus, username, password)
+                                   maritalstatus, username, password, image_name)
 
             new_patient_db = root.child('Patient')
             new_patient_db.push({
@@ -210,14 +259,15 @@ def render_admin():
                 'emergency_contact_relationship': new_patient.get_emergency_contact_relationship(),
                 'maritalstatus': new_patient.get_maritalstatus(),
                 'username': new_patient.get_username(),
-                'password': new_patient.get_password()
+                'password': new_patient.get_password(),
+                "image_name": new_patient.get_image_name()
             })
             hospital_admin = root.child("Patient").get()
             for data in hospital_admin:
                 datainfo = hospital_admin[data]
                 setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"], datainfo["gender"], datainfo["occupation"],
                                    datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"], datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
-                                   datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"], datainfo["password"])
+                                   datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"], datainfo["password"], datainfo["image_name"])
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
@@ -227,93 +277,104 @@ def render_admin():
 
 @app.route('/patient_info/<string:id>', methods=["GET"])
 def render_patient_info(id):
-    # try:
-    # patient_infos = root.child("patient_info").get()
-    # patient_id = "" #probably the login determine this
-    # for patid in patient_infos:
-    #     eachpatient = patient_infos[patid]
-    #     if patient_id == "":
-    #         patientInfo = Edit_Patient(eachpatient["name"], eachpatient["illness"], eachpatient["patientdesc"], eachpatient["medicinedesc"], eachpatient["med1"], eachpatient["med2"], eachpatient["med3"])
-    #         patientInfo.set_patient_id(patid)
-
     url = "patient_info/" + id
     eachpat = root.child(url).get()
     patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"],
-                            eachpat["med1"], eachpat["med2"], eachpat["med3"])
-
+                            eachpat["med1"], eachpat["med2"], eachpat["med3"], eachpat["time"], eachpat["image_name"])
     patients.set_patient_id(id)
-    return render_template('patient_info.html', eachpat=patients) # patient_infos=patientInfo)
-    # except TypeError:
-    #     flash("No patient left in the database!", "danger")
-    #     return redirect(url_for("render_patient_info_editor"))
 
+    try:
+        history = root.child('archived_patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
+        list = []
+        for data in history:
+            info = history[data]
+            infos = Edit_Patient(info["name"], info["illness"], info["patientdesc"], info["medicinedesc"], info["med1"],
+                                 info["med2"], info["med3"], info["time"], info["image_name"])
+            infos.set_patient_id(data)
+            list.append(infos)
+    except TypeError:
+        flash("No Records Found!", "danger")
+    return render_template('patient_info.html', eachpat=patients, history=list) # patient_infos=patientInfo)
+
+@app.route('/patient_info/')
+def point_p():
+    return render_template("point_p.html")
 
 @app.route('/patient_info_editor/', methods=["GET", "POST"])
 def render_patient_info_editor():
     form = Patient_Info(request.form)
     if request.method == "POST" and form.validate():
-        name = form.name.data
+        name = form.name.data #redundant
         illness = form.illness.data
         patientdesc = form.patientdesc.data
         medicinedesc = form.medicinedesc.data
         med1 = form.med1.data
         med2 = form.med2.data
         med3 = form.med3.data
+        time = now.strftime("%d/%m/%Y %H:%M")
         pray = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
+        image_name = ""
         print(session["user_id"])
         for key, val in pray.items():
             if session["user_id"] == val['username']:
                 pat_name = val["name"]
+                img_name = val["image_name"]
             else:
                 pat_name = name
-        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
+        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3, time, image_name)
 
-        # find patient_info if there's same "newthing" in the firebase
+        #find and check if there any patient with the same "newthing"
         pat_db3 = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
-        print(pat_db3)
-        for test, testing in pat_db3.items():
-            if session["user_id"] == testing['newthing']:
-                # if it exists, set the "session url" to the "-L0spKVkqG0t9WeLaHvq"
-                session["patient_url"] = test
-
-                # trying to keep old info
-                arc_pat_db = root.child("archived_patient_info")
-                arc_name = testing["name"]
-                arc_illness = testing["illness"]
-                arc_patientdesc = testing["patientdesc"]
-                arc_medicinedesc = testing["medicinedesc"]
-                arc_med1 = testing["med1"]
-                arc_med2 = testing["med2"]
-                arc_med3 = testing["med3"]
-
-                arc_pat_db.push({
-                    "name": arc_name,
-                    "illness": arc_illness,
-                    "patientdesc": arc_patientdesc,
-                    "medicinedesc": arc_medicinedesc,
-                    "med1": arc_med1,
-                    "med2": arc_med2,
-                    "med3": arc_med3,
-                    "newthing": session["user_id"]
-                })
-
-        # check if there any patient with the same "newthing"
         if len(pat_db3) > 0:
-            #if there is, update it
-            pat_db = root.child("patient_info/" + session["patient_url"])
-            pat_db.set({
-                "name": pat_name,
-                "illness": pat.get_illness(),
-                "patientdesc": pat.get_patientdesc(),
-                "medicinedesc": pat.get_medicinedesc(),
-                "med1": pat.get_med1(),
-                "med2": pat.get_med2(),
-                "med3": pat.get_med3(),
-                "newthing": session["user_id"]
-            })
+            for test, testing in pat_db3.items():
+                if session["user_id"] == testing['newthing']:
+                    # if "newthing" exists, set the "session url" to the "-L0spKVkqG0t9WeLaHvq"
+                    session["patient_url"] = test
+                    # update the patient_info folder
+                    pat_db = root.child("patient_info/" + session["patient_url"])
+                    pat_db.set({
+                        "name": pat_name,
+                        "illness": pat.get_illness(),
+                        "patientdesc": pat.get_patientdesc(),
+                        "medicinedesc": pat.get_medicinedesc(),
+                        "med1": pat.get_med1(),
+                        "med2": pat.get_med2(),
+                        "med3": pat.get_med3(),
+                        "newthing": session["user_id"],
+                        "time": "(Date Modified) " + now.strftime("%d/%m/%Y %H:%M"),
+                        "image_name": img_name
+                    })
+            #get the updated version again......
+            meh = root.child("patient_info").order_by_child("newthing").equal_to(session["user_id"]).get()
+            for mehh, mehmeh in meh.items():
+                if session["user_id"] == testing['newthing']:
+                    # keep the recently updated record into another folder
+                    arc_pat_db = root.child("archived_patient_info")
+                    arc_name = mehmeh["name"]
+                    arc_illness = mehmeh["illness"]
+                    arc_patientdesc = mehmeh["patientdesc"]
+                    arc_medicinedesc = mehmeh["medicinedesc"]
+                    arc_med1 = mehmeh["med1"]
+                    arc_med2 = mehmeh["med2"]
+                    arc_med3 = mehmeh["med3"]
+                    arc_time = mehmeh["time"]
+                    arc_img_name = mehmeh["image_name"]
+
+                    arc_pat_db.push({
+                        "name": arc_name,
+                        "illness": arc_illness,
+                        "patientdesc": arc_patientdesc,
+                        "medicinedesc": arc_medicinedesc,
+                        "med1": arc_med1,
+                        "med2": arc_med2,
+                        "med3": arc_med3,
+                        "newthing": session["user_id"],
+                        "time": arc_time,
+                        "image_name": arc_img_name
+                    })
             print("Patient Info Updated!")
         else:
-            # if not, add it in
+            #if new patient, add it in
             pat_db = root.child('patient_info')
             pat_db.push({
                 "name": pat_name,
@@ -323,8 +384,25 @@ def render_patient_info_editor():
                 "med1": pat.get_med1(),
                 "med2": pat.get_med2(),
                 "med3": pat.get_med3(),
-                "newthing": session["user_id"]
+                "newthing": session["user_id"],
+                "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
+                "image_name": img_name
                 })
+            #add the new patient record into another folder
+            pat_db2 = root.child('archived_patient_info')
+            pat_db2.push({
+                "name": pat_name,
+                "illness": pat.get_illness(),
+                "patientdesc": pat.get_patientdesc(),
+                "medicinedesc": pat.get_medicinedesc(),
+                "med1": pat.get_med1(),
+                "med2": pat.get_med2(),
+                "med3": pat.get_med3(),
+                "newthing": session["user_id"],
+                "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
+                "image_name": img_name
+            })
+
             print("New Patient Added!")
 
         # pat_db2 = root.child('patient_info').order_by_child('name').equal_to(pat_name).get()
@@ -345,8 +423,22 @@ def render_patient_info_editor():
 
         flash("Patient Information Successfully Updated.", "success")
         return redirect(url_for("render_patient_info", id=session["patient_url"]))
-    return render_template('patient_info_editor.html', form=form)
+    else:
+        prayagain = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
+        for key, val in prayagain.items():
+            if session["user_id"] == val['username']:
+                session["pat_admin_info"] = key
+                # pat_name = val["name"]
+        # form.name.data = pat_name
+        datainfo = root.child("Patient/" + session["pat_admin_info"]).get()
+        hello = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"],
+                           datainfo["gender"], datainfo["occupation"],
+                           datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
+                           datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
+                           datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
+                           datainfo["password"], datainfo["image_name"])
 
+    return render_template('patient_info_editor.html', form=form, something=hello)
 
 @app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
 def update_patient(id):
@@ -474,7 +566,7 @@ def login():
         for key, val in validate.items():
             if username == val['username'] and password == val['password']:
                 session['logged_in_staff'] = True
-                return redirect(url_for('render_patient_info'))
+                return redirect(url_for('render_patient_info', id=session["patient_url"]))
             else:
                 error = "Invalid Login"
                 flash(error, "danger")
