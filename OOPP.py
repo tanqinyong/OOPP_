@@ -268,14 +268,15 @@ def render_patient_info_editor():
                 pat_name = name
         pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
 
-        #find patient_info if there's same "newthing" in the firebase
+        # find patient_info if there's same "newthing" in the firebase
         pat_db3 = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
+        print(pat_db3)
         for test, testing in pat_db3.items():
             if session["user_id"] == testing['newthing']:
-                #if it exists, set the "session url" to the "-L0spKVkqG0t9WeLaHvq"
+                # if it exists, set the "session url" to the "-L0spKVkqG0t9WeLaHvq"
                 session["patient_url"] = test
 
-                #trying to keep old info
+                # trying to keep old info
                 arc_pat_db = root.child("archived_patient_info")
                 arc_name = testing["name"]
                 arc_illness = testing["illness"]
@@ -296,7 +297,7 @@ def render_patient_info_editor():
                     "newthing": session["user_id"]
                 })
 
-        #check if there any patient with the same "newthing"
+        # check if there any patient with the same "newthing"
         if len(pat_db3) > 0:
             #if there is, update it
             pat_db = root.child("patient_info/" + session["patient_url"])
@@ -312,7 +313,7 @@ def render_patient_info_editor():
             })
             print("Patient Info Updated!")
         else:
-            #if not, add it in
+            # if not, add it in
             pat_db = root.child('patient_info')
             pat_db.push({
                 "name": pat_name,
@@ -563,8 +564,9 @@ def delete_order(id):
 
     return redirect(url_for('render_nurse'))
 
+
 if __name__ == '__main__':
     app.secret_key = 'icare1729'
     app.debug = True
-    app.run()
+    app.run(port='80')
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
