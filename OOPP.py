@@ -296,6 +296,7 @@ def render_patient_info(id):
         flash("No Records Found!", "danger")
     return render_template('patient_info.html', eachpat=patients, history=list) # patient_infos=patientInfo)
 
+# New patient when logging in!
 @app.route('/patient_info/')
 def point_p():
     return render_template("point_p.html")
@@ -658,7 +659,7 @@ def delete_order(id):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'icare1729'
+    app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
     app.run(port=80)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it

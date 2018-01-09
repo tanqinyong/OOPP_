@@ -61,6 +61,7 @@ td:hover
 <!-- PATIENT MEDICINE & DESCRIPTION -->
 <form method="POST" action ="">
     <div id="services" class="container-fluid text-center">
+
         <div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
             <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/">(exit)</a></div>
                 <h2>{{ something.get_name() }}</h2>
@@ -76,6 +77,10 @@ td:hover
 
                 <div class="form-group">
                     {{ render_field(form.patientdesc, class_="form-control", cols="5", rows="10") }}
+                </div>
+
+                <div class="form-group">
+                    {{ render_field() }}
                 </div>
         </div>
 
