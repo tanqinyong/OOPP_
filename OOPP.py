@@ -26,6 +26,7 @@ root = db.reference()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key="toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ"
 
 class LoginForm(Form):
     username = StringField('Staff ID:', [validators.DataRequired()])
@@ -657,6 +658,7 @@ def delete_order(id):
     flash('Order Deleted', 'success')
 
     return redirect(url_for('render_nurse'))
+
 
 
 if __name__ == '__main__':
