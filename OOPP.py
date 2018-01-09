@@ -26,7 +26,8 @@ root = db.reference()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.secret_key="toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ"
+app.secret_key = "toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ"
+app.config['SESSION_TYPE'] = 'filesystem'
 
 class LoginForm(Form):
     username = StringField('Staff ID:', [validators.DataRequired()])
