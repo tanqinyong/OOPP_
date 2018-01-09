@@ -533,6 +533,7 @@ def render_speech_to_text():
 
 @app.route('/nursecallpage/',methods=['GET','POST'])
 def render_nurse():
+        # DAYS
         # FOOD ORDER
         Food_Order = root.child('Food_Order').get()
         list = []
@@ -659,7 +660,7 @@ def delete_order(id):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
-    app.debug = True
+    # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
+    # app.debug = True
     app.run(port=80)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
