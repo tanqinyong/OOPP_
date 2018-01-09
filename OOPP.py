@@ -270,7 +270,7 @@ def render_admin():
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"], datainfo["password"], datainfo["image_name"])
                 setid.set_patient_id(data)
                 print(data)
-            flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
+            # flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
 
     return render_template('Admin.html',form=admin_form)
 
