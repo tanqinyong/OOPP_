@@ -1,10 +1,10 @@
 class FoodOrder:
-    def __init__(self, foodname, patientname, quantity, price):
+    def __init__(self, foodname, patientname, quantity):
         self.__food_id = ""
         self.__foodname = foodname
         self.__patientname = patientname
         self.__quantity = quantity
-        self.__price = price
+        self.__price = 0
 
     # Accessor methods
 

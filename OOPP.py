@@ -29,6 +29,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = "toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ"
 app.config['SESSION_TYPE'] = 'filesystem'
 
+
 class LoginForm(Form):
     username = StringField('Staff ID:', [validators.DataRequired()])
     password = PasswordField('Password:', [validators.DataRequired()])
@@ -37,7 +38,7 @@ class LoginForm(Form):
 
 # Login Page
 class PatientLogin(Form):
-    username = StringField("Patient ID: ",[validators.Length(min=1, max=7), validators.DataRequired()])
+    username = StringField("User ID: ",[validators.Length(min=1, max=7), validators.DataRequired()])
     password = PasswordField("Password: ",[validators.Length(min=1, max=9), validators.DataRequired()])
 
 
@@ -49,9 +50,9 @@ class NurseCallForm(Form):
 
 # Menu Page
 class FoodOrderForm(Form):
-    foodname = RadioField('Food Choices', choices = [('Chicken','Chicken'),('Fish','Fish'),('Beef','Beef'),('Pork','Pork')],default='Chicken')
-    patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
-    qty = SelectField('Qty', choices=[('1', '1'), ('2', '2'),('3','3'),('4','4'),('5','5')], default='')
+    foodname = RadioField('Food Choices:', choices = [('Indian Cuisine','indian'),('Chinese Cuisine','chinese'),('Western Cuisine','western'),('International Cuisine','international')],default='international')
+    # patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
+    # qty = SelectField('Qty', choices=[('1', '1'), ('2', '2'),('3','3'),('4','4'),('5','5')], default='')
     submit = SubmitField('Enter')
 
 
@@ -72,6 +73,7 @@ class Patient_Info(Form):
     med2 = StringField("Medicine 2")
     med3 = StringField("Medicine 3")
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
+
 
 # Admin Page
 # validations not yet done for AdminForm!!!!!!!!!!
@@ -94,9 +96,11 @@ class AdminForm(Form):
     maritalstatus = SelectField("Marital Status: ", choices=[("Married", "Married"), ("Single", "Single"), ("Divorced", "Divorced"), ("Widowed", "Widowed")], default="")
     image_name = FileField("Patient's Image: ") #not even used
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/', methods=['GET','POST'])
 def render_login():
@@ -105,23 +109,38 @@ def render_login():
         username = form.username.data
         password = form.password.data
         #https://firebase.google.com/docs/database/admin/retrieve-data
-        validate = root.child('Patient').order_by_child("username").equal_to(username).get()
+        if username[0].upper() == "P":
+            validate = root.child('Patient').order_by_child("username").equal_to(username).get()
 
+            for key, val in validate.items():
+                if username == val['username'] and password == val['password']:
+                    session['logged_in'] = True
+                    session['db_id'] = key
+                    session['user_id'] = username
 
-        for key, val in validate.items():
-            if username == val['username'] and password == val['password']:
-                session['logged_in'] = True
-                session['db_id'] = key
-                session['user_id'] = username
+                    pat_url = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
+                    for pat, url in pat_url.items():
+                        if session["user_id"] == url['newthing']:
+                            session["patient_url"] = pat
+                    return redirect(url_for('render_nurse'))
+                else:
+                    error = "Invalid Login"
+                    flash(error, "danger")
 
-                pat_url = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
-                for pat, url in pat_url.items():
-                    if session["user_id"] == url['newthing']:
-                        session["patient_url"] = pat
-                return redirect(url_for('render_nurse'))
-            else:
-                error = "Invalid Login"
-                flash(error, "danger")
+        elif username[0].upper() == 'S':
+            validate = root.child('Staff').order_by_child("username").equal_to(username).get()
+
+            for key, val in validate.items():
+                if username == val['username'] and password == val['password']:
+                    session['logged_in_staff'] = True
+                    session['db_id'] = key
+                    session['user_id'] = username
+
+                    return redirect(url_for('render_trainee_notes'))
+                else:
+                    error = "Invalid Login"
+                    flash(error, "danger")
+
     return render_template('login.html', form=form)
 
 
@@ -523,16 +542,6 @@ def render_billing():
     return render_template('billing.html')
 
 
-@app.route('/remote_doctor/')
-def render_remote_doctor():
-    return render_template('remote_doctor.html')
-
-
-@app.route('/speech_to_text/')
-def render_speech_to_text():
-    return render_template('speech_to_text.html')
-
-
 @app.route('/nursecallpage/',methods=['GET','POST'])
 def render_nurse():
         # DAYS
@@ -541,7 +550,7 @@ def render_nurse():
         list = []
         for food_id in Food_Order:
             eachorder = Food_Order[food_id]
-            order = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['price'],eachorder['quantity'])
+            order = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['price'])
             order.set_foodid(food_id)
             list.append(order)
 
@@ -558,24 +567,24 @@ def render_nurse():
         return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
 
 
-@app.route('/login/', methods=['GET', 'POST'])
-def login():
-    form = LoginForm(request.form)
-    print(request.method)
-    if request.method == 'POST' and form.validate():
-        username = form.username.data
-        password = form.password.data
-        validate = root.child('Staff').order_by_child("username").equal_to(username).get()
-
-        for key, val in validate.items():
-            if username == val['username'] and password == val['password']:
-                session['logged_in_staff'] = True
-                return redirect(url_for('render_patient_info', id=session["patient_url"]))
-            else:
-                error = "Invalid Login"
-                flash(error, "danger")
-
-    return render_template('StaffLogin.html', form=form)
+# @app.route('/login/', methods=['GET', 'POST'])
+# def login():
+#     form = LoginForm(request.form)
+#     print(request.method)
+#     if request.method == 'POST' and form.validate():
+#         username = form.username.data
+#         password = form.password.data
+#         validate = root.child('Staff').order_by_child("username").equal_to(username).get()
+#
+#         for key, val in validate.items():
+#             if username == val['username'] and password == val['password']:
+#                 session['logged_in_staff'] = True
+#                 return redirect(url_for('render_patient_info', id=session["patient_url"]))
+#             else:
+#                 error = "Invalid Login"
+#                 flash(error, "danger")
+#form=form)
+#     return render_template('StaffLogin.html',
 
 
 @app.route('/logout/')
@@ -585,29 +594,22 @@ def logout():
     return redirect(url_for('render_login'))
 
 
-@app.route('/staff_logout/')
-def logout_staff():
-    session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
-    flash('You are now logged out', 'success')
-    return redirect(url_for('render_nurse'))
+# @app.route('/staff_logout/')
+# def logout_staff():
+#     session.pop("logged_in_staff", None) #None is pass in as the "default" value (else it will return its "default" value)
+#     flash('You are now logged out', 'success')
+#     return redirect(url_for('render_nurse'))
 
 
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)
-    price = 0
     if request.method =='POST' and form.validate():
-            if form.foodname.data == 'Chicken':
-                price = 5
-            elif form.foodname.data == 'Fish' or 'Pork':
-                price = 6
-            elif form.foodname.data == 'Beef':
-                price = 7
-            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.qty.data,price)
+            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.qty.data)
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
-            'foodname': neworder.get_foodname(),
             'patientname': neworder.get_patientname(),
+            'foodname': neworder.get_foodname(),
             'quantity': neworder.get_quantity(),
             'price': neworder.get_price(),
             })
@@ -659,7 +661,6 @@ def delete_order(id):
     flash('Order Deleted', 'success')
 
     return redirect(url_for('render_nurse'))
-
 
 
 if __name__ == '__main__':
