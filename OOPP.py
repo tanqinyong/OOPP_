@@ -506,7 +506,6 @@ def update_patient(id):
     return render_template("patient_edit.html", form=form)
 
 
-
 @app.route("/patient_delete/<string:id>", methods=["POST"])
 def delete_patient(id):
     pat_db = root.child("patient_info/" + id)

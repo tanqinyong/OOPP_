@@ -43,21 +43,21 @@ td:hover
     text-decoration: underline;
 }
 </style>
-    {% if session['logged_in_staff'] == True %}
-        <script type=text/javascript>
-        document.addEventListener("DOMContentLoaded",docIsReady);
-        function docIsReady(){
-            document.getElementById("authen").style.visibility = "visible";
-        }
-        </script>
-    {% else %}
-        <script type=text/javascript>
-        document.addEventListener("DOMContentLoaded",docIsReady);
-        function docIsReady(){
-            document.getElementById("authen").style.visibility = "hidden";
-        }
-        </script>
-    {% endif %}
+{#    {% if session['logged_in_staff'] == True %}#}
+{#        <script type=text/javascript>#}
+{#        document.addEventListener("DOMContentLoaded",docIsReady);#}
+{#        function docIsReady(){#}
+{#            document.getElementById("authen").style.visibility = "visible";#}
+{#        }#}
+{#        </script>#}
+{#    {% else %}#}
+{#        <script type=text/javascript>#}
+{#        document.addEventListener("DOMContentLoaded",docIsReady);#}
+{#        function docIsReady(){#}
+{#            document.getElementById("authen").style.visibility = "hidden";#}
+{#        }#}
+{#        </script>#}
+{#    {% endif %}#}
 <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Info</a></li>
     <li><a data-toggle="tab" href="#menu1">History</a></li>
@@ -68,10 +68,9 @@ td:hover
 <div id="home" class="tab-pane fade in active">
     <div id="services" class="container-fluid text-center">
         <div id="patientinfo" class="container-fluid text-center" style="position:relative;">
-            <div id="authen" style="visibility:hidden; position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a>
-                <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>
-                <form action="{{url_for('delete_patient', id=eachpat.get_patient_id())}}" method="post">
-                    <input type="submit" value="(delete)" id="delete" style="background:none; border:none; color:red;" onclick="return confirm('Are you sure you want to delete this patient\'s details?');"></form></div>
+            <div id="authen" style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a></div>
+{#                <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>#}
+
 
           <h2> {{ eachpat.get_name() }} </h2>
             <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ eachpat.get_image_name() }}" alt="{{ eachpat.get_name() }}">
