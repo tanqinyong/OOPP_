@@ -72,6 +72,7 @@ class Patient_Info(Form):
     med1 = StringField("Medicine 1", [validators.Length(min=1, max=30), validators.DataRequired()])
     med2 = StringField("Medicine 2")
     med3 = StringField("Medicine 3")
+    ward = SelectField("Ward: ", choices=[("C","C"),("B2", "B2"), ("B1","B1"), ("A", "A")], default="")
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
 
@@ -301,7 +302,7 @@ def render_patient_info(id):
     url = "patient_info/" + id
     eachpat = root.child(url).get()
     patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"],
-                            eachpat["med1"], eachpat["med2"], eachpat["med3"], eachpat["time"], eachpat["image_name"])
+                            eachpat["med1"], eachpat["med2"], eachpat["med3"], eachpat["time"], eachpat["image_name"], eachpat["ward"])
     patients.set_patient_id(id)
 
     try:
@@ -310,7 +311,7 @@ def render_patient_info(id):
         for data in history:
             info = history[data]
             infos = Edit_Patient(info["name"], info["illness"], info["patientdesc"], info["medicinedesc"], info["med1"],
-                                 info["med2"], info["med3"], info["time"], info["image_name"])
+                                 info["med2"], info["med3"], info["time"], info["image_name"], info["ward"])
             infos.set_patient_id(data)
             list.append(infos)
     except TypeError:
@@ -334,6 +335,7 @@ def render_patient_info_editor():
         med2 = form.med2.data
         med3 = form.med3.data
         time = now.strftime("%d/%m/%Y %H:%M")
+        ward = form.ward.data
         pray = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
         image_name = ""
         print(session["user_id"])
@@ -343,7 +345,7 @@ def render_patient_info_editor():
                 img_name = val["image_name"]
             else:
                 pat_name = name
-        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3, time, image_name)
+        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3, time, image_name, ward)
 
         #find and check if there any patient with the same "newthing"
         pat_db3 = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
@@ -364,7 +366,8 @@ def render_patient_info_editor():
                         "med3": pat.get_med3(),
                         "newthing": session["user_id"],
                         "time": "(Date Modified) " + now.strftime("%d/%m/%Y %H:%M"),
-                        "image_name": img_name
+                        "image_name": img_name,
+                        "ward": pat.get_ward()
                     })
             #get the updated version again......
             meh = root.child("patient_info").order_by_child("newthing").equal_to(session["user_id"]).get()
@@ -381,6 +384,7 @@ def render_patient_info_editor():
                     arc_med3 = mehmeh["med3"]
                     arc_time = mehmeh["time"]
                     arc_img_name = mehmeh["image_name"]
+                    arc_ward = mehmeh["ward"]
 
                     arc_pat_db.push({
                         "name": arc_name,
@@ -392,7 +396,8 @@ def render_patient_info_editor():
                         "med3": arc_med3,
                         "newthing": session["user_id"],
                         "time": arc_time,
-                        "image_name": arc_img_name
+                        "image_name": arc_img_name,
+                        "ward": arc_ward
                     })
             print("Patient Info Updated!")
         else:
@@ -408,7 +413,8 @@ def render_patient_info_editor():
                 "med3": pat.get_med3(),
                 "newthing": session["user_id"],
                 "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
-                "image_name": img_name
+                "image_name": img_name,
+                "ward": pat.get_ward()
                 })
             #add the new patient record into another folder
             pat_db2 = root.child('archived_patient_info')
@@ -422,7 +428,8 @@ def render_patient_info_editor():
                 "med3": pat.get_med3(),
                 "newthing": session["user_id"],
                 "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
-                "image_name": img_name
+                "image_name": img_name,
+                "ward": pat.get_ward()
             })
 
             print("New Patient Added!")
@@ -460,59 +467,71 @@ def render_patient_info_editor():
                            datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
                            datainfo["password"], datainfo["image_name"])
 
+        formpat = root.child("patient_info/" + session["patient_url"]).get()
+        pat_form = Edit_Patient(formpat["name"], formpat["illness"], formpat["patientdesc"], formpat["medicinedesc"], formpat["med1"], formpat["med2"], formpat["med3"],
+                                formpat["time"], formpat["image_name"], formpat["ward"])
+
+        form.illness.data = pat_form.get_illness()
+        form.patientdesc.data = pat_form.get_patientdesc()
+        form.medicinedesc.data = pat_form.get_medicinedesc()
+        form.med1.data = pat_form.get_med1()
+        form.med2.data = pat_form.get_med2()
+        form.med3.data = pat_form.get_med3()
+        form.ward.data = pat_form.get_ward()
+
     return render_template('patient_info_editor.html', form=form, something=hello)
 
-@app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
-def update_patient(id):
-    form = Patient_Info(request.form)
-    if request.method == "POST" and form.validate():
-        name = form.name.data
-        illness = form.illness.data
-        patientdesc = form.patientdesc.data
-        medicinedesc = form.medicinedesc.data
-        med1 = form.med1.data
-        med2 = form.med2.data
-        med3 = form.med3.data
-
-        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
-        pat_db = root.child('patient_info/' + id)
-        pat_db.set({
-            "name": pat.get_name(),
-            "illness": pat.get_illness(),
-            "patientdesc": pat.get_patientdesc(),
-            "medicinedesc": pat.get_medicinedesc(),
-            "med1": pat.get_med1(),
-            "med2": pat.get_med2(),
-            "med3": pat.get_med3(),
-        })
-
-        flash("Patient Information Successfully Updated.", "success")
-        return redirect(url_for("render_patient_info"))
-
-    else:
-        url = "patient_info/" + id
-        eachpat = root.child(url).get()
-        patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"], eachpat["med1"], eachpat["med2"], eachpat["med3"])
-
-        patients.set_patient_id(id)
-        form.name.data = patients.get_name()
-        form.illness.data = patients.get_illness()
-        form.patientdesc.data = patients.get_patientdesc()
-        form.medicinedesc.data = patients.get_medicinedesc()
-        form.med1.data = patients.get_med1()
-        form.med2.data = patients.get_med2()
-        form.med3.data = patients.get_med3()
-
-    return render_template("patient_edit.html", form=form)
-
-
-@app.route("/patient_delete/<string:id>", methods=["POST"])
-def delete_patient(id):
-    pat_db = root.child("patient_info/" + id)
-    pat_db.delete()
-    flash("Patient's information has been delete", "success")
-
-    return redirect(url_for("render_patient_info"))
+# @app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
+# def update_patient(id):
+#     form = Patient_Info(request.form)
+#     if request.method == "POST" and form.validate():
+#         name = form.name.data
+#         illness = form.illness.data
+#         patientdesc = form.patientdesc.data
+#         medicinedesc = form.medicinedesc.data
+#         med1 = form.med1.data
+#         med2 = form.med2.data
+#         med3 = form.med3.data
+#
+#         pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3)
+#         pat_db = root.child('patient_info/' + id)
+#         pat_db.set({
+#             "name": pat.get_name(),
+#             "illness": pat.get_illness(),
+#             "patientdesc": pat.get_patientdesc(),
+#             "medicinedesc": pat.get_medicinedesc(),
+#             "med1": pat.get_med1(),
+#             "med2": pat.get_med2(),
+#             "med3": pat.get_med3(),
+#         })
+#
+#         flash("Patient Information Successfully Updated.", "success")
+#         return redirect(url_for("render_patient_info"))
+#
+#     else:
+#         url = "patient_info/" + id
+#         eachpat = root.child(url).get()
+#         patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"], eachpat["med1"], eachpat["med2"], eachpat["med3"])
+#
+#         patients.set_patient_id(id)
+#         form.name.data = patients.get_name()
+#         form.illness.data = patients.get_illness()
+#         form.patientdesc.data = patients.get_patientdesc()
+#         form.medicinedesc.data = patients.get_medicinedesc()
+#         form.med1.data = patients.get_med1()
+#         form.med2.data = patients.get_med2()
+#         form.med3.data = patients.get_med3()
+#
+#     return render_template("patient_edit.html", form=form)
+#
+#
+# @app.route("/patient_delete/<string:id>", methods=["POST"])
+# def delete_patient(id):
+#     pat_db = root.child("patient_info/" + id)
+#     pat_db.delete()
+#     flash("Patient's information has been delete", "success")
+#
+#     return redirect(url_for("render_patient_info"))
 
 
 @app.route('/trainee_notes/',methods=['POST',"GET"])
