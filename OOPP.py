@@ -76,6 +76,12 @@ class Patient_Info(Form):
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
 
+# no class Staff
+class StaffProfile(Form):
+    name = StringField('Name')
+
+
+
 # Admin Page
 # validations not yet done for AdminForm!!!!!!!!!!
 class AdminForm(Form):
@@ -96,6 +102,7 @@ class AdminForm(Form):
     emergency_contact_relationship = StringField("Emergency Contact Relationship: ")
     maritalstatus = SelectField("Marital Status: ", choices=[("Married", "Married"), ("Single", "Single"), ("Divorced", "Divorced"), ("Widowed", "Widowed")], default="")
     image_name = FileField("Patient's Image: ") #not even used
+    ward = StringField("Ward: ")
 
 
 def allowed_file(filename):
@@ -167,6 +174,7 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
+            ward = admin_form.ward.data
 
             # check if the post request has the file part
             if 'file' not in request.files:
@@ -187,7 +195,7 @@ def render_admin():
             new_staff = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
                                      bloodtype, race, phone_no,
                                      emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                     maritalstatus, username, password, image_name)
+                                     maritalstatus, username, password, image_name, ward)
 
             new_staff_db = root.child('Staff')
             new_staff_db.push({
@@ -208,7 +216,8 @@ def render_admin():
                 'maritalstatus': new_staff.get_maritalstatus(),
                 'username': new_staff.get_username(),
                 'password': new_staff.get_password(),
-                'image_name': new_staff.get_image_name()
+                'image_name': new_staff.get_image_name(),
+                'ward': new_staff.get_ward()
             })
             hospital_admin = root.child("Staff").get()
             for data in hospital_admin:
@@ -218,7 +227,7 @@ def render_admin():
                                    datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
                                    datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
-                                   datainfo["username"], datainfo["password"], datainfo["image_name"])
+                                   datainfo["username"], datainfo["password"], datainfo["image_name"], datainfo["ward"])
                 setid.set_patient_id(data)
                 print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
@@ -241,6 +250,7 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
+            ward = admin_form.ward.data
 
             # check if the post request has the file part
             if 'file' not in request.files:
@@ -258,10 +268,9 @@ def render_admin():
 
             image_name = file.filename
 
-            new_patient = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
-                                   bloodtype, race, phone_no,
-                                   emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                   maritalstatus, username, password, image_name)
+            new_patient = Admin_Work(name, nric, dob, email, address, gender, occupation, income, bloodtype, race,
+                                     phone_no, emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
+                                     maritalstatus, username, password, image_name, ward)
 
             new_patient_db = root.child('Patient')
             new_patient_db.push({
@@ -282,14 +291,18 @@ def render_admin():
                 'maritalstatus': new_patient.get_maritalstatus(),
                 'username': new_patient.get_username(),
                 'password': new_patient.get_password(),
-                "image_name": new_patient.get_image_name()
+                "image_name": new_patient.get_image_name(),
+                "ward": new_patient.get_ward()
             })
             hospital_admin = root.child("Patient").get()
             for data in hospital_admin:
                 datainfo = hospital_admin[data]
-                setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"], datainfo["gender"], datainfo["occupation"],
-                                   datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"], datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
-                                   datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"], datainfo["password"], datainfo["image_name"])
+                setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"],
+                                   datainfo["gender"], datainfo["occupation"], datainfo["income"], datainfo["bloodtype"],
+                                   datainfo["race"], datainfo["phone_no"], datainfo["emergency_contact_no"],
+                                   datainfo["emergency_contact_address"], datainfo["emergency_contact_relationship"],
+                                   datainfo["maritalstatus"], datainfo["username"], datainfo["password"],
+                                   datainfo["image_name"], datainfo["ward"])
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
@@ -534,6 +547,78 @@ def render_patient_info_editor():
 #     return redirect(url_for("render_patient_info"))
 
 
+@app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
+def render_staff_profile(id):
+    id = 'S91719'
+    url = "Staff/" + id
+    print(url)
+    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
+
+    # print(eachstaff)
+
+    for k, v in eachstaff.items():
+        print(k, v)
+        # print(v['username'])
+        # print(v['password'])
+        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"],
+                   v["phone_no"], v["email"], v["address"])
+
+    # staff.set_patient_id(id)
+    # form = AdminForm(request.form)
+    # if request.method == 'POST' and form.validate():
+    #     name = form.name.data  # redundant
+    #     gender = form.gender.data
+    #     nric = form.nric.data
+    #     dob = form.dob.data
+    #     username = form.username.data
+    #     phone_no = form.phone_no.data
+    #     email = form.email.data
+    #     address = form.address.data
+    #     ward = form.ward.data
+    #     okay = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
+    #     image_name = ""
+    #     print(session["user_id"])
+    #     for key, val in okay.items():
+    #         if session["user_id"] == val['username']:
+    #             staff_name = val["name"]
+    #             img_name = val["image_name"]
+    #         else:
+    #             staff_name = name
+    #     st = Staff(name, gender, nric, dob, username, phone_no, email, address, image_name, ward)
+    # else:
+    #     ok = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
+    #     for key, val in ok.items():
+    #         if session["user_id"] == val['username']:
+    #             session["staff_admin_info"] = key
+    #             # pat_name = val["name"]
+    #     # form.name.data = pat_name
+    #     datainfo = root.child("Staff/" + session["staff_admin_info"]).get()
+    #     data = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"],
+    #                        datainfo["gender"], datainfo["occupation"],
+    #                        datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
+    #                        datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
+    #                        datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
+    #                        datainfo["password"], datainfo["image_name"])
+    #
+    #     formstaff = root.child("staff_ino/" + session["staff_url"]).get()
+    #     staff_form = Edit_Patient(formstaff["name"], formstaff["illness"], formstaff["patientdesc"], formstaff["medicinedesc"],
+    #                               formstaff["med1"], formstaff["med2"], formstaff["med3"],
+    #                               formstaff["time"], formstaff["image_name"], formstaff["ward"])
+    #
+    #     form.gender.data = staff_form.get_gender()
+    #     form.nric.data = staff_form.get_nric()
+    #     form.dob.data = staff_form.get_dob()
+    #     form.username.data = staff_form.get_username()
+    #     form.phone_no.data = staff_form.get_phone_no()
+    #     form.email.data = staff_form.get_email()
+    #     form.address.data = staff_form.get_address()
+    #     form.ward.data = staff_form.get_ward()
+
+    return render_template('staff_profile.html', eachstaff = staff)
+
+
+
+
 @app.route('/trainee_notes/',methods=['POST',"GET"])
 def render_trainee_notes():
     form = TraineeForm(request.form)
@@ -684,5 +769,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     # app.debug = True
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
