@@ -55,20 +55,20 @@
 <div class="container-fluid">
     {% include 'includes/_message.html' %}
 </div>
-<div id="login" class="container">
-    <div id="description" class="container">
+<div id="login" class="container-fluid">
+    <div id="description" class="container-fluid">
         <img src="../static/images/iCAre.jpeg" style="float:left;height:200px;width:250px;" />
         <div id="productDescBox">
         <p id="productDesc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam auctor, nisl posuere blandit egestas,sim justo nibh a eros. tae accumsan enim feugiat.</p>
         </div>
     </div>
     <img src="https://www.bforball.com/images/geometry/vertical-line.png" style="float:left;height:500px;width:50px;"/>
-    <div id="loginside">
+    <div id="loginside" class="container-fluid">
         <br> <br> <br>
         <h1 > Login </h1>
         <h3 style="display:inline;"> We will need... </h3> <br> <br>
         <form action="" method="POST">
-        <div id="idpass"><br>
+        <div id="idpass" class="container-fluid"><br>
             {{ render_field(form.username, class="loginform") }} <br> <br>
             {{ render_field(form.password, class="loginform") }} <br> <br>
             <input type="submit" class="btn btn-success" value="Login" style="width:80px;"/>

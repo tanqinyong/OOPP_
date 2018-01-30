@@ -73,9 +73,11 @@ td:hover
 
 
           <h2> {{ eachpat.get_name() }} </h2>
+            <h4> {{ eachpat.get_days() }}</h4>
             <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ eachpat.get_image_name() }}" alt="{{ eachpat.get_name() }}">
           <h3> {{ eachpat.get_illness() }} </h3> <br>
               <p style="width: 600px;margin:auto"> {{ eachpat.get_patientdesc() }}</p>
+
         </div>
 
 
@@ -183,6 +185,7 @@ td:hover
         <div class="container-fluid" style="color:black;">
             <span style="font-style: italic; color:gray;">{{ his.get_time() }}</span><br/>
             Name: {{ his.get_name() }} <br/>
+            Days: {{ his.get_days() }} <br>
             Ward: {{ his.get_ward() }} <br/>
             Illness: {{ his.get_illness() }} <br/>
             Description: {{ his.get_patientdesc() }} <br/>

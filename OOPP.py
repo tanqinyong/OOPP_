@@ -44,13 +44,13 @@ class PatientLogin(Form):
 
 # Nurse Call Page
 class NurseCallForm(Form):
-    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
+    problem = SelectMultipleField("",choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
     submit = SubmitField('Enter')
 
 
 # Menu Page
 class FoodOrderForm(Form):
-    foodname = RadioField('Food Choices:', choices = [('Indian Cuisine','indian'),('Chinese Cuisine','chinese'),('Western Cuisine','western'),('International Cuisine','international')],default='international')
+    foodname = RadioField('Food Choices:', choices = [('Indian Cuisine','Indian Cuisine'),('Chinese Cuisine','Chinese Cuisine'),('Western Cuisine','Western Cuisine'),('International Cuisine','International Cuisine')],default='International Cuisine')
     # patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
     # qty = SelectField('Qty', choices=[('1', '1'), ('2', '2'),('3','3'),('4','4'),('5','5')], default='')
     submit = SubmitField('Enter')
@@ -73,6 +73,7 @@ class Patient_Info(Form):
     med2 = StringField("Medicine 2")
     med3 = StringField("Medicine 3")
     ward = SelectField("Ward: ", choices=[("C","C"),("B2", "B2"), ("B1","B1"), ("A", "A")], default="")
+    days = StringField("Days until discharge: ", [validators.Length(min=1, max=3),validators.DataRequired(), validators.NumberRange(1,365,message="Invalid Input.")])
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
 
@@ -103,6 +104,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+# Login Page
 @app.route('/', methods=['GET','POST'])
 def render_login():
     form = PatientLogin(request.form)
@@ -145,6 +147,7 @@ def render_login():
     return render_template('login.html', form=form)
 
 
+# Admin Page
 @app.route('/Admin/',methods=['GET','POST'])
 def render_admin():
     admin_form = AdminForm(request.form)
@@ -297,12 +300,13 @@ def render_admin():
     return render_template('Admin.html',form=admin_form)
 
 
+# Patient info page
 @app.route('/patient_info/<string:id>', methods=["GET"])
 def render_patient_info(id):
     url = "patient_info/" + id
     eachpat = root.child(url).get()
     patients = Edit_Patient(eachpat["name"], eachpat["illness"], eachpat["patientdesc"], eachpat["medicinedesc"],
-                            eachpat["med1"], eachpat["med2"], eachpat["med3"], eachpat["time"], eachpat["image_name"], eachpat["ward"])
+                            eachpat["med1"], eachpat["med2"], eachpat["med3"], eachpat["time"], eachpat["image_name"], eachpat["ward"], eachpat["days"])
     patients.set_patient_id(id)
 
     try:
@@ -311,7 +315,7 @@ def render_patient_info(id):
         for data in history:
             info = history[data]
             infos = Edit_Patient(info["name"], info["illness"], info["patientdesc"], info["medicinedesc"], info["med1"],
-                                 info["med2"], info["med3"], info["time"], info["image_name"], info["ward"])
+                                 info["med2"], info["med3"], info["time"], info["image_name"], info["ward"], info["days"])
             infos.set_patient_id(data)
             list.append(infos)
     except TypeError:
@@ -323,6 +327,8 @@ def render_patient_info(id):
 def point_p():
     return render_template("point_p.html")
 
+
+# Patient editor page
 @app.route('/patient_info_editor/', methods=["GET", "POST"])
 def render_patient_info_editor():
     form = Patient_Info(request.form)
@@ -336,6 +342,7 @@ def render_patient_info_editor():
         med3 = form.med3.data
         time = now.strftime("%d/%m/%Y %H:%M")
         ward = form.ward.data
+        days = form.days.data
         pray = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
         image_name = ""
         print(session["user_id"])
@@ -345,7 +352,7 @@ def render_patient_info_editor():
                 img_name = val["image_name"]
             else:
                 pat_name = name
-        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3, time, image_name, ward)
+        pat = Edit_Patient(name, illness, patientdesc, medicinedesc, med1, med2, med3, time, image_name, ward, days)
 
         #find and check if there any patient with the same "newthing"
         pat_db3 = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
@@ -367,7 +374,8 @@ def render_patient_info_editor():
                         "newthing": session["user_id"],
                         "time": "(Date Modified) " + now.strftime("%d/%m/%Y %H:%M"),
                         "image_name": img_name,
-                        "ward": pat.get_ward()
+                        "ward": pat.get_ward(),
+                        "days": pat.get_days()
                     })
             #get the updated version again......
             meh = root.child("patient_info").order_by_child("newthing").equal_to(session["user_id"]).get()
@@ -385,6 +393,7 @@ def render_patient_info_editor():
                     arc_time = mehmeh["time"]
                     arc_img_name = mehmeh["image_name"]
                     arc_ward = mehmeh["ward"]
+                    arc_days = mehmeh["days"]
 
                     arc_pat_db.push({
                         "name": arc_name,
@@ -397,7 +406,8 @@ def render_patient_info_editor():
                         "newthing": session["user_id"],
                         "time": arc_time,
                         "image_name": arc_img_name,
-                        "ward": arc_ward
+                        "ward": arc_ward,
+                        "days": arc_days
                     })
             print("Patient Info Updated!")
         else:
@@ -414,7 +424,8 @@ def render_patient_info_editor():
                 "newthing": session["user_id"],
                 "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
                 "image_name": img_name,
-                "ward": pat.get_ward()
+                "ward": pat.get_ward(),
+                "days": pat.get_days()
                 })
             #add the new patient record into another folder
             pat_db2 = root.child('archived_patient_info')
@@ -429,7 +440,8 @@ def render_patient_info_editor():
                 "newthing": session["user_id"],
                 "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
                 "image_name": img_name,
-                "ward": pat.get_ward()
+                "ward": pat.get_ward(),
+                "days": pat.get_days()
             })
 
             print("New Patient Added!")
@@ -467,17 +479,20 @@ def render_patient_info_editor():
                            datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
                            datainfo["password"], datainfo["image_name"])
 
-        formpat = root.child("patient_info/" + session["patient_url"]).get()
-        pat_form = Edit_Patient(formpat["name"], formpat["illness"], formpat["patientdesc"], formpat["medicinedesc"], formpat["med1"], formpat["med2"], formpat["med3"],
-                                formpat["time"], formpat["image_name"], formpat["ward"])
+        pat_db9 = root.child("patient_info").order_by_child("newthing").equal_to(session["user_id"]).get()
+        if len(pat_db9) > 0:
+            formpat = root.child("patient_info/" + session["patient_url"]).get()
+            pat_form = Edit_Patient(formpat["name"], formpat["illness"], formpat["patientdesc"], formpat["medicinedesc"], formpat["med1"], formpat["med2"], formpat["med3"],
+                                    formpat["time"], formpat["image_name"], formpat["ward"], formpat["days"])
 
-        form.illness.data = pat_form.get_illness()
-        form.patientdesc.data = pat_form.get_patientdesc()
-        form.medicinedesc.data = pat_form.get_medicinedesc()
-        form.med1.data = pat_form.get_med1()
-        form.med2.data = pat_form.get_med2()
-        form.med3.data = pat_form.get_med3()
-        form.ward.data = pat_form.get_ward()
+            form.illness.data = pat_form.get_illness()
+            form.patientdesc.data = pat_form.get_patientdesc()
+            form.medicinedesc.data = pat_form.get_medicinedesc()
+            form.med1.data = pat_form.get_med1()
+            form.med2.data = pat_form.get_med2()
+            form.med3.data = pat_form.get_med3()
+            form.ward.data = pat_form.get_ward()
+            form.days.data = pat_form.get_days()
 
     return render_template('patient_info_editor.html', form=form, something=hello)
 
@@ -568,7 +583,7 @@ def render_nurse():
         list = []
         for food_id in Food_Order:
             eachorder = Food_Order[food_id]
-            order = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['price'])
+            order = FoodOrder(eachorder['foodname'])
             order.set_foodid(food_id)
             list.append(order)
 
@@ -623,13 +638,13 @@ def logout():
 def render_menu():
     form = FoodOrderForm(request.form)
     if request.method =='POST' and form.validate():
-            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.qty.data)
+            neworder = FoodOrder(form.foodname.data)
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
-            'patientname': neworder.get_patientname(),
+            # 'patientname': neworder.get_patientname(),
             'foodname': neworder.get_foodname(),
-            'quantity': neworder.get_quantity(),
-            'price': neworder.get_price(),
+            # 'quantity': neworder.get_quantity(),
+            # 'price': neworder.get_price(),
             })
             flash('Success!','success')
             return redirect(url_for("render_nurse"))
@@ -637,39 +652,6 @@ def render_menu():
     elif request.method == 'GET':
         return render_template('menu.html', form=form)
     return render_template('menu.html', form=form)
-
-
-# @app.route('/update_order/<string:id>/', methods=['GET', 'POST'])
-# def update_order(id):
-#     form = FoodOrderForm(request.form)
-#     price = 0
-#     if request.method == 'POST' and form.validate():
-#         if form.foodname.data == 'Chicken':
-#             price = 5
-#         elif form.foodname.data == 'Fish' or 'Pork':
-#             price = 6
-#         elif form.foodname.data == 'Beef':
-#             price = 7
-#         neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
-#         neworder_db = root.child('Food_Order/'+id)
-#         neworder_db.push({
-#             'foodname': neworder.get_foodname(),
-#             'patientname': neworder.get_patientname(),
-#             'quantity': neworder.get_quantity(),
-#             'price': neworder.get_price(),
-#         })
-#         flash('Updated Successfully!')
-#         return render_template('nursecallpage.html', order=form)
-#         #return redirect(url_for("render_nurse"))
-#     else:
-#         url = 'Food_Order/' + id
-#         eachorder = root.child(url).get()
-#         neworder = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['quantity'],eachorder['price'])
-#         neworder.set_foodid(id)
-#         form.foodname.data = neworder.get_foodname()
-#         form.patientname.data = neworder.get_patientname()
-#         form.qty.data = neworder.get_quantity()
-#     return render_template('nursecallpage.html',order=form, nurse = "",orders="")
 
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
@@ -683,6 +665,6 @@ def delete_order(id):
 
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
-    # app.debug = True
+    app.debug = True
     app.run(port=80)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
