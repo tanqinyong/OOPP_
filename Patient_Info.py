@@ -1,5 +1,5 @@
 class Edit_Patient():
-    def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3, days):
+    def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3):
         self.__patid = ""
         self.__name = name
         self.__illness = illness
@@ -8,13 +8,6 @@ class Edit_Patient():
         self.__med1 = med1
         self.__med2 = med2
         self.__med3 = med3
-        self.__days = days
-
-    def get_days(self):
-        return self.__days
-
-    def set_days(self,days):
-        self.__days = days
 
     def get_patid(self):
         return self.__patid

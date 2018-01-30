@@ -60,7 +60,9 @@ td:hover
 {#    {% endif %}#}
 <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Info</a></li>
-    <li><a data-toggle="tab" href="#menu1">History</a></li>
+    <li><a data-toggle="tab" href="#menu1">Medicine</a></li>
+    <li><a data-toggle="tab" href="#menu2">Schedule</a></li>
+    <li><a data-toggle="tab" href="#menu3">History</a></li>
 </ul>
 
 <div class="tab-content">
@@ -68,131 +70,119 @@ td:hover
 <div id="home" class="tab-pane fade in active">
     <div id="services" class="container-fluid text-center">
         <div id="patientinfo" class="container-fluid text-center" style="position:relative;">
-            <div id="authen" style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a></div>
-{#                <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>#}
-
-
-          <h2> {{ eachpat.get_name() }} </h2>
-            <h4> {{ eachpat.get_days() }}</h4>
-            <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ eachpat.get_image_name() }}" alt="{{ eachpat.get_name() }}">
-          <h3> {{ eachpat.get_illness() }} </h3> <br>
-              <p style="width: 600px;margin:auto"> {{ eachpat.get_patientdesc() }}</p>
-
-        </div>
-
-
-
-        <div id="medicine" class="container-fluid text-center">
-            <h2> Treatments & Medicine </h2>
-            <h4> Possible treatments and medicine for your diagnosis. </h4>
-            <h2> Possible medicines: </h2>
-
             <div class="row slideanim">
-
-                <div class="col-sm-3">
-                  <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
-                </div>
-
-                <div class="col-sm-6">
-                <br>
-                    <p>{{ eachpat.get_medicinedesc() }} </p>
-                </div>
-                <div class="col-sm-3">
-                    <ul>
-                      <li>{{ eachpat.get_med1() }}</li>
-                      <li>{{ eachpat.get_med2() }}</li>
-                      <li>{{ eachpat.get_med3() }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- schedule -->
-        <div id="schedule" class="container-fluid text-center">
-            <h2> Schedule </h2>
-            <h4> Your timings </h4>
-            <div class="row slideanim">
-                <table width="80%" align="center" >
-                    <div id="head_nav">
-                        <tr>
-                            <th class="toprow">Time</th>
-                            <th class="toprow">Monday</th>
-                            <th class="toprow">Tuesday</th>
-                            <th class="toprow">Wednesday</th>
-                            <th class="toprow">Thursday</th>
-                            <th class="toprow">Friday</th>
-                            <th class="toprow">Saturday</th>
-                        </tr>
-                    </div>
-
-                    <tr>
-                        <th style="text-align:center;">10:00 - 11:00</th>
-                            <td>Breakfast</td>
-                            <td>Breakfast</td>
-                            <td>Breakfast</td>
-                            <td>Breakfast</td>
-                            <td>Breakfast</td>
-                            <td>Breakfast</td>
-                    </tr>
-
-                    <tr>
-                        <th style="text-align:center;">11:00 - 12:00</th>
-                            <td>Take Medicine (A)</td>
-                            <td>Take Medicine (A)</td>
-                            <td>Take Medicine (A)</td>
-                            <td>Take Medicine (A)</td>
-                            <td>Take Medicine (A)</td>
-                            <td>Take Medicine (A)</td>
-                    </tr>
-
-                    <tr>
-                        <th style="text-align:center;">12:00 - 01:00</th>
-                            <td>Lunch</td>
-                            <td>Lunch</td>
-                            <td>Lunch</td>
-                            <td>Lunch</td>
-                            <td>Lunch</td>
-                            <td>Lunch</td>
-                    </tr>
-
-                    <tr>
-                        <th style="text-align:center;">01:00 - 02:00</th>
-                            <td>Take Medicine (A&B)</td>
-                            <td>Take Medicine (A&B)</td>
-                            <td>Take Medicine (A&B)</td>
-                            <td>Take Medicine (A&B)</td>
-                            <td>Take Medicine (A&B)</td>
-                            <td>Take Medicine (A&B)</td>
-                    </tr>
-
-                    <tr>
-                        <th style="text-align:center;">02:00 - 03:00</th>
-                            <td>Toe surgery</td>
-                            <td>-----</td>
-                            <td>Medical checkup</td>
-                            <td>-----</td>
-                            <td>Medical checkup</td>
-                            <td>-----</td>
-                    </tr>
-                </table>
+                <div id="authen" style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/patient_info_editor/">(edit)</a></div>
+    {#                <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>#}
+              <h2> {{ eachpat.get_name() }} </h2>
+                <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ eachpat.get_image_name() }}" alt="{{ eachpat.get_name() }}">
+              <h3> {{ eachpat.get_illness() }} </h3> <br>
+                  <p style="width: 600px;margin:auto"> {{ eachpat.get_patientdesc() }}</p>
             </div>
         </div>
     </div>
 </div>
 <div id="menu1" class="tab-pane fade">
+    <div id="medicine" class="container-fluid text-center">
+        <h2>Medicine</h2>
+        <table align="center">
+            <tr>
+                <th>Medicine Name</th>
+                <th>Medicine Description</th>
+                <th>Medicine Dosage (ml)</th>
+                <th>Side Effect (if applicable)</th>
+            </tr>
+        {% for med in medicine %}
+            <tr>
+                <td>{{ med.get_medName() }}</td>
+                <td>{{ med.get_medDesc() }}</td>
+                <td>{{ med.get_medDosage() }}</td>
+                <td>{{ med.get_sideEffect() }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+<div id="menu2" class="tab-pane fade">
+<!-- schedule -->
+    <div id="schedule" class="container-fluid text-center">
+        <h2> Schedule </h2>
+        <h4> Your timings </h4>
+        <div class="row slideanim">
+            <table width="80%" align="center" >
+                <div id="head_nav">
+                    <tr>
+                        <th class="toprow">Time</th>
+                        <th class="toprow">Monday</th>
+                        <th class="toprow">Tuesday</th>
+                        <th class="toprow">Wednesday</th>
+                        <th class="toprow">Thursday</th>
+                        <th class="toprow">Friday</th>
+                        <th class="toprow">Saturday</th>
+                    </tr>
+                </div>
+
+                <tr>
+                    <th style="text-align:center;">10:00 - 11:00</th>
+                        <td>Breakfast</td>
+                        <td>Breakfast</td>
+                        <td>Breakfast</td>
+                        <td>Breakfast</td>
+                        <td>Breakfast</td>
+                        <td>Breakfast</td>
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">11:00 - 12:00</th>
+                        <td>Take Medicine (A)</td>
+                        <td>Take Medicine (A)</td>
+                        <td>Take Medicine (A)</td>
+                        <td>Take Medicine (A)</td>
+                        <td>Take Medicine (A)</td>
+                        <td>Take Medicine (A)</td>
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">12:00 - 01:00</th>
+                        <td>Lunch</td>
+                        <td>Lunch</td>
+                        <td>Lunch</td>
+                        <td>Lunch</td>
+                        <td>Lunch</td>
+                        <td>Lunch</td>
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">01:00 - 02:00</th>
+                        <td>Take Medicine (A&B)</td>
+                        <td>Take Medicine (A&B)</td>
+                        <td>Take Medicine (A&B)</td>
+                        <td>Take Medicine (A&B)</td>
+                        <td>Take Medicine (A&B)</td>
+                        <td>Take Medicine (A&B)</td>
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;">02:00 - 03:00</th>
+                        <td>Toe surgery</td>
+                        <td>-----</td>
+                        <td>Medical checkup</td>
+                        <td>-----</td>
+                        <td>Medical checkup</td>
+                        <td>-----</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="menu3" class="tab-pane fade">
     {% for his in history %}
         <div class="container-fluid" style="color:black;">
             <span style="font-style: italic; color:gray;">{{ his.get_time() }}</span><br/>
             Name: {{ his.get_name() }} <br/>
-            Days: {{ his.get_days() }} <br>
             Ward: {{ his.get_ward() }} <br/>
             Illness: {{ his.get_illness() }} <br/>
             Description: {{ his.get_patientdesc() }} <br/>
-            Medicine Info: {{ his.get_medicinedesc() }} <br/>
-            Medicine: {{ his.get_med1() }} <br/>
-            Medicine: {{ his.get_med2() }} <br/>
-            Medicine: {{ his.get_med3() }}
         </div>
     {% endfor %}
     </div>

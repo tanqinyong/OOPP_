@@ -1,39 +1,9 @@
 {% extends 'layout.html' %}
 {% block body %}
-
     <style>
-
-
-
-        th,td
-{
-    margin: 0;
-    text-align: center;
-    border-collapse: collapse;
-    outline: 1px solid #e3e3e3;
-            background-color: #FFFFFF;
-}
-
-td
-{
-    padding: 5px 10px;
-    background-color: #FFFFFF;
-}
-
-th
-{
-    padding: 5px 10px;
-}
-
-td:hover  {# Hover on mobile? Design flaw! #} {
-    cursor: pointer;
-    background: #F4511E;
-    color: white;
-}
-.toprow {
-
-  padding:10px;
-}
+    #symptoms {
+        list-style:none;
+    }
     </style>
     <script>
     var heartcount = 1;
@@ -138,7 +108,7 @@ td:hover  {# Hover on mobile? Design flaw! #} {
   <h4>What we offer</h4>
   <div class="row slideanim">
 
-      <div class="col-sm-3" style="margin-top:40px;margin-bottom: 80px;padding:0;">
+      <div class="col-sm-3">
       <span class="glyphicon glyphicon-heart logo-small"></span>
       <h4>MEDICAL CARE</h4>
       <p> Your online guardian angel.</p>
@@ -194,7 +164,6 @@ td:hover  {# Hover on mobile? Design flaw! #} {
               </div>
 </form>
 </div>
-
 
 <!-- Kitchen -->
 <div id="kitchen" class="container-fluid text-center">

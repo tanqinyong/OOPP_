@@ -16,8 +16,7 @@ class Hospital():
 
 # This is for Patients!
 class Admin_Work(Hospital):
-    def __init__(self, name, nric, dob, email, address, gender, occupation, income, bloodtype, race, phone_no, emergency_contact_no,
-                 emergency_contact_address, emergency_contact_relationship, maritalstatus, username, password, image_name):
+    def __init__(self, name, nric, dob, email, address, gender, occupation, income, bloodtype, race, phone_no, emergency_contact_no, emergency_contact_address, emergency_contact_relationship, maritalstatus, username, password, image_name):
         super().__init__(name)
         self.__nric = nric
         self.__dob = dob
@@ -36,12 +35,6 @@ class Admin_Work(Hospital):
         self.__username = username
         self.__password = password
         self.__image_name = image_name
-
-
-    def get_ward(self):
-        return self.__ward
-    def set_image_name(self, ward):
-        self.__ward = ward
 
     def get_image_name(self):
         return self.__image_name
@@ -131,23 +124,13 @@ class Admin_Work(Hospital):
 
 # This is to edit Patients
 class Edit_Patient(Hospital):
-    def __init__(self, name, illness, patientdesc, medicinedesc, med1, med2, med3, time, image_name, ward, days):
+    def __init__(self, name, illness, patientdesc, time, image_name, ward):
         super().__init__(name)
         self.__illness = illness
         self.__patientdesc = patientdesc
-        self.__medicinedesc = medicinedesc
-        self.__med1 = med1
-        self.__med2 = med2
-        self.__med3 = med3
         self.__time = time
         self.__image_name = image_name
         self.__ward = ward
-        self.__days = days
-
-    def get_days(self):
-        return self.__days
-    def set_days(self,days):
-        self.__days = days
 
     def get_image_name(self):
         return self.__image_name
@@ -177,45 +160,52 @@ class Edit_Patient(Hospital):
     def set_patientdesc(self, patientdesc):
         self.__patientdesc = patientdesc
 
-    def get_medicinedesc(self):
-        return self.__medicinedesc
+class Medicine:
+    def __init__(self, medName, medDesc, medDosage, sideEffect):
+        self.__medName = medName
+        self.__medDesc = medDesc
+        self.__medDosage = medDosage
+        self.__sideEffect = sideEffect
+        self.__med_id = ""
 
-    def set_medicinedesc(self, medicinedesc):
-        self.__medicinedsec = medicinedesc
+    def get_medName(self):
+        return self.__medName
 
-    def get_med1(self):
-        return self.__med1
+    def set_medName(self, medName):
+        self.__medName = medName
 
-    def set_med1(self, med1):
-        self.__med1 = med1
+    def get_medDesc(self):
+        return self.__medDesc
 
-    def get_med2(self):
-        return self.__med2
+    def set_medDesc(self, medDesc):
+        self.__medDesc = medDesc
 
-    def set_med2(self, med2):
-        self.__med2 = med2
+    def get_medDosage(self):
+        return self.__medDosage
 
-    def get_med3(self):
-        return self.__med3
+    def set_medDosage(self, medDosage):
+        self.__medDosage = medDosage
 
-    def set_med3(self, med3):
-        self.__med3 = med3
+    def get_sideEffect(self):
+        return self.__sideEffect
+
+    def set_sideEffect(self, sideEffect):
+        self.__sideEffect = sideEffect
+
+    def get_med_id(self):
+        return self.__med_id
+
+    def set_med_id(self, med_id):
+        self.__med_id = med_id
 
 
 # This is for staff
 class Staff(Hospital):
-    def __init__(self, name, nric, username, password, image_name, ward, dob, email, address, gender, phone_no):
+    def __init__(self, name, nric, username, password):
         super().__init__(name)
         self.__username = username
         self.__password = password
         self.__nric = nric
-        self.__image_name = image_name
-        self.__ward = ward
-        self.__dob = dob
-        self.__email = email
-        self.__address = address
-        self.__gender = gender
-        self.__phone_no = phone_no
 
     def get_nric(self):
         return self.__nric
@@ -235,47 +225,6 @@ class Staff(Hospital):
     def set_password(self, password):
         self.__password = password
 
-    def get_image_name(self):
-        return self.__image_name
-
-    def set_image_name(self,image_name):
-        self.__image_name=image_name
-
-    def get_ward(self):
-        return self.__ward
-
-    def set_ward(self,ward):
-        self.__ward = ward
-
-    def get_dob(self):
-        return self.__dob
-
-    def set_dob(self, dob):
-        self.__dob = dob
-
-    def get_email(self):
-        return self.__email
-
-    def set_email(self, email):
-        self.__email = email
-
-    def get_address(self):
-        return self.__address
-
-    def set_address(self, address):
-        self.__address = address
-
-    def get_gender(self):
-        return self.__gender
-
-    def set_gender(self, gender):
-        self.__gender = gender
-
-    def get_phone_no(self):
-        return self.__phone_no
-
-    def set_phone_no(self, phone_no):
-        self.__phone_no = phone_no
 
 class NurseCall:
     def __init__(self, reason,user_id):

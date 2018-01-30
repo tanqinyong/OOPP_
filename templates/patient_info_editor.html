@@ -58,64 +58,82 @@ td:hover
 </style>
 
 
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#home">Info</a></li>
+    <li><a data-toggle="tab" href="#menu1">Medicine</a></li>
+    <li><a data-toggle="tab" href="#menu2">Schedule</a></li>
+</ul>
+
+<div class="tab-content">
+    <div id="home" class="tab-pane fade in active">
 <!-- PATIENT MEDICINE & DESCRIPTION -->
-<form method="POST" action ="">
-    <div id="services" class="container-fluid text-center">
+        <form method="POST" action="">
+            <div id="services" class="container-fluid text-center">
+                <div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
+                    <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/{{ session["patient_url"] }}">(exit)</a></div>
+                        <h2>{{ data.get_name() }}</h2>
+                        <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ data.get_image_name() }}" alt="{{ data.get_name() }}">
+        {#                <div class="form-group">#}
+        {#                    {{  render_field(form.name, class_="form-control", placeholder="Patient Name") }}#}
+        {#                </div>#}
 
-        <div id="patientinfo" class="container-fluid text-center"  style="position:relative;">
-            <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/patient_info/{{ session["patient_url"] }}">(exit)</a></div>
-                <h2>{{ something.get_name() }}</h2>
-                <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ something.get_image_name() }}" alt="{{ something.get_name() }}">
-{#                <div class="form-group">#}
-{#                    {{  render_field(form.name, class_="form-control", placeholder="Patient Name") }}#}
-{#                </div>#}
+                        <div class="form-group">
+                            {{ render_field(form.ward) }} <br/>
+                            {{  render_field(form.illness, class="form-control", placeholder="E.g. Atherosclerosis (Coronary heart disease)") }}
+                        </div>
 
-                <div class="form-group">
-                    {{ render_field(form.ward) }} <br/>
-                    {{ render_field(form.days) }} <br>
-                    {{  render_field(form.illness, class="form-control", placeholder="E.g. Atherosclerosis (Coronary heart disease)") }}
+
+                        <div class="form-group">
+                            {{ render_field(form.patientdesc, class_="form-control", cols="5", rows="10") }}
+                        </div>
                 </div>
-
-
                 <div class="form-group">
-                    {{ render_field(form.patientdesc, class_="form-control", cols="5", rows="10") }}
+                    <input type="submit" value="Submit" class="btn btn-info"/>
+                    {{ form.submitInfo }}
                 </div>
-        </div>
+            </div>
+        </form>
+    </div>
 
+    <div id="menu1" class="tab-pane fade">
         <div id="medicine" class="container-fluid text-center">
-            <h2> Treatments & Medicine </h2>
-            <h4> Possible treatments and medicine for your diagnosis. </h4>
-            <h2> Possible medicines: </h2>
+            <form method="POST" action="">
+                <h2> Treatments & Medicine </h2>
+                <h4> Possible treatments and medicine for your diagnosis. </h4>
+                <h2> Possible medicines: </h2>
 
 
-            <div class="col-sm-3">
-              <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
-            </div>
-
-            <div class="col-sm-6">
-                <div class="form-group">
-                  {{ render_field(form.medicinedesc, class="form-control", cols="5", rows="10") }}
+                <div class="col-sm-3">
+                  <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
                 </div>
-            </div>
 
-            <div class="col-sm-3">
-                <div id="meds">
-                  <div class="form-group">
-                    {{  render_field(form.med1, class="form-control") }}
-                  </div>
-                  <div class="form-group">
-                    {{  render_field(form.med2, class="form-control") }}
-                  </div>
-                  <div class="form-group">
-                   {{  render_field(form.med3, class="form-control") }}
-                  </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                      {{ render_field(medform.medDesc, class="form-control", cols="5", rows="10") }}
+                    </div>
                 </div>
-              <button class="btn btn-primary" type="button" onclick="addMed();">Add row</button>
-              <button class="btn btn-danger" type="button" onclick="removeMed()">Delete row = hover over press 'X' on the right >>?</button>
-            </div>
+
+                <div class="col-sm-3">
+                    <div id="meds">
+                      <div class="form-group">
+                        {{  render_field(medform.medName, class="form-control") }}
+                      </div>
+                      <div class="form-group">
+                        {{  render_field(medform.medDosage, class="form-control") }}
+                      </div>
+                      <div class="form-group">
+                        {{  render_field(medform.sideEffect, class="form-control") }}
+                      </div>
+                    </div>
+                  <button class="btn btn-primary" type="submit">Add Medicine</button>
+                    {{ medform.submitMed }}
+                </div>
+
+            </form>
         </div>
+    </div>
 
-
+    <div id="menu2" class="tab-pane fade">
         <!-- schedule -->
         <div id="schedule" class="container-fluid text-center">
 
@@ -231,45 +249,5 @@ td:hover
                 <button class="btn btn-danger" type="button" style="margin-top:10px;" onclick="removeRow()">Delete Row</button>
             </div>
         </div>
-    <div class="form-group">
-        <input type="submit" value="Submit" class="btn btn-info"/>
-    </div>
-</form>
-<script type="text/javascript">
-function addMed() {
-    var med = document.getElementById("meds");
-    var div = document.createElement("div");
-    var input = document.createElement("input");
-    input.placeholder = "NEED FIXES!!!";
-    div.className = "form-group";
-    div.appendChild(input);
-    med.appendChild(div);
-}
-function removeMed() {
-    var med = document.getElementById("meds");
-    med.parentNode.removeChild(med);
-}
-function addRow() {
-    var table = document.getElementById("scheduleTable");
-    var row = table.insertRow(-1);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    var cell4 = row.insertCell(3);
-    var cell5 = row.insertCell(4);
-    var cell6 = row.insertCell(5);
-    var cell7 = row.insertCell(6);
-    cell1.innerHTML = "Test1";
-    cell2.innerHTML = "Test2";
-    cell3.innerHTML = "Test3";
-    cell4.innerHTML = "Test4";
-    cell5.innerHTML = "Test5";
-    cell6.innerHTML = "Test6";
-    cell7.innerHTML = "Test7";
-
-}
-function removeRow() {
-    document.getElementById("scheduleTable").deleteRow(-1);
-}
-</script>
+</div>
 {% endblock %}
