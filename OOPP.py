@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField, FileField, IntegerField
 from werkzeug.utils import secure_filename
 import random, datetime, os
+from datetime import timedelta
+from threading import Timer
 now = datetime.datetime.now()
 print(now.strftime("%d/%m/%Y %H:%M"))
 # Classes and shit
@@ -16,11 +18,11 @@ from trainee_notes import comment
 # TWILIO
 # /usr/bin/env python
 # Download the twilio-python library from twilio.com/docs/libraries/python
-from twilio.rest import Client
-# Find these values at https://twilio.com/user/account
-account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
-auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
-client = Client(account_sid, auth_token)
+# from twilio.rest import Client
+# # Find these values at https://twilio.com/user/account
+# account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
+# auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
+# client = Client(account_sid, auth_token)
 
 
 UPLOAD_FOLDER = 'static/images/'
@@ -236,10 +238,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
-            client.api.account.messages.create(
-                to="+6592211065",
-                from_="+18636927542",
-                body="Your user is: {} and password: {}".format(username,password))
+            # client.api.account.messages.create(
+            #     to="+6592211065",
+            #     from_="+18636927542",
+            #     body="Your user is: {} and password: {}".format(username,password))
 
         elif admin_form.type.data == 'Patient':
             username = 'P' + str(random.randint(10000, 99999))
@@ -311,10 +313,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
-            client.api.account.messages.create(
-                to="+6592211065",
-                from_="+18636927542",
-                body="Your user is: {} and password: {}".format(username,password))
+            # client.api.account.messages.create(
+            #     to="+6592211065",
+            #     from_="+18636927542",
+            #     body="Your user is: {} and password: {}".format(username,password))
 
     return render_template('Admin.html',form=admin_form)
 
@@ -496,8 +498,19 @@ def render_patient_info_editor():
             form.illness.data = pat_form.get_illness()
             form.patientdesc.data = pat_form.get_patientdesc()
             form.ward.data = pat_form.get_ward()
+        try:
+            med_db1 = root.child("Medicine/" + session["user_id"]).get()
+            medList2 = []
+            if len(med_db1) > 0:
+                for med in med_db1:
+                    med3 = med_db1[med]
+                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"])
+                    med4.set_med_id(med)
+                    medList2.append(med4)
+        except:
+            pass
 
-    return render_template('patient_info_editor.html', form=form, data=data, medform=medform)
+    return render_template('patient_info_editor.html', form=form, data=data, medform=medform, medicine2=medList2)
 
 # @app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
 # def update_patient(id):
@@ -543,13 +556,13 @@ def render_patient_info_editor():
 #     return render_template("patient_edit.html", form=form)
 #
 #
-# @app.route("/patient_delete/<string:id>", methods=["POST"])
-# def delete_patient(id):
-#     pat_db = root.child("patient_info/" + id)
-#     pat_db.delete()
-#     flash("Patient's information has been delete", "success")
-#
-#     return redirect(url_for("render_patient_info"))
+@app.route("/delete_med/<medicine>/<string:id>", methods=["POST"])
+def delete_med(medicine, id):
+    med_db = root.child("Medicine/" + medicine + "/" + id)
+    med_db.delete()
+    flash("Medicine has been removed", "success")
+
+    return redirect(url_for("render_patient_info_editor"))
 
 
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
