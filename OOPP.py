@@ -483,14 +483,14 @@ def render_patient_info_editor():
         pat_form = Edit_Patient(formpat["name"], formpat["illness"], formpat["patientdesc"], formpat["medicinedesc"], formpat["med1"], formpat["med2"], formpat["med3"],
                                 formpat["time"], formpat["image_name"], formpat["ward"])
 
-            form.illness.data = pat_form.get_illness()
-            form.patientdesc.data = pat_form.get_patientdesc()
-            form.medicinedesc.data = pat_form.get_medicinedesc()
-            form.med1.data = pat_form.get_med1()
-            form.med2.data = pat_form.get_med2()
-            form.med3.data = pat_form.get_med3()
-            form.ward.data = pat_form.get_ward()
-            form.days.data = pat_form.get_days()
+        form.illness.data = pat_form.get_illness()
+        form.patientdesc.data = pat_form.get_patientdesc()
+        form.medicinedesc.data = pat_form.get_medicinedesc()
+        form.med1.data = pat_form.get_med1()
+        form.med2.data = pat_form.get_med2()
+        form.med3.data = pat_form.get_med3()
+        form.ward.data = pat_form.get_ward()
+        form.days.data = pat_form.get_days()
 
     return render_template('patient_info_editor.html', form=form, something=hello)
 
@@ -724,37 +724,6 @@ def render_menu():
     return render_template('menu.html', form=form)
 
 
-# @app.route('/update_order/<string:id>/', methods=['GET', 'POST'])
-# def update_order(id):
-#     form = FoodOrderForm(request.form)
-#     price = 0
-#     if request.method == 'POST' and form.validate():
-#         if form.foodname.data == 'Chicken':
-#             price = 5
-#         elif form.foodname.data == 'Fish' or 'Pork':
-#             price = 6
-#         elif form.foodname.data == 'Beef':
-#             price = 7
-#         neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
-#         neworder_db = root.child('Food_Order/'+id)
-#         neworder_db.push({
-#             'foodname': neworder.get_foodname(),
-#             'patientname': neworder.get_patientname(),
-#             'quantity': neworder.get_quantity(),
-#             'price': neworder.get_price(),
-#         })
-#         flash('Updated Successfully!')
-#         return render_template('nursecallpage.html', order=form)
-#         #return redirect(url_for("render_nurse"))
-#     else:
-#         url = 'Food_Order/' + id
-#         eachorder = root.child(url).get()
-#         neworder = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['quantity'],eachorder['price'])
-#         neworder.set_foodid(id)
-#         form.foodname.data = neworder.get_foodname()
-#         form.patientname.data = neworder.get_patientname()
-#         form.qty.data = neworder.get_quantity()
-#     return render_template('nursecallpage.html',order=form, nurse = "",orders="")
 
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
