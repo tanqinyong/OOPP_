@@ -54,7 +54,7 @@ class PatientLogin(Form):
 
 # Nurse Call Page
 class NurseCallForm(Form):
-    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
+    problem = SelectMultipleField("", choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
     submit = SubmitField('Enter')
 
 
@@ -678,7 +678,7 @@ def render_nurse():
         #     to="+12316851234",
         #     from_="+15555555555",
         #     body="Hello there!")
-        # return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
+        return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
 
 
 

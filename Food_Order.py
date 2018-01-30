@@ -1,9 +1,8 @@
 class FoodOrder:
-    def __init__(self, foodname, patientname, quantity):
+    def __init__(self, foodname):
         self.__food_id = ""
         self.__foodname = foodname
-        self.__patientname = patientname
-        self.__quantity = quantity
+
         self.__price = 0
 
     # Accessor methods
@@ -11,8 +10,6 @@ class FoodOrder:
     def get_food_id(self):
         return self.__foodid
 
-    def get_patientname(self):
-        return self.__patientname
 
     def get_foodname(self):
         return self.__foodname
