@@ -102,6 +102,8 @@ td:hover  {# Hover on mobile? Design flaw! #} {
             breathingcount = 1;
         }
     }
+    window.onload(document.getElementById("callForm").reset());
+
     </script>
 
     {% from "includes/_formhelper.html" import render_field %}
@@ -142,13 +144,13 @@ td:hover  {# Hover on mobile? Design flaw! #} {
       <p> Your online guardian angel.</p>
       </div>
       <!-- nurse call form -->
-      <form method="POST" action="/nursecallpage/" style="margin-top:40px">
+      <form method="POST" action="/nursecallpage/" style="margin-top:40px" id="callForm">
       <div id="schedule" class="container-fluid text-center col-sm-6" style="padding:0;" >
                 <table width="100%" align="center" >
                     <tr>
                         <th class="toprow">Symptoms</th>
                         <th class="toprow">Pictures</th>
-                        <th class="toprow" rowspan="1"> Selections </th>
+                        <th class="toprow" rowspan="7"> Previous Selection: {{  nurse.problem.data  }} </th>
 
                     </tr>
 
@@ -157,7 +159,6 @@ td:hover  {# Hover on mobile? Design flaw! #} {
                     <tr>
                         <th style="text-align:center;">Heart</th>
                         <td id="heart" onclick="highlightheart(this.id)"><label for="problem-0" style="height:100%;width:100%"><img src="http://allan-kelli.com/br/wp-content/uploads/sites/2/2016/01/cropped-heart.png" style="height:100px;width:100px"/></label></td>
-                        <td id="cselections" rowspan="3"> Current Selection: </td>
                     </tr>
 
                     <tr>
@@ -173,7 +174,6 @@ td:hover  {# Hover on mobile? Design flaw! #} {
                     <tr>
                         <th style="text-align:center;">Stomach</th>
                         <td id="stomach" onclick="highlightstomach(this.id)"><label for="problem-3" style="height:100%;width:100%"><img src="https://png.icons8.com/metro/540/stomach.png" style="height:100px;width:100px"/></label></td>
-                        <td id="pselections" rowspan="3"> Previous Selection: {{  nurse.problem.data  }}</td>
                     </tr>
 
                     <tr>
@@ -253,7 +253,7 @@ td:hover  {# Hover on mobile? Design flaw! #} {
     </div>
 
     <div class="col-md-3">
-        <button class="button-menu" style="vertical-align:middle;"><span> <h3> Call us! </h3> </span></button>
+        <button class="button-menu" style="vertical-align:middle;" onclick=""><span> <h3> Call us! </h3> </span></button>
     </div>
     </div>
 </div>

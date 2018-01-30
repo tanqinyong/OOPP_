@@ -13,6 +13,16 @@ from Hospital import Hospital, Edit_Patient, Staff, Admin_Work, NurseCall
 # from Admin import Staff, Patient
 from trainee_notes import comment
 
+# TWILIO
+# /usr/bin/env python
+# Download the twilio-python library from twilio.com/docs/libraries/python
+from twilio.rest import Client
+# Find these values at https://twilio.com/user/account
+account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
+auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
+client = Client(account_sid, auth_token)
+
+
 UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 # Database shit
@@ -225,6 +235,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
+            client.api.account.messages.create(
+                to="+6592211065",
+                from_="+18636927542",
+                body="Your user is: {} and password: {}".format(username,password))
 
         elif admin_form.type.data == 'Patient':
             username = 'P' + str(random.randint(10000, 99999))
@@ -296,6 +310,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
+            client.api.account.messages.create(
+                to="+6592211065",
+                from_="+18636927542",
+                body="Your user is: {} and password: {}".format(username,password))
 
     return render_template('Admin.html',form=admin_form)
 
@@ -481,7 +499,7 @@ def render_patient_info_editor():
 
         formpat = root.child("patient_info/" + session["patient_url"]).get()
         pat_form = Edit_Patient(formpat["name"], formpat["illness"], formpat["patientdesc"], formpat["medicinedesc"], formpat["med1"], formpat["med2"], formpat["med3"],
-                                formpat["time"], formpat["image_name"], formpat["ward"])
+                                formpat["time"], formpat["image_name"], formpat["ward"], formpat["days"])
 
         form.illness.data = pat_form.get_illness()
         form.patientdesc.data = pat_form.get_patientdesc()
@@ -667,7 +685,14 @@ def render_nurse():
                'id': newcall.get_user_id()
              })
             flash('A nurse will attend to you shortly.','success')
-        return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
+
+        # FOOD ORDER
+        # client.api.account.messages.create(
+        #     to="+12316851234",
+        #     from_="+15555555555",
+        #     body="Hello there!")
+        # return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
+
 
 
 # @app.route('/login/', methods=['GET', 'POST'])

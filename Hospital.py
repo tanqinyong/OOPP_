@@ -17,7 +17,7 @@ class Hospital():
 # This is for Patients!
 class Admin_Work(Hospital):
     def __init__(self, name, nric, dob, email, address, gender, occupation, income, bloodtype, race, phone_no, emergency_contact_no,
-                 emergency_contact_address, emergency_contact_relationship, maritalstatus, username, password, image_name, ward):
+                 emergency_contact_address, emergency_contact_relationship, maritalstatus, username, password, image_name):
         super().__init__(name)
         self.__nric = nric
         self.__dob = dob
@@ -36,7 +36,7 @@ class Admin_Work(Hospital):
         self.__username = username
         self.__password = password
         self.__image_name = image_name
-        self.__ward = ward
+
 
     def get_ward(self):
         return self.__ward
