@@ -320,8 +320,43 @@ def render_admin():
 
     return render_template('Admin.html',form=admin_form)
 
+@app.route("/med_time/<patientid>/<medid>", methods=["POST"])
+def med_time(patientid, medid):
+    duration = datetime.datetime.now() + timedelta(seconds=10)
+    med_db2 = root.child("Medicine/" + patientid + "/" + medid).get()
+    medicine3 = Medicine(med_db2["medName"], med_db2["medDesc"], med_db2["medDosage"], med_db2["sideEffect"], med_db2["medTime"])
+    medicine3.set_med_id(medid)
+    name = medicine3.get_medName()
+    desc = medicine3.get_medDesc()
+    dosage = medicine3.get_medDosage()
+    side = medicine3.get_sideEffect()
+    newthing = session["user_id"]
+    # def startTime():
+    #     session[patientid + "_" + medid] = True
+    # def endTime():
+    #     session.pop(patientid + "_" + medid, None)
 
-@app.route('/patient_info/<string:id>', methods=["GET"])
+    def countDown():
+        range = duration - datetime.datetime.now()
+        secondsDiff = range.total_seconds()
+        root.child("Medicine/" + patientid + "/" + medid).set({
+            "medName": name,
+            "medDesc": desc,
+            "medDosage": dosage,
+            "sideEffect": side,
+            "newthing": newthing,
+            "medTime":("%02.f" % secondsDiff)
+        })
+        if secondsDiff > 0.5:
+            Timer(1, countDown).start() #every 1sec then update the firebase (should increase time to not flood db)
+        else:
+            print("End")
+
+    countDown()
+
+    return redirect(url_for("render_patient_info", id=session["patient_url"]))
+
+@app.route('/patient_info/<string:id>', methods=["GET", "POST"])
 def render_patient_info(id):
     url = "patient_info/" + id
     eachpat = root.child(url).get()
@@ -340,7 +375,7 @@ def render_patient_info(id):
             list.append(infos)
         for med in medicine:
             med1 = medicine[med]
-            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"])
+            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"], med1["medTime"])
             med2.set_med_id(med)
             medList.append(med2)
     except TypeError:
@@ -363,13 +398,15 @@ def render_patient_info_editor():
         medDesc = medform.medDesc.data
         medDosage = medform.medDosage.data
         sideEffect = medform.sideEffect.data
-        medicine = Medicine(medName, medDesc, medDosage, sideEffect)
+        medTime = ""
+        medicine = Medicine(medName, medDesc, medDosage, sideEffect, medTime)
         med_db = root.child("Medicine/" + session["user_id"])
         med_db.push({
             "medName": medicine.get_medName(),
             "medDesc": medicine.get_medDesc(),
             "medDosage": medicine.get_medDosage(),
             "sideEffect": medicine.get_sideEffect(),
+            "medTime": 0,
             "newthing": session["user_id"] #just in case
         })
 
@@ -504,7 +541,7 @@ def render_patient_info_editor():
             if len(med_db1) > 0:
                 for med in med_db1:
                     med3 = med_db1[med]
-                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"])
+                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"], med3["medTime"])
                     med4.set_med_id(med)
                     medList2.append(med4)
         except:
