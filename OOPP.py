@@ -250,7 +250,6 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
-            ward = admin_form.ward.data
 
             # check if the post request has the file part
             if 'file' not in request.files:
@@ -270,7 +269,7 @@ def render_admin():
 
             new_patient = Admin_Work(name, nric, dob, email, address, gender, occupation, income, bloodtype, race,
                                      phone_no, emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                     maritalstatus, username, password, image_name, ward)
+                                     maritalstatus, username, password, image_name)
 
             new_patient_db = root.child('Patient')
             new_patient_db.push({
@@ -292,7 +291,6 @@ def render_admin():
                 'username': new_patient.get_username(),
                 'password': new_patient.get_password(),
                 "image_name": new_patient.get_image_name(),
-                "ward": new_patient.get_ward()
             })
             hospital_admin = root.child("Patient").get()
             for data in hospital_admin:
@@ -302,7 +300,7 @@ def render_admin():
                                    datainfo["race"], datainfo["phone_no"], datainfo["emergency_contact_no"],
                                    datainfo["emergency_contact_address"], datainfo["emergency_contact_relationship"],
                                    datainfo["maritalstatus"], datainfo["username"], datainfo["password"],
-                                   datainfo["image_name"], datainfo["ward"])
+                                   datainfo["image_name"])
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
@@ -549,7 +547,7 @@ def render_patient_info_editor():
 
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
 def render_staff_profile(id):
-    id = 'S91719'
+    id = 'S61440'
     url = "Staff/" + id
     print(url)
     eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
@@ -560,8 +558,7 @@ def render_staff_profile(id):
         print(k, v)
         # print(v['username'])
         # print(v['password'])
-        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"],
-                   v["phone_no"], v["email"], v["address"])
+        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"], v["phone_no"], v["email"], v["address"], v['image_name'], v['password'])
 
     # staff.set_patient_id(id)
     # form = AdminForm(request.form)

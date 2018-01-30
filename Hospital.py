@@ -197,9 +197,10 @@ class Edit_Patient(Hospital):
 
 
 # This is for staff
-class Staff(Hospital):
+class Staff:
     def __init__(self, name, nric, username, password, image_name, ward, dob, email, address, gender, phone_no):
-        super().__init__(name)
+        # super().__init__(name, nric, username, password, image_name, ward, dob, email, address, gender, phone_no)
+        self.__name = name
         self.__username = username
         self.__password = password
         self.__nric = nric
@@ -210,6 +211,12 @@ class Staff(Hospital):
         self.__address = address
         self.__gender = gender
         self.__phone_no = phone_no
+
+    def get_name(self):
+        return self.__name
+
+    def set_name(self, name):
+        self.__name = name
 
     def get_nric(self):
         return self.__nric
