@@ -113,6 +113,7 @@ class AdminForm(Form):
     emergency_contact_relationship = StringField("Emergency Contact Relationship: ")
     maritalstatus = SelectField("Marital Status: ", choices=[("Married", "Married"), ("Single", "Single"), ("Divorced", "Divorced"), ("Widowed", "Widowed")], default="")
     image_name = FileField("Patient's Image: ") #not even used
+    ward = StringField("Ward: ")
 
 
 def allowed_file(filename):
@@ -184,6 +185,7 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
+            ward = admin_form.ward.data
 
             # check if the post request has the file part
             if 'file' not in request.files:
@@ -204,7 +206,7 @@ def render_admin():
             new_staff = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
                                      bloodtype, race, phone_no,
                                      emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                     maritalstatus, username, password, image_name)
+                                     maritalstatus, username, password, image_name, ward)
 
             new_staff_db = root.child('Staff')
             new_staff_db.push({
@@ -225,7 +227,8 @@ def render_admin():
                 'maritalstatus': new_staff.get_maritalstatus(),
                 'username': new_staff.get_username(),
                 'password': new_staff.get_password(),
-                'image_name': new_staff.get_image_name()
+                'image_name': new_staff.get_image_name(),
+                'ward': new_staff.get_ward()
             })
             hospital_admin = root.child("Staff").get()
             for data in hospital_admin:
@@ -235,7 +238,7 @@ def render_admin():
                                    datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
                                    datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
-                                   datainfo["username"], datainfo["password"], datainfo["image_name"])
+                                   datainfo["username"], datainfo["password"], datainfo["image_name"], datainfo["ward"])
                 setid.set_patient_id(data)
                 print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
@@ -621,10 +624,9 @@ def delete_med(medicine, id):
 
     return redirect(url_for("render_patient_info_editor"))
 
-
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
 def render_staff_profile(id):
-    id = 'S91719'
+    id = 'S61440'
     url = "Staff/" + id
     print(url)
     eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
@@ -635,8 +637,7 @@ def render_staff_profile(id):
         print(k, v)
         # print(v['username'])
         # print(v['password'])
-        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"],
-                   v["phone_no"], v["email"], v["address"])
+        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"], v["phone_no"], v["email"], v["address"], v['image_name'], v['password'])
 
     # staff.set_patient_id(id)
     # form = AdminForm(request.form)
@@ -690,9 +691,6 @@ def render_staff_profile(id):
     #     form.ward.data = staff_form.get_ward()
 
     return render_template('staff_profile.html', eachstaff = staff)
-
-
-
 
 @app.route('/trainee_notes/',methods=['POST',"GET"])
 def render_trainee_notes():
@@ -789,21 +787,24 @@ def logout():
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)
+    now_unformatted = datetime.datetime.now()
+    now = now_unformatted.strftime("%d%m%y")
+    days = int(session["current_date"][0:2]) - int(now[0:2])
+    print(days) # zero
     if request.method =='POST' and form.validate():
-            neworder = FoodOrder(form.foodname.data)
+            neworder = FoodOrder(form.foodname.data,days+1,session["user_id"])
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
-            # 'patientname': neworder.get_patientname(),
+            'day': neworder.get_days(),
+            'user_id':neworder.get_patient_id(),
             'foodname': neworder.get_foodname(),
-            # 'quantity': neworder.get_quantity(),
-            # 'price': neworder.get_price(),
             })
             flash('Success!','success')
             return redirect(url_for("render_nurse"))
 
     elif request.method == 'GET':
-        return render_template('menu.html', form=form)
-    return render_template('menu.html', form=form)
+        return render_template('menu.html', form=form, days=days+1)
+    return render_template('menu.html', form=form, days =days+1)
 
 
 
@@ -820,5 +821,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
