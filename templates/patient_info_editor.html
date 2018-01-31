@@ -97,38 +97,52 @@ td:hover
 
     <div id="menu1" class="tab-pane fade">
         <div id="medicine" class="container-fluid text-center">
+            <h2> Treatments & Medicine </h2>
+{#                <div class="col-sm-3">#}
+{#                  <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>#}
+{#                </div>#}
+            <table align="center">
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Description</th>
+                        <th>Dosage (ml)</th>
+                        <th>Side Effect</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for med in medicine2 %}
+                    <tr>
+                        <td>{{ med.get_medName() }}</td>
+                        <td>{{ med.get_medDesc() }}</td>
+                        <td>{{ med.get_medDosage() }}</td>
+                        <td>{{ med.get_sideEffect() }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_med', medicine=session["user_id"], id=med.get_med_id())}}" method="POST">
+                                <input type="submit" value="&times;" class="btn btn-danger" onclick="return confirm('Remove this Medicine Field?');">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
             <form method="POST" action="">
-                <h2> Treatments & Medicine </h2>
-                <h4> Possible treatments and medicine for your diagnosis. </h4>
-                <h2> Possible medicines: </h2>
-
-
-                <div class="col-sm-3">
-                  <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>
+                <div class="form-group">
+                    {{  render_field(medform.medName, class="form-control") }}
                 </div>
-
-                <div class="col-sm-6">
-                    <div class="form-group">
-                      {{ render_field(medform.medDesc, class="form-control", cols="5", rows="10") }}
-                    </div>
+                <div class="form-group">
+                    <span>{{  render_field(medform.medDosage, class="form-control") }}ml</span>
                 </div>
-
-                <div class="col-sm-3">
-                    <div id="meds">
-                      <div class="form-group">
-                        {{  render_field(medform.medName, class="form-control") }}
-                      </div>
-                      <div class="form-group">
-                        {{  render_field(medform.medDosage, class="form-control") }}
-                      </div>
-                      <div class="form-group">
-                        {{  render_field(medform.sideEffect, class="form-control") }}
-                      </div>
-                    </div>
-                  <button class="btn btn-primary" type="submit">Add Medicine</button>
-                    {{ medform.submitMed }}
+                <div class="form-group">
+                    {{  render_field(medform.sideEffect, class="form-control") }}
                 </div>
-
+                <div class="form-group">
+                    {{ render_field(medform.medDesc, class="form-control", cols="5", rows="10") }}
+                </div>
+              <button class="btn btn-primary" type="submit">Add Medicine</button>
+                {{ medform.submitMed }}
             </form>
         </div>
     </div>
