@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField, FileField, IntegerField
 from werkzeug.utils import secure_filename
 import random, datetime, os
+from datetime import timedelta
+from threading import Timer
 now = datetime.datetime.now()
 print(now.strftime("%d/%m/%Y %H:%M"))
 # Classes and shit
@@ -12,6 +14,16 @@ from Food_Order import FoodOrder
 from Hospital import *
 # from Admin import Staff, Patient
 from trainee_notes import comment
+
+# TWILIO
+# /usr/bin/env python
+# Download the twilio-python library from twilio.com/docs/libraries/python
+# from twilio.rest import Client
+# # Find these values at https://twilio.com/user/account
+# account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
+# auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
+# client = Client(account_sid, auth_token)
+
 
 UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -44,7 +56,7 @@ class PatientLogin(Form):
 
 # Nurse Call Page
 class NurseCallForm(Form):
-    problem = SelectMultipleField('Symptoms', choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
+    problem = SelectMultipleField("", choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
     submit = SubmitField('Enter')
 
 
@@ -229,6 +241,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
+            # client.api.account.messages.create(
+            #     to="+6592211065",
+            #     from_="+18636927542",
+            #     body="Your user is: {} and password: {}".format(username,password))
 
         elif admin_form.type.data == 'Patient':
             username = 'P' + str(random.randint(10000, 99999))
@@ -300,11 +316,50 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
+            # client.api.account.messages.create(
+            #     to="+6592211065",
+            #     from_="+18636927542",
+            #     body="Your user is: {} and password: {}".format(username,password))
 
     return render_template('Admin.html',form=admin_form)
 
+@app.route("/med_time/<patientid>/<medid>", methods=["POST"])
+def med_time(patientid, medid):
+    duration = datetime.datetime.now() + timedelta(seconds=10)
+    med_db2 = root.child("Medicine/" + patientid + "/" + medid).get()
+    medicine3 = Medicine(med_db2["medName"], med_db2["medDesc"], med_db2["medDosage"], med_db2["sideEffect"], med_db2["medTime"])
+    medicine3.set_med_id(medid)
+    name = medicine3.get_medName()
+    desc = medicine3.get_medDesc()
+    dosage = medicine3.get_medDosage()
+    side = medicine3.get_sideEffect()
+    newthing = session["user_id"]
+    # def startTime():
+    #     session[patientid + "_" + medid] = True
+    # def endTime():
+    #     session.pop(patientid + "_" + medid, None)
 
-@app.route('/patient_info/<string:id>', methods=["GET"])
+    def countDown():
+        range = duration - datetime.datetime.now()
+        secondsDiff = range.total_seconds()
+        root.child("Medicine/" + patientid + "/" + medid).set({
+            "medName": name,
+            "medDesc": desc,
+            "medDosage": dosage,
+            "sideEffect": side,
+            "newthing": newthing,
+            "medTime":("%02.f" % secondsDiff)
+        })
+        if secondsDiff > 0.5:
+            Timer(1, countDown).start() #every 1sec then update the firebase (should increase time to not flood db)
+        else:
+            print("End")
+
+    countDown()
+
+    return redirect(url_for("render_patient_info", id=session["patient_url"]))
+
+@app.route('/patient_info/<string:id>', methods=["GET", "POST"])
 def render_patient_info(id):
     url = "patient_info/" + id
     eachpat = root.child(url).get()
@@ -323,7 +378,7 @@ def render_patient_info(id):
             list.append(infos)
         for med in medicine:
             med1 = medicine[med]
-            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"])
+            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"], med1["medTime"])
             med2.set_med_id(med)
             medList.append(med2)
     except TypeError:
@@ -346,13 +401,15 @@ def render_patient_info_editor():
         medDesc = medform.medDesc.data
         medDosage = medform.medDosage.data
         sideEffect = medform.sideEffect.data
-        medicine = Medicine(medName, medDesc, medDosage, sideEffect)
+        medTime = ""
+        medicine = Medicine(medName, medDesc, medDosage, sideEffect, medTime)
         med_db = root.child("Medicine/" + session["user_id"])
         med_db.push({
             "medName": medicine.get_medName(),
             "medDesc": medicine.get_medDesc(),
             "medDosage": medicine.get_medDosage(),
             "sideEffect": medicine.get_sideEffect(),
+            "medTime": 0,
             "newthing": session["user_id"] #just in case
         })
 
@@ -481,8 +538,19 @@ def render_patient_info_editor():
             form.illness.data = pat_form.get_illness()
             form.patientdesc.data = pat_form.get_patientdesc()
             form.ward.data = pat_form.get_ward()
+        try:
+            med_db1 = root.child("Medicine/" + session["user_id"]).get()
+            medList2 = []
+            if len(med_db1) > 0:
+                for med in med_db1:
+                    med3 = med_db1[med]
+                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"], med3["medTime"])
+                    med4.set_med_id(med)
+                    medList2.append(med4)
+        except:
+            pass
 
-    return render_template('patient_info_editor.html', form=form, data=data, medform=medform)
+    return render_template('patient_info_editor.html', form=form, data=data, medform=medform, medicine2=medList2)
 
 # @app.route("/patient_edit/<string:id>/", methods=["GET", "POST"])
 # def update_patient(id):
@@ -528,13 +596,85 @@ def render_patient_info_editor():
 #     return render_template("patient_edit.html", form=form)
 #
 #
-# @app.route("/patient_delete/<string:id>", methods=["POST"])
-# def delete_patient(id):
-#     pat_db = root.child("patient_info/" + id)
-#     pat_db.delete()
-#     flash("Patient's information has been delete", "success")
-#
-#     return redirect(url_for("render_patient_info"))
+@app.route("/delete_med/<medicine>/<string:id>", methods=["POST"])
+def delete_med(medicine, id):
+    med_db = root.child("Medicine/" + medicine + "/" + id)
+    med_db.delete()
+    flash("Medicine has been removed", "success")
+
+    return redirect(url_for("render_patient_info_editor"))
+
+
+@app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
+def render_staff_profile(id):
+    id = 'S91719'
+    url = "Staff/" + id
+    print(url)
+    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
+
+    # print(eachstaff)
+
+    for k, v in eachstaff.items():
+        print(k, v)
+        # print(v['username'])
+        # print(v['password'])
+        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"],
+                   v["phone_no"], v["email"], v["address"])
+
+    # staff.set_patient_id(id)
+    # form = AdminForm(request.form)
+    # if request.method == 'POST' and form.validate():
+    #     name = form.name.data  # redundant
+    #     gender = form.gender.data
+    #     nric = form.nric.data
+    #     dob = form.dob.data
+    #     username = form.username.data
+    #     phone_no = form.phone_no.data
+    #     email = form.email.data
+    #     address = form.address.data
+    #     ward = form.ward.data
+    #     okay = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
+    #     image_name = ""
+    #     print(session["user_id"])
+    #     for key, val in okay.items():
+    #         if session["user_id"] == val['username']:
+    #             staff_name = val["name"]
+    #             img_name = val["image_name"]
+    #         else:
+    #             staff_name = name
+    #     st = Staff(name, gender, nric, dob, username, phone_no, email, address, image_name, ward)
+    # else:
+    #     ok = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
+    #     for key, val in ok.items():
+    #         if session["user_id"] == val['username']:
+    #             session["staff_admin_info"] = key
+    #             # pat_name = val["name"]
+    #     # form.name.data = pat_name
+    #     datainfo = root.child("Staff/" + session["staff_admin_info"]).get()
+    #     data = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"],
+    #                        datainfo["gender"], datainfo["occupation"],
+    #                        datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
+    #                        datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
+    #                        datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
+    #                        datainfo["password"], datainfo["image_name"])
+    #
+    #     formstaff = root.child("staff_ino/" + session["staff_url"]).get()
+    #     staff_form = Edit_Patient(formstaff["name"], formstaff["illness"], formstaff["patientdesc"], formstaff["medicinedesc"],
+    #                               formstaff["med1"], formstaff["med2"], formstaff["med3"],
+    #                               formstaff["time"], formstaff["image_name"], formstaff["ward"])
+    #
+    #     form.gender.data = staff_form.get_gender()
+    #     form.nric.data = staff_form.get_nric()
+    #     form.dob.data = staff_form.get_dob()
+    #     form.username.data = staff_form.get_username()
+    #     form.phone_no.data = staff_form.get_phone_no()
+    #     form.email.data = staff_form.get_email()
+    #     form.address.data = staff_form.get_address()
+    #     form.ward.data = staff_form.get_ward()
+
+    return render_template('staff_profile.html', eachstaff = staff)
+
+
 
 
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
@@ -642,7 +782,7 @@ def render_nurse():
         list = []
         for food_id in Food_Order:
             eachorder = Food_Order[food_id]
-            order = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['price'])
+            order = FoodOrder(eachorder['foodname'])
             order.set_foodid(food_id)
             list.append(order)
 
@@ -656,7 +796,14 @@ def render_nurse():
                'id': newcall.get_user_id()
              })
             flash('A nurse will attend to you shortly.','success')
+
+        # FOOD ORDER
+        # client.api.account.messages.create(
+        #     to="+12316851234",
+        #     from_="+15555555555",
+        #     body="Hello there!")
         return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
+
 
 
 # @app.route('/login/', methods=['GET', 'POST'])
@@ -696,54 +843,26 @@ def logout():
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)
+    now_unformatted = datetime.datetime.now()
+    now = now_unformatted.strftime("%d%m%y")
+    days = int(session["current_date"][0:2]) - int(now[0:2])
+    print(days) # zero
     if request.method =='POST' and form.validate():
-            neworder = FoodOrder(form.foodname.data,form.patientname.data,form.qty.data)
+            neworder = FoodOrder(form.foodname.data,days+1,session["user_id"])
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
-            'patientname': neworder.get_patientname(),
+            'day': neworder.get_days(),
+            'user_id':neworder.get_patient_id(),
             'foodname': neworder.get_foodname(),
-            'quantity': neworder.get_quantity(),
-            'price': neworder.get_price(),
             })
             flash('Success!','success')
             return redirect(url_for("render_nurse"))
 
     elif request.method == 'GET':
-        return render_template('menu.html', form=form)
-    return render_template('menu.html', form=form)
+        return render_template('menu.html', form=form, days=days+1)
+    return render_template('menu.html', form=form, days =days+1)
 
 
-# @app.route('/update_order/<string:id>/', methods=['GET', 'POST'])
-# def update_order(id):
-#     form = FoodOrderForm(request.form)
-#     price = 0
-#     if request.method == 'POST' and form.validate():
-#         if form.foodname.data == 'Chicken':
-#             price = 5
-#         elif form.foodname.data == 'Fish' or 'Pork':
-#             price = 6
-#         elif form.foodname.data == 'Beef':
-#             price = 7
-#         neworder = FoodOrder(form.foodname.data, form.patientname.data, form.qty.data, price)
-#         neworder_db = root.child('Food_Order/'+id)
-#         neworder_db.push({
-#             'foodname': neworder.get_foodname(),
-#             'patientname': neworder.get_patientname(),
-#             'quantity': neworder.get_quantity(),
-#             'price': neworder.get_price(),
-#         })
-#         flash('Updated Successfully!')
-#         return render_template('nursecallpage.html', order=form)
-#         #return redirect(url_for("render_nurse"))
-#     else:
-#         url = 'Food_Order/' + id
-#         eachorder = root.child(url).get()
-#         neworder = FoodOrder(eachorder['foodname'],eachorder['patientname'],eachorder['quantity'],eachorder['price'])
-#         neworder.set_foodid(id)
-#         form.foodname.data = neworder.get_foodname()
-#         form.patientname.data = neworder.get_patientname()
-#         form.qty.data = neworder.get_quantity()
-#     return render_template('nursecallpage.html',order=form, nurse = "",orders="")
 
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
@@ -757,6 +876,6 @@ def delete_order(id):
 
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
-    # app.debug = True
+    app.debug = True
     app.run(port=80)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it

@@ -90,13 +90,21 @@ td:hover
                 <th>Medicine Description</th>
                 <th>Medicine Dosage (ml)</th>
                 <th>Side Effect (if applicable)</th>
+                <th></th>
             </tr>
         {% for med in medicine %}
+            <span id="{{ med.get_med_id() }}" style="visibility:hidden">{{ med.get_medTime() }}</span>
             <tr>
                 <td>{{ med.get_medName() }}</td>
                 <td>{{ med.get_medDesc() }}</td>
                 <td>{{ med.get_medDosage() }}</td>
                 <td>{{ med.get_sideEffect() }}</td>
+                <td>
+                    <form action="{{ url_for('med_time', patientid=session["user_id"], medid=med.get_med_id())}}" method="POST">
+                        <input type="submit" value="Med Taken" class="btn btn-success">
+                    </form>
+                    <span id="{{ session['user_id'] }}{{ med.get_med_id() }}"></span>
+                </td>
             </tr>
         {% endfor %}
         </table>
@@ -187,7 +195,35 @@ td:hover
     {% endfor %}
     </div>
 </div>
+{#var variable_name=document.querySelectorAll('.classname');#}
+{#for(var i=0;i<variable_name.length;i++){#}
+{#variable_name[i].(--your option--);#}
+{#}#}
+{% for med in medicine %}
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded",docIsReady);
+    function docIsReady() {
+            console.log("{{ session["user_id"] }}");
+            var countdownTimer = document.getElementById("{{ med.get_med_id() }}").innerHTML;
+            console.log(countdownTimer);
 
+            var x = setInterval(function () {
+                var timer = countdownTimer--;
+                console.log(timer);
+                var hours = Math.floor((timer / (60 * 60)));
+                var minutes = Math.floor((timer / 60) % 60);
+                var seconds = Math.floor((timer % 60));
+                if (seconds < 10) {
+                    seconds = "0" + seconds;
+                }
+                document.getElementById("{{ session['user_id'] }}{{ med.get_med_id() }}").innerHTML =  hours + ":" + minutes + ":" + seconds;
+                if (timer <= 0) {
+                    clearInterval(x);
+                }
+        }, 1000);
+    }
+</script>
+{% endfor %}
 
 <script>
 $(document).ready(function(){

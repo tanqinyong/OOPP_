@@ -1,10 +1,105 @@
 {% extends 'layout.html' %}
 {% block body %}
     <style>
-    #symptoms {
-        list-style:none;
-    }
+        th,td
+{
+    margin: 0;
+    text-align: center;
+    border-collapse: collapse;
+    outline: 1px solid #e3e3e3;
+}
+
+td
+{
+    padding: 5px 10px;
+}
+
+th
+{
+    padding: 5px 10px;
+}
+
+td:hover
+{
+    cursor: pointer;
+    background: #f4511e;
+    color: white;
+}
+    .toprow {
+  padding:50px;
+}
     </style>
+    <script>
+    var heartcount = 1;
+    var extremitiescount = 1;
+    var headcount = 1;
+    var stomachcount = 1;
+    var nauseacount = 1;
+    var breathingcount = 1;
+    function highlightheart(qy) {
+        if (heartcount === 1) {
+            document.getElementById(qy).style.backgroundColor = "#F4511E";
+            heartcount = 0;
+        }
+        else if(heartcount === 0) {
+            document.getElementById(qy).style.backgroundColor = "#FFFFFF";
+            heartcount = 1;
+        }
+    }
+    function highlightextremities(qy) {
+        if (extremitiescount === 1) {
+            document.getElementById(qy).style.backgroundColor = "#F4511E";
+            extremitiescount = 0;
+        }
+        else if(extremitiescount === 0) {
+            document.getElementById(qy).style.backgroundColor = "#FFFFFF";
+            extremitiescount = 1;
+        }
+    }
+    function highlightheadache(qy) {
+        if (headcount === 1) {
+            document.getElementById(qy).style.backgroundColor = "#F4511E";
+            headcount = 0;
+        }
+        else if(headcount === 0) {
+            document.getElementById(qy).style.backgroundColor = "#FFFFFF";
+            headcount = 1;
+        }
+    }
+    function highlightstomach(qy) {
+        if (stomachcount === 1) {
+            document.getElementById(qy).style.backgroundColor = "#F4511E";
+            stomachcount = 0;
+        }
+        else if(stomachcount === 0) {
+            document.getElementById(qy).style.backgroundColor = "#FFFFFF";
+            stomachcount = 1;
+        }
+    }
+    function highlightnausea(qy) {
+        if (nauseacount === 1) {
+            document.getElementById(qy).style.backgroundColor = "#F4511E";
+            nauseacount = 0;
+        }
+        else if(nauseacount === 0) {
+            document.getElementById(qy).style.backgroundColor = "#FFFFFF";
+            nauseacount = 1;
+        }
+    }
+    function highlightbreathing(qy) {
+        if (breathingcount === 1) {
+            document.getElementById(qy).style.backgroundColor = "#F4511E";
+            breathingcount = 0;
+        }
+        else if(breathingcount === 0) {
+            document.getElementById(qy).style.backgroundColor = "#FFFFFF";
+            breathingcount = 1;
+        }
+    }
+    window.onload(document.getElementById("callForm").reset());
+
+    </script>
+
     {% from "includes/_formhelper.html" import render_field %}
     {% if nurse.errors %}
 <div class="alert alert-danger">
@@ -43,28 +138,55 @@
       <p> Your online guardian angel.</p>
       </div>
       <!-- nurse call form -->
-      <form method="POST" action="/nursecallpage/">
-      <div class="col-sm-2" style="text-align:left">
-              <div class="form-group">
-                  {{  render_field(nurse.problem,id="symptoms")}}
-                  {{ nurse.submit(class="btn-primary") }}
-              </div>
+      <form method="POST" action="/nursecallpage/" style="margin-top:40px" id="callForm">
+      <div id="schedule" class="container-fluid text-center col-sm-6" style="padding:0;" >
+                <table width="100%" align="center" >
+                    <tr>
+                        <th class="toprow">Symptoms</th>
+                        <th class="toprow">Pictures</th>
+                        <th class="toprow" rowspan="7"> Previous Selection: {{  nurse.problem.data  }} </th>
 
-      </div>
-          <div class="col-sm-7" style="text-align:left">
-              <ul style="list-style:none">
-                  <br>
-                 <li><img src="http://allan-kelli.com/br/wp-content/uploads/sites/2/2016/01/cropped-heart.png" style="height:35px;width:35px"/></li>
-                  <li><img src="http://www.anatomy-resources.com/human-anatomy/images/sh240-joints.gif" style="height:35px;width:35px"/></li>
-                  <li><img src="https://d30y9cdsu7xlg0.cloudfront.net/png/638283-200.png" style="height:35px;width:35px"/></li>
-                  <li><img src="https://png.icons8.com/metro/540/stomach.png" style="height:35px;width:35px"/></li>
-                  <li><img src="https://cdn0.iconfinder.com/data/icons/medical-5/450/spit-512.png" style="height:35px;width:35px"/></li>
-                  <li><img src="https://cdn0.iconfinder.com/data/icons/brain-activity-outline-style/150/smell-512.png" style="height:35px;width:35px"/></li>
-              </ul>
-          </div>
-      </form>
+                    </tr>
+
+
+                        {{  render_field(nurse.problem,id="symptoms",style="visibility:hidden;display:none;")}}
+                    <tr>
+                        <th style="text-align:center;">Heart</th>
+                        <td id="heart" onclick="highlightheart(this.id)"><label for="problem-0" style="height:100%;width:100%"><img src="http://allan-kelli.com/br/wp-content/uploads/sites/2/2016/01/cropped-heart.png" style="height:100px;width:100px"/></label></td>
+                    </tr>
+
+                    <tr>
+                        <th style="text-align:center;">Extremities</th>
+                        <td id="extremitites" onclick="highlightextremities(this.id)"><label for="problem-1" style="height:100%;width:100%"><img src="http://www.anatomy-resources.com/human-anatomy/images/sh240-joints.gif" style="height:100px;width:100px"/></label></td>
+                    </tr>
+
+                    <tr>
+                        <th style="text-align:center;">Headache</th>
+                        <td id="headache" onclick="highlightheadache(this.id)"><label for="problem-2" style="height:100%;width:100%"><img src="https://d30y9cdsu7xlg0.cloudfront.net/png/638283-200.png" style="height:100px;width:100px"/></label></td>
+                    </tr>
+
+                    <tr>
+                        <th style="text-align:center;">Stomach</th>
+                        <td id="stomach" onclick="highlightstomach(this.id)"><label for="problem-3" style="height:100%;width:100%"><img src="https://png.icons8.com/metro/540/stomach.png" style="height:100px;width:100px"/></label></td>
+                    </tr>
+
+                    <tr>
+                        <th style="text-align:center;">Nausea</th>
+                            <td id="nausea" onclick="highlightnausea(this.id)"><label for="problem-4" style="height:100%;width:100%"><img src="https://cdn0.iconfinder.com/data/icons/medical-5/450/spit-512.png" style="height:100px;width:100px"/></label></td>
+                    </tr>
+
+                    <tr>
+                        <th style="text-align:center;">Breathing</th>
+                            <td id="breathing" onclick="highlightbreathing(this.id)"><label for="problem-5" style="height:100%;width:100%"><img src="https://cdn0.iconfinder.com/data/icons/brain-activity-outline-style/150/smell-512.png" style="height:100px;width:100px"/></label></td>
+                    </tr>
+                </table>
+
 
   </div>
+                <div class="col-sm-3">
+                    {{ nurse.submit(class="button-menu",style="text-align:center;padding:0;margin-top:40px;margin-bottom: 80px;") }}
+              </div>
+</form>
 </div>
 
 <!-- Kitchen -->
@@ -90,8 +212,8 @@
             {% for order in orders %}
                 {% if order == orders[-1] %}
                     <p> Name: {{ order.get_foodname() }}</p>
-                    <p> Quantity: {{ order.get_price() }}</p>
-                    <p> Price: {{ order.get_quantity() }}</p>
+{#                    <p> Quantity: {{ order.get_price() }}</p>#}
+{#                    <p> Price: {{ order.get_quantity() }}</p>#}
 
 {#                    <a href="/update_order/{{order.get_food_id()}}" class="btn btn-warning">Update</a>#}
 
@@ -124,7 +246,7 @@
     </div>
 
     <div class="col-md-3">
-        <button class="button-menu" style="vertical-align:middle;"><span> <h3> Call us! </h3> </span></button>
+        <button class="button-menu" style="vertical-align:middle;" onclick=""><span> <h3> Call us! </h3> </span></button>
     </div>
     </div>
 </div>
