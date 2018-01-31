@@ -719,21 +719,24 @@ def logout():
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)
+    now_unformatted = datetime.datetime.now()
+    now = now_unformatted.strftime("%d%m%y")
+    days = int(session["current_date"][0:2]) - int(now[0:2])
+    print(days) # zero
     if request.method =='POST' and form.validate():
-            neworder = FoodOrder(form.foodname.data)
+            neworder = FoodOrder(form.foodname.data,days+1,session["user_id"])
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
-            # 'patientname': neworder.get_patientname(),
+            'day': neworder.get_days(),
+            'user_id':neworder.get_patient_id(),
             'foodname': neworder.get_foodname(),
-            # 'quantity': neworder.get_quantity(),
-            # 'price': neworder.get_price(),
             })
             flash('Success!','success')
             return redirect(url_for("render_nurse"))
 
     elif request.method == 'GET':
-        return render_template('menu.html', form=form)
-    return render_template('menu.html', form=form)
+        return render_template('menu.html', form=form, days=days+1)
+    return render_template('menu.html', form=form, days =days+1)
 
 
 
