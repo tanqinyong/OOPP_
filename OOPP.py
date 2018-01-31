@@ -81,6 +81,7 @@ class Patient_Medicine(Form):
     medDesc = TextAreaField("Medicine Description", [validators.DataRequired()])
     medDosage = IntegerField("Dosage")
     sideEffect = StringField("Side Effect")
+    medInterval = SelectField("Hours for patient to take med", choices=[("6","6"),("8","8"),("12","12")], default="")
     submitMed = SubmitField("submit")
 
 class Patient_Info(Form):
@@ -322,15 +323,17 @@ def render_admin():
 
 @app.route("/med_time/<patientid>/<medid>", methods=["POST"])
 def med_time(patientid, medid):
-    duration = datetime.datetime.now() + timedelta(seconds=10)
     med_db2 = root.child("Medicine/" + patientid + "/" + medid).get()
-    medicine3 = Medicine(med_db2["medName"], med_db2["medDesc"], med_db2["medDosage"], med_db2["sideEffect"], med_db2["medTime"])
+    medicine3 = Medicine(med_db2["medName"], med_db2["medDesc"], med_db2["medDosage"], med_db2["sideEffect"], med_db2["medTime"], med_db2["medInterval"])
     medicine3.set_med_id(medid)
     name = medicine3.get_medName()
     desc = medicine3.get_medDesc()
     dosage = medicine3.get_medDosage()
     side = medicine3.get_sideEffect()
+    medInterval = medicine3.get_medInterval()
+    x = int(medInterval)
     newthing = session["user_id"]
+    duration = datetime.datetime.now() + timedelta(hours=x)
     # def startTime():
     #     session[patientid + "_" + medid] = True
     # def endTime():
@@ -339,19 +342,25 @@ def med_time(patientid, medid):
     def countDown():
         range = duration - datetime.datetime.now()
         secondsDiff = range.total_seconds()
-        root.child("Medicine/" + patientid + "/" + medid).set({
-            "medName": name,
-            "medDesc": desc,
-            "medDosage": dosage,
-            "sideEffect": side,
-            "newthing": newthing,
-            "medTime":("%02.f" % secondsDiff)
-        })
-        if secondsDiff > 0.5:
-            Timer(1, countDown).start() #every 1sec then update the firebase (should increase time to not flood db)
-        else:
-            print("End")
-
+        try:
+            med_db3 = root.child("Medicine/" + patientid + "/" + medid).get()
+            if len(med_db3) > 0:
+                root.child("Medicine/" + patientid + "/" + medid).set({
+                    "medName": name,
+                    "medDesc": desc,
+                    "medDosage": dosage,
+                    "sideEffect": side,
+                    "newthing": newthing,
+                    "medTime":("%02.f" % secondsDiff),
+                    "medInterval": medInterval
+                })
+                countDownTime = Timer(1, countDown)
+                if secondsDiff > 0.5:
+                    countDownTime.start() #every 1sec then update the firebase (should increase time to not flood db)
+                else:
+                    print("End")
+        except TypeError:
+            print("Med Field Deleted")
     countDown()
 
     return redirect(url_for("render_patient_info", id=session["patient_url"]))
@@ -375,7 +384,7 @@ def render_patient_info(id):
             list.append(infos)
         for med in medicine:
             med1 = medicine[med]
-            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"], med1["medTime"])
+            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"], med1["medTime"], med1["medInterval"])
             med2.set_med_id(med)
             medList.append(med2)
     except TypeError:
@@ -399,7 +408,8 @@ def render_patient_info_editor():
         medDosage = medform.medDosage.data
         sideEffect = medform.sideEffect.data
         medTime = ""
-        medicine = Medicine(medName, medDesc, medDosage, sideEffect, medTime)
+        medInterval = medform.medInterval.data
+        medicine = Medicine(medName, medDesc, medDosage, sideEffect, medTime, medInterval)
         med_db = root.child("Medicine/" + session["user_id"])
         med_db.push({
             "medName": medicine.get_medName(),
@@ -407,6 +417,7 @@ def render_patient_info_editor():
             "medDosage": medicine.get_medDosage(),
             "sideEffect": medicine.get_sideEffect(),
             "medTime": 0,
+            "medInterval": medicine.get_medInterval(),
             "newthing": session["user_id"] #just in case
         })
 
@@ -514,6 +525,7 @@ def render_patient_info_editor():
         flash("Patient Information Successfully Updated.", "success")
         return redirect(url_for("render_patient_info", id=session["patient_url"]))
     else:
+        session.pop("add_med", None)
         pat_db8 = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
         for key5, val5 in pat_db8.items():
             if session["user_id"] == val5['username']:
@@ -541,7 +553,7 @@ def render_patient_info_editor():
             if len(med_db1) > 0:
                 for med in med_db1:
                     med3 = med_db1[med]
-                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"], med3["medTime"])
+                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"], med3["medTime"], med3["medInterval"])
                     med4.set_med_id(med)
                     medList2.append(med4)
         except:
@@ -597,6 +609,14 @@ def render_patient_info_editor():
 def delete_med(medicine, id):
     med_db = root.child("Medicine/" + medicine + "/" + id)
     med_db.delete()
+    med_db.delete()
+    med_db.delete()
+    med_db.delete()
+    med_db.delete()
+    #MULTIPLE DELETE IS INTENDED
+    #REASON BEING: COUNTDOWN() MIGHT SET A NEW 1 ALONG WHEN OLD ONE IS DELETED
+    #2 IS ENOUGH TO DELETE THE OTHER ONE THAT WAS SETTED
+    #BUT I HARDSTUCKED ON THAT LOGICAL ERROR SO I ADDED IN MORE
     flash("Medicine has been removed", "success")
 
     return redirect(url_for("render_patient_info_editor"))

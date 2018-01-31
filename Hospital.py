@@ -161,12 +161,13 @@ class Edit_Patient(Hospital):
         self.__patientdesc = patientdesc
 
 class Medicine:
-    def __init__(self, medName, medDesc, medDosage, sideEffect, medTime):
+    def __init__(self, medName, medDesc, medDosage, sideEffect, medTime, medInterval):
         self.__medName = medName
         self.__medDesc = medDesc
         self.__medDosage = medDosage
         self.__sideEffect = sideEffect
         self.__medTime = medTime
+        self.__medInterval = medInterval
         self.__med_id = ""
 
     def get_medName(self):
@@ -198,6 +199,12 @@ class Medicine:
 
     def set_medTime(self, medTime):
         self.__medTime = medTime
+
+    def get_medInterval(self):
+        return self.__medInterval
+
+    def set_medInterval(self, medInterval):
+        self.__medInterval = medInterval
 
     def get_med_id(self):
         return self.__med_id
