@@ -604,79 +604,6 @@ def delete_med(medicine, id):
 
     return redirect(url_for("render_patient_info_editor"))
 
-
-@app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
-def render_staff_profile(id):
-    id = 'S91719'
-    url = "Staff/" + id
-    print(url)
-    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
-
-    # print(eachstaff)
-
-    for k, v in eachstaff.items():
-        print(k, v)
-        # print(v['username'])
-        # print(v['password'])
-        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"],
-                   v["phone_no"], v["email"], v["address"])
-
-    # staff.set_patient_id(id)
-    # form = AdminForm(request.form)
-    # if request.method == 'POST' and form.validate():
-    #     name = form.name.data  # redundant
-    #     gender = form.gender.data
-    #     nric = form.nric.data
-    #     dob = form.dob.data
-    #     username = form.username.data
-    #     phone_no = form.phone_no.data
-    #     email = form.email.data
-    #     address = form.address.data
-    #     ward = form.ward.data
-    #     okay = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
-    #     image_name = ""
-    #     print(session["user_id"])
-    #     for key, val in okay.items():
-    #         if session["user_id"] == val['username']:
-    #             staff_name = val["name"]
-    #             img_name = val["image_name"]
-    #         else:
-    #             staff_name = name
-    #     st = Staff(name, gender, nric, dob, username, phone_no, email, address, image_name, ward)
-    # else:
-    #     ok = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
-    #     for key, val in ok.items():
-    #         if session["user_id"] == val['username']:
-    #             session["staff_admin_info"] = key
-    #             # pat_name = val["name"]
-    #     # form.name.data = pat_name
-    #     datainfo = root.child("Staff/" + session["staff_admin_info"]).get()
-    #     data = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"],
-    #                        datainfo["gender"], datainfo["occupation"],
-    #                        datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
-    #                        datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
-    #                        datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
-    #                        datainfo["password"], datainfo["image_name"])
-    #
-    #     formstaff = root.child("staff_ino/" + session["staff_url"]).get()
-    #     staff_form = Edit_Patient(formstaff["name"], formstaff["illness"], formstaff["patientdesc"], formstaff["medicinedesc"],
-    #                               formstaff["med1"], formstaff["med2"], formstaff["med3"],
-    #                               formstaff["time"], formstaff["image_name"], formstaff["ward"])
-    #
-    #     form.gender.data = staff_form.get_gender()
-    #     form.nric.data = staff_form.get_nric()
-    #     form.dob.data = staff_form.get_dob()
-    #     form.username.data = staff_form.get_username()
-    #     form.phone_no.data = staff_form.get_phone_no()
-    #     form.email.data = staff_form.get_email()
-    #     form.address.data = staff_form.get_address()
-    #     form.ward.data = staff_form.get_ward()
-
-    return render_template('staff_profile.html', eachstaff = staff)
-
-
-
-
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
 def render_staff_profile(id):
     id = 'S61440'
@@ -744,9 +671,6 @@ def render_staff_profile(id):
     #     form.ward.data = staff_form.get_ward()
 
     return render_template('staff_profile.html', eachstaff = staff)
-
-
-
 
 @app.route('/trainee_notes/',methods=['POST',"GET"])
 def render_trainee_notes():
@@ -877,5 +801,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
