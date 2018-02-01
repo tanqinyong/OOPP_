@@ -30,6 +30,8 @@ td:hover
 }
     </style>
     <script>
+
+    {# This is for the table & selections #}
     var heartcount = 1;
     var extremitiescount = 1;
     var headcount = 1;
@@ -96,7 +98,15 @@ td:hover
             breathingcount = 1;
         }
     }
-    window.onload(document.getElementById("callForm").reset());
+
+
+
+
+
+    {# This is to reset the damn form #}
+    $('#nurseSubmit').click(function(){
+        $('#nurseSubmit')[0].reset();
+    })
 
     </script>
 
@@ -123,24 +133,26 @@ td:hover
     </ul>
 </div>
 {% endif %}
-    <!-- Container (Days) -->
 
 
-    <!-- Container (Services Section)(medical attention) -->
+<!-- Nurse Call  -->
 <div id="about" class="container-fluid text-center">
   <h2>Medical attention</h2>
   <h4>What we offer</h4>
   <div class="row slideanim">
 
-      <div class="col-sm-3">
+      <!-- Cool Pic + Description -->
+      <div class="col-sm-3" style="margin-top:60px">
       <span class="glyphicon glyphicon-heart logo-small"></span>
       <h4>MEDICAL CARE</h4>
       <p> Your online guardian angel.</p>
       </div>
-      <!-- nurse call form -->
+
+      <!-- Nurse call form in table format -->
       <form method="POST" action="/nursecallpage/" style="margin-top:40px" id="callForm">
       <div id="schedule" class="container-fluid text-center col-sm-6" style="padding:0;" >
-                <table width="100%" align="center" >
+
+                <table width="100%" align="center" style="margin-bottom:15px">
                     <tr>
                         <th class="toprow">Symptoms</th>
                         <th class="toprow">Pictures</th>
@@ -182,12 +194,17 @@ td:hover
                 </table>
 
 
-  </div>
-                <div class="col-sm-3">
-                    {{ nurse.submit(class="button-menu",style="text-align:center;padding:0;margin-top:40px;margin-bottom: 80px;") }}
+      </div>
+              <!-- Submit Button -->
+              <div class="col-sm-3" id="nurseSubmit">
+                    {{ nurse.submit(class="button-menu",style="text-align:center;padding:0;margin-top:28px;margin-bottom: 80px;") }}
               </div>
-</form>
-</div>
+      </form>
+    </div>
+
+
+
+
 
 <!-- Kitchen -->
 <div id="kitchen" class="container-fluid text-center">
@@ -196,22 +213,26 @@ td:hover
     <h4> What we offer </h4>
     <div class="row slideanim">
 
+        <!-- Cool pic + Description -->
         <div class="col-sm-3">
         <span class="glyphicon glyphicon-cutlery logo-small"></span>
         <h4>KITCHEN</h4>
         <p> Delivering warm comfort food to your bedside 24/7. </p>
         </div>
 
+        <!-- middle section w/ button and pic -->
         <div class="col-sm-6">
             <a href="/menu/"><button class="button-menu" style="vertical-align:middle;"><span> <h3> Check out our menu! </h3></span></button></a>
             <img src="http://www.publication.sg/wp-content/uploads/2015/10/Kitchen-preparation-food.jpg" style="height:120px;border-radius:10px"/>
         </div>
 
+        <!-- Display option chosen + delete -->
         <div class="col-sm-3">
             <h3> Option chosen: </h3>
             {% for order in orders %}
                 {% if order == orders[-1] %}
                     <p> Name: {{ order.get_foodname() }}</p>
+
 {#                    <p> Quantity: {{ order.get_price() }}</p>#}
 {#                    <p> Price: {{ order.get_quantity() }}</p>#}
 
@@ -225,8 +246,13 @@ td:hover
             {% endfor %}
             <button type="button" class="btn btn-success" style="display:inline;width:80px;text-align:center;background-color: #f4511e;">Submit</button>
         </div>
+
     </div>
 </div>
+
+
+
+
 
 <!-- Housekeeping -->
 <div id="housekeeping" class="container-fluid text-center">
@@ -237,7 +263,7 @@ td:hover
     <div class="col-md-3">
         <span class="glyphicon glyphicon-home logo-small"></span>
         <h4>HOUSEKEEPING</h4>
-        <p> Lorem ipsum dolor sit amet... </p>
+        <p>  </p>
     </div>
 
     <div class="col-md-6"    >
