@@ -14,7 +14,6 @@ from Food_Order import FoodOrder
 from Hospital import *
 # from Admin import Staff, Patient
 
-
 # TWILIO
 # /usr/bin/env python
 # Download the twilio-python library from twilio.com/docs/libraries/python
@@ -691,27 +690,6 @@ def render_staff_profile(id):
     #     form.ward.data = staff_form.get_ward()
 
     return render_template('staff_profile.html', eachstaff = staff)
-
-@app.route('/trainee_notes/',methods=['POST',"GET"])
-def render_trainee_notes():
-    form = TraineeForm(request.form)
-    if request.method == "POST" and form.validate():
-        newcomment = comment(form.name.data,form.comment.data)
-        newcomment_db = root.child('comment')
-        newcomment_db.push ({
-            'name': newcomment.get_name(),
-            'comment':newcomment.get_comment()
-        })
-        flash('Comment posted successfully.', 'success')
-    comments = root.child('comment').get()
-    list = []
-    for commentid in comments:
-
-        eachcomment = comments[commentid]
-        thatcomment = comment(eachcomment['name'],eachcomment['comment'])
-        list.append(thatcomment)
-    return render_template('trainee_notes.html', comments=list,form=form)
-
 
 @app.route('/billing/')
 def render_billing():
