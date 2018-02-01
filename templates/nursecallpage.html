@@ -149,7 +149,7 @@ td:hover
                     </tr>
 
 
-                        {{  render_field(nurse.problem,id="symptoms",style="visibility:hidden;display:none;")}}
+                        {{  render_field(nurse.problem,id="symptoms",style="display:none;")}}
                     <tr>
                         <th style="text-align:center;">Heart</th>
                         <td id="heart" onclick="highlightheart(this.id)"><label for="problem-0" style="height:100%;width:100%"><img src="http://allan-kelli.com/br/wp-content/uploads/sites/2/2016/01/cropped-heart.png" style="height:100px;width:100px"/></label></td>
@@ -217,7 +217,7 @@ td:hover
 
 {#                    <a href="/update_order/{{order.get_food_id()}}" class="btn btn-warning">Update</a>#}
 
-                    <form action="{{url_for('delete_order', id=order.get_food_id())}}" method="post">
+                    <form action="{{url_for('delete_order', id=order.get_foodname())}}" method="post">
                         <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
                     </form>
 

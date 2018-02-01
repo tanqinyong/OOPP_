@@ -61,9 +61,12 @@ class NurseCallForm(Form):
 
 # Menu Page
 class FoodOrderForm(Form):
-    foodname = RadioField('Food Choices:', choices = [('Indian Cuisine','indian'),('Chinese Cuisine','chinese'),('Western Cuisine','western'),('International Cuisine','international')],default='international')
-    # patientname = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
-    # qty = SelectField('Qty', choices=[('1', '1'), ('2', '2'),('3','3'),('4','4'),('5','5')], default='')
+    foodname = RadioField('Food Choices:', choices = [('Indian Cuisine','Indian Cuisine'),('Malay Cuisine','Malay Cuisine'),('Chinese Cuisine','Chinese Cuisine'),('Western Cuisine','Western Cuisine'),('International Cuisine','International Cuisine')],default='international')
+    indian = RadioField('Indian Meals:', [validators.Optional()], default="", choices = [('Appam', 'Appam'), ('Prata w/ Chicken Curry', 'Prata w/ Chicken Curry'),('Nazi Briyani', 'Nazi Briyani')])
+    malay = RadioField('Malay Meals', [validators.Optional()] , default="", choices = [('Mee Rebus','Mee Rebus'),('Nazi Lemak','Nazi Lemak'),('Mee Siam','Mee Siam')])
+    chinese = RadioField('Chinese Meals', [validators.Optional()] , default="", choices = [('Chicken Rice','Chicken Rice'),('Shredded Chicken Porridge','Shredded Chicken Porridge'),('Handmade noodles','Handmade noodles')])
+    western = RadioField('Western Meals', [validators.Optional()] , default="", choices = [('Chicken Chop','Chicken Chop'),('Fish & Chips','Fish & Chips'),('Bolognese Spaghetti','Bolognese Spaghetti')])
+    international = RadioField('International Meals', [validators.Optional()] , default="", choices = [('Paella','Paella'),('Swedish Meatballs & Mashed Potatoes','Swedish Meatballs & Mashed Potatoes'),('Mediterranean Grilled Bass','Mediterranean Grilled Bass')])
     submit = SubmitField('Enter')
 
 
@@ -135,6 +138,8 @@ def render_login():
                     session['logged_in'] = True
                     session['db_id'] = key
                     session['user_id'] = username
+                    logindate = datetime.datetime.now()
+                    session["login_date"] = logindate.strftime("%d%m%y")
 
                     pat_url = root.child('patient_info').order_by_child("newthing").equal_to(session["user_id"]).get()
                     for pat, url in pat_url.items():
@@ -704,8 +709,8 @@ def render_nurse():
         list = []
         for food_id in Food_Order:
             eachorder = Food_Order[food_id]
-            order = FoodOrder(eachorder['foodname'])
-            order.set_foodid(food_id)
+            order = FoodOrder(eachorder['foodname'],eachorder['day'],eachorder['user_id'],eachorder['indian'],eachorder['malay'],eachorder['chinese'],eachorder['western'],eachorder['international'])
+            # order.set_foodid(food_id)
             list.append(order)
 
         # NURSE CALL
@@ -767,21 +772,27 @@ def render_menu():
     form = FoodOrderForm(request.form)
     now_unformatted = datetime.datetime.now()
     now = now_unformatted.strftime("%d%m%y")
-    days = int(session["current_date"][0:2]) - int(now[0:2])
+    days = int(session["login_date"][0:2]) - int(now[0:2])
     print(days) # zero
     if request.method =='POST' and form.validate():
-            neworder = FoodOrder(form.foodname.data,days+1,session["user_id"])
+            neworder = FoodOrder(form.foodname.data,days+1,session["user_id"],form.indian.data,form.malay.data,form.chinese.data,form.western.data,form.international.data)
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
             'day': neworder.get_days(),
             'user_id':neworder.get_patient_id(),
             'foodname': neworder.get_foodname(),
+            'indian':neworder.get_indian(),
+            'malay':neworder.get_malay(),
+            'chinese':neworder.get_chinese(),
+            'western':neworder.get_western(),
+            'international':neworder.get_international()
             })
             flash('Success!','success')
             return redirect(url_for("render_nurse"))
 
     elif request.method == 'GET':
         return render_template('menu.html', form=form, days=days+1)
+
     return render_template('menu.html', form=form, days =days+1)
 
 
