@@ -13,7 +13,7 @@ from Food_Order import FoodOrder
 # from Patient_Info import Edit_Patient
 from Hospital import *
 # from Admin import Staff, Patient
-from trainee_notes import comment
+
 
 # TWILIO
 # /usr/bin/env python
