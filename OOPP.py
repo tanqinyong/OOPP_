@@ -795,8 +795,9 @@ def render_menu():
 
     return render_template('menu.html', form=form, days =days+1)
 
-
-
+@app.route('/trainee_notes/',methods=['POST',"GET"])
+def render_trainee_notes():
+    return render_template('trainee_notes.html')
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
 def delete_order(id):
