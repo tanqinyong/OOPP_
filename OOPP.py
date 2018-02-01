@@ -13,7 +13,7 @@ from Food_Order import FoodOrder
 # from Patient_Info import Edit_Patient
 from Hospital import *
 # from Admin import Staff, Patient
-from trainee_notes import comment
+
 
 # TWILIO
 # /usr/bin/env python
@@ -84,6 +84,7 @@ class Patient_Medicine(Form):
     medDesc = TextAreaField("Medicine Description", [validators.DataRequired()])
     medDosage = IntegerField("Dosage")
     sideEffect = StringField("Side Effect")
+    medInterval = SelectField("Hours for patient to take med", choices=[("6","6"),("8","8"),("12","12")], default="")
     submitMed = SubmitField("submit")
 
 class Patient_Info(Form):
@@ -115,6 +116,7 @@ class AdminForm(Form):
     emergency_contact_relationship = StringField("Emergency Contact Relationship: ")
     maritalstatus = SelectField("Marital Status: ", choices=[("Married", "Married"), ("Single", "Single"), ("Divorced", "Divorced"), ("Widowed", "Widowed")], default="")
     image_name = FileField("Patient's Image: ") #not even used
+    ward = StringField("Ward: ")
 
 
 def allowed_file(filename):
@@ -188,6 +190,7 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
+            ward = admin_form.ward.data
 
             # check if the post request has the file part
             if 'file' not in request.files:
@@ -208,7 +211,7 @@ def render_admin():
             new_staff = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
                                      bloodtype, race, phone_no,
                                      emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                     maritalstatus, username, password, image_name)
+                                     maritalstatus, username, password, image_name, ward)
 
             new_staff_db = root.child('Staff')
             new_staff_db.push({
@@ -229,7 +232,8 @@ def render_admin():
                 'maritalstatus': new_staff.get_maritalstatus(),
                 'username': new_staff.get_username(),
                 'password': new_staff.get_password(),
-                'image_name': new_staff.get_image_name()
+                'image_name': new_staff.get_image_name(),
+                'ward': new_staff.get_ward()
             })
             hospital_admin = root.child("Staff").get()
             for data in hospital_admin:
@@ -239,7 +243,7 @@ def render_admin():
                                    datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
                                    datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
-                                   datainfo["username"], datainfo["password"], datainfo["image_name"])
+                                   datainfo["username"], datainfo["password"], datainfo["image_name"], datainfo["ward"])
                 setid.set_patient_id(data)
                 print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
@@ -327,15 +331,17 @@ def render_admin():
 
 @app.route("/med_time/<patientid>/<medid>", methods=["POST"])
 def med_time(patientid, medid):
-    duration = datetime.datetime.now() + timedelta(seconds=10)
     med_db2 = root.child("Medicine/" + patientid + "/" + medid).get()
-    medicine3 = Medicine(med_db2["medName"], med_db2["medDesc"], med_db2["medDosage"], med_db2["sideEffect"], med_db2["medTime"])
+    medicine3 = Medicine(med_db2["medName"], med_db2["medDesc"], med_db2["medDosage"], med_db2["sideEffect"], med_db2["medTime"], med_db2["medInterval"])
     medicine3.set_med_id(medid)
     name = medicine3.get_medName()
     desc = medicine3.get_medDesc()
     dosage = medicine3.get_medDosage()
     side = medicine3.get_sideEffect()
+    medInterval = medicine3.get_medInterval()
+    x = int(medInterval)
     newthing = session["user_id"]
+    duration = datetime.datetime.now() + timedelta(hours=x)
     # def startTime():
     #     session[patientid + "_" + medid] = True
     # def endTime():
@@ -344,19 +350,25 @@ def med_time(patientid, medid):
     def countDown():
         range = duration - datetime.datetime.now()
         secondsDiff = range.total_seconds()
-        root.child("Medicine/" + patientid + "/" + medid).set({
-            "medName": name,
-            "medDesc": desc,
-            "medDosage": dosage,
-            "sideEffect": side,
-            "newthing": newthing,
-            "medTime":("%02.f" % secondsDiff)
-        })
-        if secondsDiff > 0.5:
-            Timer(1, countDown).start() #every 1sec then update the firebase (should increase time to not flood db)
-        else:
-            print("End")
-
+        try:
+            med_db3 = root.child("Medicine/" + patientid + "/" + medid).get()
+            if len(med_db3) > 0:
+                root.child("Medicine/" + patientid + "/" + medid).set({
+                    "medName": name,
+                    "medDesc": desc,
+                    "medDosage": dosage,
+                    "sideEffect": side,
+                    "newthing": newthing,
+                    "medTime":("%02.f" % secondsDiff),
+                    "medInterval": medInterval
+                })
+                countDownTime = Timer(1, countDown)
+                if secondsDiff > 0.5:
+                    countDownTime.start() #every 1sec then update the firebase (should increase time to not flood db)
+                else:
+                    print("End")
+        except TypeError:
+            print("Med Field Deleted")
     countDown()
 
     return redirect(url_for("render_patient_info", id=session["patient_url"]))
@@ -380,7 +392,7 @@ def render_patient_info(id):
             list.append(infos)
         for med in medicine:
             med1 = medicine[med]
-            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"], med1["medTime"])
+            med2 = Medicine(med1["medName"], med1["medDesc"], med1["medDosage"], med1["sideEffect"], med1["medTime"], med1["medInterval"])
             med2.set_med_id(med)
             medList.append(med2)
     except TypeError:
@@ -404,7 +416,8 @@ def render_patient_info_editor():
         medDosage = medform.medDosage.data
         sideEffect = medform.sideEffect.data
         medTime = ""
-        medicine = Medicine(medName, medDesc, medDosage, sideEffect, medTime)
+        medInterval = medform.medInterval.data
+        medicine = Medicine(medName, medDesc, medDosage, sideEffect, medTime, medInterval)
         med_db = root.child("Medicine/" + session["user_id"])
         med_db.push({
             "medName": medicine.get_medName(),
@@ -412,6 +425,7 @@ def render_patient_info_editor():
             "medDosage": medicine.get_medDosage(),
             "sideEffect": medicine.get_sideEffect(),
             "medTime": 0,
+            "medInterval": medicine.get_medInterval(),
             "newthing": session["user_id"] #just in case
         })
 
@@ -519,6 +533,7 @@ def render_patient_info_editor():
         flash("Patient Information Successfully Updated.", "success")
         return redirect(url_for("render_patient_info", id=session["patient_url"]))
     else:
+        session.pop("add_med", None)
         pat_db8 = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
         for key5, val5 in pat_db8.items():
             if session["user_id"] == val5['username']:
@@ -546,7 +561,7 @@ def render_patient_info_editor():
             if len(med_db1) > 0:
                 for med in med_db1:
                     med3 = med_db1[med]
-                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"], med3["medTime"])
+                    med4 = Medicine(med3["medName"], med3["medDesc"], med3["medDosage"], med3["sideEffect"], med3["medTime"], med3["medInterval"])
                     med4.set_med_id(med)
                     medList2.append(med4)
         except:
@@ -602,14 +617,21 @@ def render_patient_info_editor():
 def delete_med(medicine, id):
     med_db = root.child("Medicine/" + medicine + "/" + id)
     med_db.delete()
+    med_db.delete()
+    med_db.delete()
+    med_db.delete()
+    med_db.delete()
+    #MULTIPLE DELETE IS INTENDED
+    #REASON BEING: COUNTDOWN() MIGHT SET A NEW 1 ALONG WHEN OLD ONE IS DELETED
+    #2 IS ENOUGH TO DELETE THE OTHER ONE THAT WAS SETTED
+    #BUT I HARDSTUCKED ON THAT LOGICAL ERROR SO I ADDED IN MORE
     flash("Medicine has been removed", "success")
 
     return redirect(url_for("render_patient_info_editor"))
 
-
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
 def render_staff_profile(id):
-    id = 'S91719'
+    id = 'S61440'
     url = "Staff/" + id
     print(url)
     eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
@@ -620,8 +642,7 @@ def render_staff_profile(id):
         print(k, v)
         # print(v['username'])
         # print(v['password'])
-        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"],
-                   v["phone_no"], v["email"], v["address"])
+        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"], v["phone_no"], v["email"], v["address"], v['image_name'], v['password'])
 
     # staff.set_patient_id(id)
     # form = AdminForm(request.form)
@@ -675,9 +696,6 @@ def render_staff_profile(id):
     #     form.ward.data = staff_form.get_ward()
 
     return render_template('staff_profile.html', eachstaff = staff)
-
-
-
 
 @app.route('/trainee_notes/',methods=['POST',"GET"])
 def render_trainee_notes():
@@ -814,5 +832,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
