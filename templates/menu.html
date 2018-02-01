@@ -13,16 +13,145 @@
     </ul>
 </div>
 {% endif %}
+
+    <script>
+    $(document).ready(function () {
+        $('.food').hide();
+
+        $('input[type="radio"]').click(function () {
+            alert($(this).attr('value'));
+        if ($(this).attr('value') === 'Indian Cuisine') {
+            $('.food').hide();
+            $('#indian').show();
+
+            $('#malay').reset();
+            $('#chinese').reset();
+            $('#western').reset();
+            $('#international').reset();
+        }
+        else if ($(this).attr('value') === 'Malay Cuisine') {
+            $('.food').hide();
+            $('#malay').show();
+
+            $('#indian').reset();
+            $('#chinese').reset();
+            $('#western').reset();
+            $('#international').reset();
+        }
+        else if ($(this).attr('value') === 'Chinese Cuisine') {
+            $('.food').hide();
+            $('#chinese').show();
+
+            $('#malay').reset();
+            $('#indian').reset();
+            $('#western').reset();
+            $('#international').reset();
+        }
+        else if ($(this).attr('value') === 'Western Cuisine') {
+            $('.food').hide();
+            $('#western').show();
+
+            $('#malay').reset();
+            $('#chinese').reset();
+            $('#indian').reset();
+            $('#international').reset();
+        }
+        else if ($(this).attr('value') === 'International Cuisine') {
+            $('.food').hide();
+            $('#international').show();
+
+            $('#malay').reset();
+            $('#chinese').reset();
+            $('#western').reset();
+            $('#indian').reset();
+        }
+        else {
+            $('.food').hide();
+        }
+        });
+
+        var foodType = $('input[name=foodname]:checked').val();
+{#        alert(foodType);#}
+        if (foodType === 'Indian Cuisine') {
+            $('.food').hide();
+            $('#indian').show();
+
+            $('#malay').reset();
+            $('#chinese').reset();
+            $('#western').reset();
+            $('#international').reset();
+        }
+        else if (foodType === 'Malay Cuisine') {
+            $('.food').hide();
+            $('#malay').show();
+
+            $('#indian').reset();
+            $('#chinese').reset();
+            $('#western').reset();
+            $('#international').reset();
+        }
+        else if (foodType === 'Chinese Cuisine') {
+            $('.food').hide();
+            $('#chinese').show();
+
+            $('#malay').reset();
+            $('#indian').reset();
+            $('#western').reset();
+            $('#international').reset();
+        }
+        else if (foodType === 'Western Cuisine') {
+            $('.food').hide();
+            $('#western').show();
+
+            $('#malay').reset();
+            $('#chinese').reset();
+            $('#indian').reset();
+            $('#international').reset();
+        }
+        else if (foodType === 'International Cuisine') {
+            $('.food').hide();
+            $('#international').show();
+
+            $('#malay').reset();
+            $('#chinese').reset();
+            $('#western').reset();
+            $('#indian').reset();
+        }
+        else {
+            $('.food').hide();
+        }
+    });
+
+    </script>
 <main class="container signup-section">
     <div class="section-content">
       <h2> Select food choice </h2>
         <h3> Day {{ days }} </h3>
         <form method="POST" action="/menu/">
 
-            <div class="form-group" style="margin:30px;">
+            <div class="form-group" style="margin:30px;" id="foodname">
                 {{  render_field(form.foodname,style="list-style:none;") }}
             </div>
 
+            <div  style="margin:30px;" id="indian" class="food" onclick="$(this).show()">
+                {{  render_field(form.indian,style="list-style:none;") }}
+            </div>
+{##}
+            <div  style="margin:30px;" id="malay" class="food" onclick="$(this).show()">
+                {{  render_field(form.malay,style="list-style:none;") }}
+            </div>
+{##}
+            <div  style="margin:30px;" id="chinese" class="food" onclick="$(this).show()">
+                {{  render_field(form.chinese,style="list-style:none;") }}
+            </div>
+
+            <div  style="margin:30px;" id="western" class="food" onclick="$(this).show()">
+                {{  render_field(form.western,style="list-style:none;") }}
+            </div>
+{##}
+            <div  style="margin:30px;" id="international" class="food" onclick="$(this).show()">
+                {{  render_field(form.international,style="list-style:none;") }}
+            </div>
 {##}
 {#            <div class="form-group" style="margin:30px;">#}
 {#                {{ render_field(form.patientname ,placeholder="Patient Name") }}#}
