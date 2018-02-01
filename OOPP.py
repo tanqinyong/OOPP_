@@ -84,14 +84,14 @@ class Patient_Medicine(Form):
     medDosage = IntegerField("Dosage")
     sideEffect = StringField("Side Effect")
     medInterval = SelectField("Hours for patient to take med", choices=[("6","6"),("8","8"),("12","12")], default="")
-    submitMed = SubmitField("submit")
+    submitMed = SubmitField("")
 
 class Patient_Info(Form):
     name = StringField("Name")
     illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
     patientdesc = TextAreaField("Illness Description", [validators.DataRequired()])
     ward = SelectField("Ward: ", choices=[("C","C"),("B2", "B2"), ("B1","B1"), ("A", "A")], default="")
-    submitInfo = SubmitField("submit")
+    submitInfo = SubmitField("")
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
 
