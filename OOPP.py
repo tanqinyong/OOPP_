@@ -18,11 +18,11 @@ from Hospital import *
 # TWILIO
 # /usr/bin/env python
 # Download the twilio-python library from twilio.com/docs/libraries/python
-# from twilio.rest import Client
-# # Find these values at https://twilio.com/user/account
-# account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
-# auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
-# client = Client(account_sid, auth_token)
+from twilio.rest import Client
+# Find these values at https://twilio.com/user/account
+account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
+auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
+client = Client(account_sid, auth_token)
 
 
 UPLOAD_FOLDER = 'static/images/'
@@ -68,7 +68,7 @@ class FoodOrderForm(Form):
     chinese = RadioField('Chinese Meals', [validators.Optional()] , default="", choices = [('Chicken Rice','Chicken Rice'),('Shredded Chicken Porridge','Shredded Chicken Porridge'),('Handmade noodles','Handmade noodles')])
     western = RadioField('Western Meals', [validators.Optional()] , default="", choices = [('Chicken Chop','Chicken Chop'),('Fish & Chips','Fish & Chips'),('Bolognese Spaghetti','Bolognese Spaghetti')])
     international = RadioField('International Meals', [validators.Optional()] , default="", choices = [('Paella','Paella'),('Swedish Meatballs & Mashed Potatoes','Swedish Meatballs & Mashed Potatoes'),('Mediterranean Grilled Bass','Mediterranean Grilled Bass')])
-    submit = SubmitField('Enter')
+    submit = SubmitField('')
 
 
 # Trainee page
@@ -322,10 +322,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
-            # client.api.account.messages.create(
-            #     to="+6592211065",
-            #     from_="+18636927542",
-            #     body="Your user is: {} and password: {}".format(username,password))
+            client.api.account.messages.create(
+                to="+6592211065",
+                from_="+18636927542",
+                body="Your user is: {} and password: {}".format(username,password))
 
     return render_template('Admin.html',form=admin_form)
 
@@ -832,5 +832,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=5000)
+    app.run(port=80)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
