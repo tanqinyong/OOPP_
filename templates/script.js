@@ -6,7 +6,7 @@ const drone = new ScaleDrone(CLIENT_ID, {
     name: getRandomName(),
     color: getRandomColor(),
   },
-  //url: 'ws://localhost:9000/websocket'
+  //  url: 'ws://localhost:9000/websocket'
 });
 
 let members = [];
