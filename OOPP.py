@@ -17,11 +17,11 @@ from Hospital import *
 # TWILIO
 # /usr/bin/env python
 # Download the twilio-python library from twilio.com/docs/libraries/python
-from twilio.rest import Client
-# Find these values at https://twilio.com/user/account
-account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
-auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
-client = Client(account_sid, auth_token)
+# from twilio.rest import Client
+# # Find these values at https://twilio.com/user/account
+# account_sid = "AC6ced1d481c8e1d8ec33c4f0da613e3e8"
+# auth_token = "5554f393e7cf77b1496cb9f2de0d61e2"
+# client = Client(account_sid, auth_token)
 
 
 UPLOAD_FOLDER = 'static/images/'
@@ -84,14 +84,14 @@ class Patient_Medicine(Form):
     medDosage = IntegerField("Dosage")
     sideEffect = StringField("Side Effect")
     medInterval = SelectField("Hours for patient to take med", choices=[("6","6"),("8","8"),("12","12")], default="")
-    submitMed = SubmitField("submit")
+    submitMed = SubmitField("")
 
 class Patient_Info(Form):
     name = StringField("Name")
     illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
     patientdesc = TextAreaField("Illness Description", [validators.DataRequired()])
     ward = SelectField("Ward: ", choices=[("C","C"),("B2", "B2"), ("B1","B1"), ("A", "A")], default="")
-    submitInfo = SubmitField("submit")
+    submitInfo = SubmitField("")
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
 
@@ -115,7 +115,6 @@ class AdminForm(Form):
     emergency_contact_relationship = StringField("Emergency Contact Relationship: ")
     maritalstatus = SelectField("Marital Status: ", choices=[("Married", "Married"), ("Single", "Single"), ("Divorced", "Divorced"), ("Widowed", "Widowed")], default="")
     image_name = FileField("Patient's Image: ") #not even used
-    ward = StringField("Ward: ")
 
 
 def allowed_file(filename):
@@ -189,7 +188,6 @@ def render_admin():
             emergency_contact_address = admin_form.emergency_contact_address.data
             emergency_contact_relationship = admin_form.emergency_contact_relationship.data
             maritalstatus = admin_form.maritalstatus.data
-            ward = admin_form.ward.data
 
             # check if the post request has the file part
             if 'file' not in request.files:
@@ -210,7 +208,7 @@ def render_admin():
             new_staff = Admin_Work(name, nric, dob, email, address, gender, occupation, income,
                                      bloodtype, race, phone_no,
                                      emergency_contact_no, emergency_contact_address, emergency_contact_relationship,
-                                     maritalstatus, username, password, image_name, ward)
+                                     maritalstatus, username, password, image_name)
 
             new_staff_db = root.child('Staff')
             new_staff_db.push({
@@ -232,7 +230,6 @@ def render_admin():
                 'username': new_staff.get_username(),
                 'password': new_staff.get_password(),
                 'image_name': new_staff.get_image_name(),
-                'ward': new_staff.get_ward()
             })
             hospital_admin = root.child("Staff").get()
             for data in hospital_admin:
@@ -242,7 +239,7 @@ def render_admin():
                                    datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
                                    datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
                                    datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
-                                   datainfo["username"], datainfo["password"], datainfo["image_name"], datainfo["ward"])
+                                   datainfo["username"], datainfo["password"], datainfo["image_name"])
                 setid.set_patient_id(data)
                 print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
@@ -321,10 +318,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
-            client.api.account.messages.create(
-                to="+6592211065",
-                from_="+18636927542",
-                body="Your user is: {} and password: {}".format(username,password))
+            # client.api.account.messages.create(
+            #     to="+6592211065",
+            #     from_="+18636927542",
+            #     body="Your user is: {} and password: {}".format(username,password))
 
     return render_template('Admin.html',form=admin_form)
 
@@ -630,9 +627,9 @@ def delete_med(medicine, id):
 
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
 def render_staff_profile(id):
-    id = 'S61440'
-    url = "Staff/" + id
-    print(url)
+    # id = 'S41745'
+    # url = "Staff/" + id
+    # print(url)
     eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
 
     # print(eachstaff)
@@ -641,7 +638,7 @@ def render_staff_profile(id):
         print(k, v)
         # print(v['username'])
         # print(v['password'])
-        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"], v["phone_no"], v["email"], v["address"], v['image_name'], v['password'])
+        staff = Staff(v["name"], v["nric"], v["gender"],  v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'], v['ward'])
 
     # staff.set_patient_id(id)
     # form = AdminForm(request.form)
@@ -798,8 +795,18 @@ def render_menu():
 
     return render_template('menu.html', form=form, days =days+1)
 
+@app.route('/trainee_notes/')
+def render_trainee_notes():
+    from scaledrone import ScaleDrone
+    import json
 
+    drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+    room = 'observable-room'
+    message = {'foo': 'bar'}
+    response = drone.publish(room, json.dumps(message))
+    print(response)
 
+    return render_template('trainee_notes.html')
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
 def delete_order(id):
@@ -813,5 +820,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it

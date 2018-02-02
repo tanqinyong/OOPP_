@@ -60,8 +60,7 @@ td:hover
 
 <ul class="nav nav-tabs" data-tab data-options="deep_linking: true">
     <li class="active"><a data-toggle="tab" href="#home">Info</a></li>
-    <li><a data-toggle="tab" href="#menu1">Medicine</a></li>
-    <li><a data-toggle="tab" href="#menu2">Schedule</a></li>
+    <li><a data-toggle="tab" href="#menu1">Schedule</a></li>
 </ul>
 
 <div class="tab-content">
@@ -88,88 +87,82 @@ td:hover
                         </div>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Submit" class="btn btn-info"/>
-                    {{ form.submitInfo }}
+                    {{ render_field(form.submitInfo, class="btn btn-info", value="Submit") }}
                 </div>
             </div>
         </form>
-    </div>
-
-    <div id="menu1" class="tab-pane fade">
         <div id="medicine" class="container-fluid text-center">
-            <h2> Treatments & Medicine </h2>
+        <h2> Treatments & Medicine </h2>
 {#                <div class="col-sm-3">#}
 {#                  <img src="http://www.freeiconspng.com/uploads/medicine-icon-9.png" style="height:150px;width:170px;"/>#}
 {#                </div>#}
-            <table align="center">
-                <thead>
-                    <tr>
-                        <th>Medicine</th>
-                        <th>Description</th>
-                        <th>Dosage (ml/mg)</th>
-                        <th>Side Effect</th>
-                        <th>Interval</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for med in medicine2 %}
-                    <tr>
-                        <td>{{ med.get_medName() }}</td>
-                        <td>{{ med.get_medDesc() }}</td>
-                        <td>{{ med.get_medDosage() }}</td>
-                        <td>{{ med.get_sideEffect() }}</td>
-                        <td>{{ med.get_medInterval() }}</td>
-                        <td>
-                            <form action="{{ url_for('delete_med', medicine=session["user_id"], id=med.get_med_id())}}" method="POST">
-                                <input type="submit" value="&times;" class="btn btn-danger" onclick="return confirm('Remove this Medicine Field?');">
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <table align="center">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Description</th>
+                    <th>Dosage (ml/mg)</th>
+                    <th>Side Effect</th>
+                    <th>Interval</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for med in medicine2 %}
+                <tr>
+                    <td>{{ med.get_medName() }}</td>
+                    <td>{{ med.get_medDesc() }}</td>
+                    <td>{{ med.get_medDosage() }}</td>
+                    <td>{{ med.get_sideEffect() }}</td>
+                    <td>{{ med.get_medInterval() }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_med', medicine=session["user_id"], id=med.get_med_id())}}" method="POST">
+                            <input type="submit" value="&times;" class="btn btn-danger" onclick="return confirm('Remove this Medicine Field?');">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
-            <form method="POST" action="">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm">
-                            <div class="form-group">
-                                {{  render_field(medform.medName, class="form-control") }}
-                            </div>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <span>{{  render_field(medform.medDosage, class="form-control") }}ml/mg</span>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                {{  render_field(medform.sideEffect, class="form-control") }}
-                            </div>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <span>{{ render_field(medform.medInterval, class="form-control") }}hours</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                {{ render_field(medform.medDesc, class="form-control", cols="5", rows="10") }}
-                            </div>
+        <form method="POST" action="">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="form-group">
+                            {{  render_field(medform.medName, class="form-control") }}
                         </div>
                     </div>
-                    <button class="btn btn-primary" type="submit">Add Medicine</button>
-                        {{ medform.submitMed }}
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <div id="menu2" class="tab-pane fade">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <span>{{  render_field(medform.medDosage, class="form-control") }}ml/mg</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            {{  render_field(medform.sideEffect, class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <span>{{ render_field(medform.medInterval, class="form-control") }}hours</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            {{ render_field(medform.medDesc, class="form-control", cols="5", rows="10") }}
+                        </div>
+                    </div>
+                </div>
+                    {{ render_field(medform.submitMed, class="btn btn-primary", value="Add Medicine") }}
+            </div>
+        </form>
+    </div>
+    </div>
+    <div id="menu1" class="tab-pane fade">
         <!-- schedule -->
         <div id="schedule" class="container-fluid text-center">
 

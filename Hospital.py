@@ -216,22 +216,23 @@ class Medicine:
     def set_med_id(self, med_id):
         self.__med_id = med_id
 
+        # staff = Staff(v["name"], v["nric"], v["gender"],  v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'], v['ward'])
 
 # This is for staff
 class Staff:
-    def __init__(self, name, nric, username, password, image_name, ward, dob, email, address, gender, phone_no):
+    def __init__(self, name, nric, gender, dob,  email, phone_no, address, username, password, image_name, ward):
         # super().__init__(name, nric, username, password, image_name, ward, dob, email, address, gender, phone_no)
         self.__name = name
-        self.__username = username
-        self.__password = password
         self.__nric = nric
-        self.__image_name = image_name
-        self.__ward = ward
+        self.__gender = gender
         self.__dob = dob
         self.__email = email
-        self.__address = address
-        self.__gender = gender
         self.__phone_no = phone_no
+        self.__address = address
+        self.__image_name = image_name
+        self.__username = username
+        self.__password = password
+        self.__ward = ward
 
     def get_name(self):
         return self.__name
