@@ -627,9 +627,9 @@ def delete_med(medicine, id):
 
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
 def render_staff_profile(id):
-    id = 'S61440'
-    url = "Staff/" + id
-    print(url)
+    # id = 'S41745'
+    # url = "Staff/" + id
+    # print(url)
     eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
 
     # print(eachstaff)
@@ -638,7 +638,7 @@ def render_staff_profile(id):
         print(k, v)
         # print(v['username'])
         # print(v['password'])
-        staff = Staff(v["name"], v['username'], v["ward"], v["gender"], v["nric"], v["dob"], v["phone_no"], v["email"], v["address"], v['image_name'], v['password'])
+        staff = Staff(v["name"], v["nric"], v["gender"],  v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'], v['ward'])
 
     # staff.set_patient_id(id)
     # form = AdminForm(request.form)
@@ -817,5 +817,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it

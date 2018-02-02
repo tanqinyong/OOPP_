@@ -1,161 +1,3 @@
-{#{% extends 'layout.html' %}#}
-{#{% block body %}#}
-{#{% from "includes/_formhelper.html" import render_field %}#}
-{#    <h1>Profile</h1>#}
-{#{% if form.errors %}#}
-{#<div class="alert alert-danger">#}
-{#    <ul>#}
-{#        {% for field_name, field_errors in form.errors|dictsort if field_errors %}#}
-{#            {% for error in field_errors %}#}
-{#                <li>{{ form[field_name].label }}: {{ error }}</li>#}
-{#            {% endfor %}#}
-{#        {% endfor %}#}
-{#    </ul>#}
-{#</div>#}
-{#{% endif %}#}
-{#<style>#}
-{#th,td#}
-{#{#}
-{#    margin: 0;#}
-{#    text-align: center;#}
-{#    border-collapse: collapse;#}
-{#    outline: 1px solid #e3e3e3;#}
-{#}#}
-{##}
-{#td#}
-{#{#}
-{#    padding: 5px 10px;#}
-{#}#}
-{##}
-{#th#}
-{#{#}
-{#    background: #f4511e;#}
-{#    color: white;#}
-{#    padding: 5px 10px;#}
-{#}#}
-{##}
-{#td:hover#}
-{#{#}
-{#    cursor: pointer;#}
-{#    background: #f4511e;#}
-{#    color: white;#}
-{#}#}
-{##}
-{##edit:hover{#}
-{#  color:lime;#}
-{#}#}
-{#</style>#}
-{##}
-{#    {% if session['logged_in_staff'] == True %}#}
-{#        <script type=text/javascript>#}
-{#        document.addEventListener("DOMContentLoaded",docIsReady);#}
-{#        function docIsReady(){#}
-{#            document.getElementById("authen").style.visibility = "visible";#}
-{#        }#}
-{#        </script>#}
-{#    {% else %}#}
-{#        <script type=text/javascript>#}
-{#        document.addEventListener("DOMContentLoaded",docIsReady);#}
-{#        function docIsReady(){#}
-{#            document.getElementById("authen").style.visibility = "hidden";#}
-{#        }#}
-{#        </script>#}
-{#    {% endif %}#}
-{##}
-{#<!--STAFF PROFILE-->#}
-{#<form method="POST" action ="">#}
-{#    <div id="services" class="container-fluid text-center">#}
-{##}
-{#        <div id="staff_profile" class="container-fluid text-center"  style="position:relative;">#}
-{#            <div style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a id="edit" style="color:limegreen;" href="/staff_profile/">(exit)</a></div>#}
-{#                <h2>{{ something.get_name() }}</h2>#}
-{#                <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ something.get_image_name() }}" alt="{{ something.get_name() }}">#}
-{#                <div class="form-group">#}
-{#                    {{  render_field(form.name, class_="form-control", placeholder="Staff Name") }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                   {{  render_field(form.gender, class="form-control", placeholder="Gender") }}#}
-{#                </div>#}
-{##}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field(form.nric, class_="form-control", placeholder = 'NRIC') }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field(form.dob, class_="form-control", placeholder = 'DOB') }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field(form.username, class_="form-control", placeholder = 'Username') }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field(form.phone_no, class_="form-control", placeholder = 'Phone No.') }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field(form.email, class_="form-control", placeholder = 'Email') }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field(form.address, class_="form-control", placeholder = 'Address') }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field(form.ward, class_="form-control", placeholder = 'Ward') }}#}
-{#                </div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    {{ render_field() }}#}
-{#                </div>#}
-{#        </div>#}
-{#    </div>#}
-{#</form>#}
-{##}
-{##}
-{##}
-{#<script>#}
-{#$(document).ready(function(){#}
-{#  // Add smooth scrolling to all links in navbar + footer link#}
-{#  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {#}
-{#    // Make sure this.hash has a value before overriding default behavior#}
-{#    if (this.hash !== "") {#}
-{#      // Prevent default anchor click behavior#}
-{#      event.preventDefault();#}
-{##}
-{#      // Store hash#}
-{#      var hash = this.hash;#}
-{##}
-{#      // Using jQuery's animate() method to add smooth page scroll#}
-{#      // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area#}
-{#      $('html, body').animate({#}
-{#        scrollTop: $(hash).offset().top#}
-{#      }, 900, function(){#}
-{##}
-{#        // Add hash (#) to URL when done scrolling (default click behavior)#}
-{#        window.location.hash = hash;#}
-{#      });#}
-{#    } // End if#}
-{#  });#}
-{##}
-{#  $(window).scroll(function() {#}
-{#    $(".slideanim").each(function(){#}
-{#      var pos = $(this).offset().top;#}
-{##}
-{#      var winTop = $(window).scrollTop();#}
-{#        if (pos < winTop + 600) {#}
-{#          $(this).addClass("slide");#}
-{#        }#}
-{#    });#}
-{#  });#}
-{#})#}
-{#</script>#}
-{##}
-{#{% endblock %}#}
-
-
 {% extends 'layout.html' %}
 {% block body %}
 <style>
@@ -190,21 +32,7 @@ td:hover
     background: #f4511e;
     color: white;
 }
-.toprow {
-  padding:50px;
-}
-#patientinfo {
-  background-color: #ffffff;
-}
-#medicine {
-  background-color: #f8f8ff;
-}
-#schedule {
-  background-color: #f5f5f5;
-}
-#delete:hover {
-    text-decoration: underline;
-}
+
 </style>
 {#    {% if session['logged_in_staff'] == True %}#}
 {#        <script type=text/javascript>#}
@@ -229,38 +57,39 @@ td:hover
 <div class="tab-content">
 <!-- STAFF PROFILE -->
 <div id="home" class="tab-pane fade in active">
-    <h1> Profile </h1>
-    <div id="services" class="container-fluid text-center">
-        <div id="staff_profile" class="container-fluid text-center" style="position:relative;">
-            <div id="authen" style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/staff_profile/">(edit)</a></div>
+{#    <h1> Profile </h1>#}
+{#    <div id="services" class="container-fluid text-center">#}
+{#        <div id="staff_profile" class="container-fluid text-center" style="position:relative;">#}
+{#            <div id="authen" style="position:absolute; top:0; right:0; font-size:20px; cursor:pointer;"><a style="color:limegreen;" href="/staff_profile/">(edit)</a></div>#}
 {#                <br/> <a href="/patient_edit/{{eachpat.get_patient_id()}}">(update)</a> <br/>#}
-
-
-            <h1> {{ eachstaff.get_name() }} </h1>
-                <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ eachstaff.get_image_name() }}" alt="{{ eachstaff.get_name() }}">
-
-            <h3> {{ eachstaff.get_username() }} </h3> <br>
-
-            <h3> {{ eachstaff.get_gender() }} </h3> <br>
-
-            <h3> {{ eachstaff.get_nric() }} </h3> <br>
-
-            <h3> {{ eachstaff.get_dob() }} </h3> <br>
-
-            <h3> {{ eachstaff.get_phone_no() }} </h3> <br>
-
-            <h3> {{ eachstaff.get_email() }} </h3> <br>
-        </div>
+{##}
+{##}
+{#            <h1> {{ eachstaff.get_name() }} </h1>#}
+{##}
+{##}
+{#            <h3> {{ eachstaff.get_username() }} </h3> <br>#}
+{##}
+{#            <h3> {{ eachstaff.get_gender() }} </h3> <br>#}
+{##}
+{#            <h3> {{ eachstaff.get_nric() }} </h3> <br>#}
+{##}
+{#            <h3> {{ eachstaff.get_dob() }} </h3> <br>#}
+{##}
+{#            <h3> {{ eachstaff.get_phone_no() }} </h3> <br>#}
+{##}
+{#            <h3> {{ eachstaff.get_email() }} </h3> <br>#}
+{#        </div>#}
 
 
 <div class="container">
-    <h1>Edit Profile</h1>
+    <h1>Profile</h1>
   	<hr>
 	<div class="row">
       <!-- left column -->
       <div class="col-md-3">
         <div class="text-center">
-          <img src="//placehold.it/100" class="avatar img-circle" alt="avatar">
+{#          <img src="//placehold.it/100" >#}
+            <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ eachstaff.get_image_name() }}" alt="{{ eachstaff.get_name() }}" class="avatar img-circle" alt="avatar">
           <h6>Upload a different photo...</h6>
 
           <input type="file" class="form-control">
@@ -272,49 +101,67 @@ td:hover
         <div class="alert alert-info alert-dismissable">
           <a class="panel-close close" data-dismiss="alert">×</a>
           <i class="fa fa-coffee"></i>
-          This is an <strong>.alert</strong>. Use this to show important messages to the user.
+          You have successfully updated your profile.
         </div>
         <h3>Personal info</h3>
 
         <form class="form-horizontal" role="form">
           <div class="form-group">
-            <label class="col-lg-3 control-label">First name:</label>
+            <label class="col-lg-3 control-label">Name:</label>
             <div class="col-lg-8">
-              <input class="form-control" type="text" value="Jane">
+              <input class="form-control" type="text" value={{ eachstaff.get_name() }}>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-3 control-label">Last name:</label>
+            <label class="col-lg-3 control-label">NRIC:</label>
             <div class="col-lg-8">
-              <input class="form-control" type="text" value="Bishop">
+              <input class="form-control" type="text" value={{ eachstaff.get_nric() }} readonly>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-3 control-label">Company:</label>
+            <label class="col-lg-3 control-label">Gender:</label>
             <div class="col-lg-8">
-              <input class="form-control" type="text" value="">
+              <input class="form-control" type="text" value={{ eachstaff.get_gender() }} readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Birthday:</label>
+            <div class="col-lg-8">
+              <input class="form-control" type="text" value={{ eachstaff.get_dob() }} readonly>
             </div>
           </div>
           <div class="form-group">
             <label class="col-lg-3 control-label">Email:</label>
             <div class="col-lg-8">
-              <input class="form-control" type="text" value="janesemail@gmail.com">
+              <input class="form-control" type="text" value={{ eachstaff.get_email() }}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Phone:</label>
+            <div class="col-lg-8">
+              <input class="form-control" type="text" value={{ eachstaff.get_phone_no() }}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Address:</label>
+            <div class="col-lg-8">
+              <input class="form-control" type="text" value={{ eachstaff.get_address() }}>
             </div>
           </div>
           <div class="form-group">
             <label class="col-md-3 control-label">Username:</label>
             <div class="col-md-8">
-              <input class="form-control" type="text" value="janeuser">
+              <input class="form-control" type="text" value={{ eachstaff.get_username() }} readonly>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-3 control-label">Password:</label>
+            <label class="col-md-3 control-label">Change password:</label>
             <div class="col-md-8">
               <input class="form-control" type="password" value="11111122333">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-3 control-label">Confirm password:</label>
+            <label class="col-md-3 control-label">Confirm new password:</label>
             <div class="col-md-8">
               <input class="form-control" type="password" value="11111122333">
             </div>
@@ -322,7 +169,7 @@ td:hover
           <div class="form-group">
             <label class="col-md-3 control-label"></label>
             <div class="col-md-8">
-              <input type="button" class="btn btn-primary" value="Save Changes">
+              <input type="button" class="btn btn-primary" value="Update Profile">
               <span></span>
               <input type="reset" class="btn btn-default" value="Cancel">
             </div>
