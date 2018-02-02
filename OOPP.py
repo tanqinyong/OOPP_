@@ -706,12 +706,15 @@ def render_nurse():
         # DAYS
         # FOOD ORDER
         Food_Order = root.child('Food_Order').get()
+        print(Food_Order)
+        id_list = []
         list = []
-        for food_id in Food_Order:
-            eachorder = Food_Order[food_id]
+        for i in Food_Order:
+            eachorder = Food_Order[i]
             order = FoodOrder(eachorder['foodname'],eachorder['day'],eachorder['user_id'],eachorder['indian'],eachorder['malay'],eachorder['chinese'],eachorder['western'],eachorder['international'])
             # order.set_foodid(food_id)
             list.append(order)
+            id_list.append(i)
 
         # NURSE CALL
         nurse_form = NurseCallForm(request.form)
@@ -729,7 +732,7 @@ def render_nurse():
         #     to="+12316851234",
         #     from_="+15555555555",
         #     body="Hello there!")
-        return render_template('nursecallpage.html',orders = list,nurse = nurse_form)
+        return render_template('nursecallpage.html',orders = list,nurse = nurse_form,id_list=id_list)
 
 
 
