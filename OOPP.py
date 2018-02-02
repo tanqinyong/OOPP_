@@ -792,8 +792,17 @@ def render_menu():
 
     return render_template('menu.html', form=form, days =days+1)
 
-@app.route('/trainee_notes/',methods=['POST',"GET"])
+@app.route('/trainee_notes/')
 def render_trainee_notes():
+    from scaledrone import ScaleDrone
+    import json
+
+    drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+    room = 'observable-room'
+    message = {'foo': 'bar'}
+    response = drone.publish(room, json.dumps(message))
+    print(response)
+
     return render_template('trainee_notes.html')
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
