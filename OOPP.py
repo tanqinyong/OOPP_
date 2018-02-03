@@ -703,9 +703,10 @@ def render_nurse():
         # DAYS
         # FOOD ORDER
         Food_Order = root.child('Food_Order').get()
-        print(Food_Order)
+        Nurses_calling = root.child('Nurse Call').get()
         id_list = []
         list = []
+        nurse_list = []
         for i in Food_Order:
             eachorder = Food_Order[i]
             order = FoodOrder(eachorder['foodname'],eachorder['day'],eachorder['user_id'],eachorder['indian'],eachorder['malay'],eachorder['chinese'],eachorder['western'],eachorder['international'])
@@ -722,14 +723,21 @@ def render_nurse():
                'symptom': newcall.get_reason(),
                'id': newcall.get_user_id()
              })
-            flash('A nurse will attend to you shortly.','success')
+
+            flash('A nurse will attend to you shortly.', 'success')
+            return redirect(url_for('render_nurse'))
+
+        for n in Nurses_calling:
+            eachnurse = Nurses_calling[n]
+            call = NurseCall(eachnurse['symptom'],eachnurse['id'])
+            nurse_list.append(call)
 
         # FOOD ORDER
         # client.api.account.messages.create(
         #     to="+12316851234",
         #     from_="+15555555555",
         #     body="Hello there!")
-        return render_template('nursecallpage.html',orders = list,nurse = nurse_form,id_list=id_list)
+        return render_template('nursecallpage.html',orders = list,nurse = nurse_form,id_list=id_list,nurse_list=nurse_list)
 
 
 
@@ -770,11 +778,16 @@ def logout():
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)
+
+    # getting the number of days
     now_unformatted = datetime.datetime.now()
     now = now_unformatted.strftime("%d%m%y")
     days = int(session["login_date"][0:2]) - int(now[0:2])
-    print(days) # zero
-    if request.method =='POST' and form.validate():
+
+    # getting timing for breakfast, lunch or dinner
+
+
+    if request.method == 'POST' and form.validate():
             neworder = FoodOrder(form.foodname.data,days+1,session["user_id"],form.indian.data,form.malay.data,form.chinese.data,form.western.data,form.international.data)
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
@@ -820,5 +833,5 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=5000)
+    app.run(port=80)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
