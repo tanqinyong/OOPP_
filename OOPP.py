@@ -90,7 +90,7 @@ class Patient_Info(Form):
     name = StringField("Name")
     illness = StringField("Illness", [validators.Length(min=1, max=100), validators.DataRequired()])
     patientdesc = TextAreaField("Illness Description", [validators.DataRequired()])
-    ward = SelectField("Ward: ", choices=[("C","C"),("B2", "B2"), ("B1","B1"), ("A", "A")], default="")
+    ward = SelectField("Ward: ", choices=[("select", "--Select Ward--"),("A", "A"),("B1","B1"), ("B2", "B2"), ("C","C")], default="select")
     submitInfo = SubmitField("")
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
@@ -427,6 +427,9 @@ def render_patient_info_editor():
 
     #All the code below could just use the one above lol (not really)
     if request.method == "POST" and form.submitInfo.data and form.validate():
+        if form.ward.data == "select":
+            flash('Please select the patient\'s wards', 'danger')
+            return redirect(request.url)
         name = form.name.data #redundant
         illness = form.illness.data
         patientdesc = form.patientdesc.data
