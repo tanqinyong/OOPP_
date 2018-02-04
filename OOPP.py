@@ -71,10 +71,10 @@ class FoodOrderForm(Form):
 
 
 # Trainee page
-class TraineeForm(Form):
-    name = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
-    comment = TextAreaField('Comment:')
-    submit = SubmitField('Enter')
+# class TraineeForm(Form):
+#    name = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
+#    comment = TextAreaField('Comment:')
+#    submit = SubmitField('Enter')
 
 
 # Patient info page
