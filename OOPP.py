@@ -79,7 +79,9 @@ class TraineeForm(Form):
 
 # Patient info page
 class Patient_Medicine(Form):
-    medName = StringField("Medicine Name")
+    #Medicine names are not to be trusted as they were randomly taken from Google search!!!
+    medName = SelectField("Medicine Name", choices=[("select","--Select A Medicine--"), ("Dextromethorphan (Cough)", "Dextromethorphan (Cough)"), ("Paracetamol (Cold)", "Paracetamol (Cold)"),
+                                                    ("Acetaminophen (Fever)", "Acetaminophen (Fever)"), ("Antiemetic (Nausea)", "Antiemetic (Nausea)"), ("Diclofenac (Stomach Ache)", "Diclofenac (Stomach Ache)")], default="select")
     medDesc = TextAreaField("Medicine Description", [validators.DataRequired()])
     medDosage = IntegerField("Dosage")
     sideEffect = StringField("Side Effect")
@@ -392,7 +394,7 @@ def render_patient_info(id):
             med2.set_med_id(med)
             medList.append(med2)
     except TypeError:
-        flash("No Records Found!", "danger")
+        pass
     return render_template('patient_info.html', eachpat=patients, history=list, medicine=medList) # patient_infos=patientInfo)
 
 # New patient when logging in!
@@ -407,6 +409,9 @@ def render_patient_info_editor():
     medform = Patient_Medicine(request.form)
 
     if request.method == "POST" and medform.submitMed.data and medform.validate():
+        if medform.medName.data == "select":
+            flash('Please select a medicine', 'danger')
+            return redirect(request.url)
         medName = medform.medName.data
         medDesc = medform.medDesc.data
         medDosage = medform.medDosage.data
@@ -433,7 +438,7 @@ def render_patient_info_editor():
         name = form.name.data #redundant
         illness = form.illness.data
         patientdesc = form.patientdesc.data
-        time = now.strftime("%d/%m/%Y %H:%M")
+        time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
         ward = form.ward.data
         pat_db = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
         image_name = ""
@@ -460,7 +465,7 @@ def render_patient_info_editor():
                         "illness": pat.get_illness(),
                         "patientdesc": pat.get_patientdesc(),
                         "newthing": session["user_id"],
-                        "time": "(Date Modified) " + now.strftime("%d/%m/%Y %H:%M"),
+                        "time": "(Date Modified) " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
                         "image_name": img_name,
                         "ward": pat.get_ward()
                     })
@@ -495,7 +500,7 @@ def render_patient_info_editor():
                 "illness": pat.get_illness(),
                 "patientdesc": pat.get_patientdesc(),
                 "newthing": session["user_id"],
-                "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
+                "time": "(Date Added) " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
                 "image_name": img_name,
                 "ward": pat.get_ward()
                 })
@@ -506,7 +511,7 @@ def render_patient_info_editor():
                 "illness": pat.get_illness(),
                 "patientdesc": pat.get_patientdesc(),
                 "newthing": session["user_id"],
-                "time": "(Date Added) " + now.strftime("%d/%m/%Y %H:%M"),
+                "time": "(Date Added) " + datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
                 "image_name": img_name,
                 "ward": pat.get_ward()
             })
@@ -532,7 +537,6 @@ def render_patient_info_editor():
         flash("Patient Information Successfully Updated.", "success")
         return redirect(url_for("render_patient_info", id=session["patient_url"]))
     else:
-        session.pop("add_med", None)
         pat_db8 = root.child("Patient").order_by_child("username").equal_to(session["user_id"]).get()
         for key5, val5 in pat_db8.items():
             if session["user_id"] == val5['username']:
@@ -823,5 +827,6 @@ def delete_order(id):
 if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
-    app.run(port=5000)
+    #PLEASE KEEP IT AT PORT 80
+    app.run(port=80)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it

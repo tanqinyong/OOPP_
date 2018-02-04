@@ -60,7 +60,7 @@ td:hover
 
 <ul class="nav nav-tabs" data-tab data-options="deep_linking: true">
     <li class="active"><a data-toggle="tab" href="#home">Info</a></li>
-    <li><a data-toggle="tab" href="#menu1">Schedule</a></li>
+{#    <li><a data-toggle="tab" href="#menu1">Schedule</a></li>#}
 </ul>
 
 <div class="tab-content">
@@ -130,30 +130,28 @@ td:hover
                 <div class="row">
                     <div class="col-sm">
                         <div class="form-group">
-                            {{  render_field(medform.medName, class="form-control") }}
+                            {{  render_field(medform.medName, class="form-control", id="medName", onclick="docIsReady()") }}
                         </div>
                     </div>
 
-                    <div class="col-sm-4">
+                    <div class="col-sm-6">
                         <div class="form-group">
                             <span>{{  render_field(medform.medDosage, class="form-control") }}ml/mg</span>
                         </div>
                     </div>
-
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            {{  render_field(medform.sideEffect, class="form-control") }}
-                        </div>
-                    </div>
-
-                    <div class="col-sm-4">
+                    <div class="col-sm-6">
                         <div class="form-group">
                             <span>{{ render_field(medform.medInterval, class="form-control") }}hours</span>
                         </div>
                     </div>
                     <div class="col-sm-12">
                         <div class="form-group">
-                            {{ render_field(medform.medDesc, class="form-control", cols="5", rows="10") }}
+                            {{  render_field(medform.sideEffect, class="form-control", id="sideEffect") }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            {{ render_field(medform.medDesc, class="form-control", cols="5", rows="10", id="medDesc") }}
                         </div>
                     </div>
                 </div>
@@ -162,121 +160,153 @@ td:hover
         </form>
     </div>
     </div>
-    <div id="menu1" class="tab-pane fade">
-        <!-- schedule -->
-        <div id="schedule" class="container-fluid text-center">
-
-            <h2> Schedule </h2>
-            <h4> Your timings </h4>
-
-
-            <table width="80%" align="center" id="scheduleTable">
-                <tr>
-                    <th class="toprow">Time</th>
-                    <th class="toprow">Monday</th>
-                    <th class="toprow">Tuesday</th>
-                    <th class="toprow">Wednesday</th>
-                    <th class="toprow">Thursday</th>
-                    <th class="toprow">Friday</th>
-                    <th class="toprow">Saturday</th>
-                </tr>
-
-                <tr>
-                    <th style="text-align:center;">10:00 - 11:00</th>
-
-                        <td>On</td>
-                        <td>click</td>
-                        <td>=</td>
-                        <td>change</td>
-                        <td>then</td>
-                        <td>Submit?</td>
-
-                </tr>
-
-                <tr>
-                    <th style="text-align:center;">11:00 - 12:00</th>
-
-                        <td>
-                            <div class="form-group">
-                                <label class="form-control-label" for="tableedit">Or:</label>
-                                <input type="text" name="Med" id="tableedit" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="form-group">
-                                <label class="form-control-label" for="tableedit1">Use:</label>
-                                <input type="text" name="Med" id="tableedit1" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                            </div>
-                        </td><td>
-                            <div class="form-group">
-                                <label class="form-control-label" for="tableedit2">Input:</label>
-                                <input type="text" name="Med" id="tableedit2" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-group">
-                                <label class="form-control-label" for="tableedit3">To:</label>
-                                <input type="text" name="Med" id="tableedit3" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-group">
-                                <label class="form-control-label" for="tableedit4">Change:</label>
-                                <input type="text" name="Med" id="tableedit4" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-group">
-                                <label class="form-control-label" for="tableedit5">Them?:</label>
-                                <input type="text" name="Med" id="tableedit5" class="form-control" placeholder="E.g. Activity"  size="40"/>
-                            </div>
-                        </td>
-
-                </tr>
-
-                <tr>
-                    <th style="text-align:center;">12:00 - 01:00</th>
-
-                        <td>We</td>
-                        <td>can</td>
-                        <td>try</td>
-                        <td>contenteditable</td>
-                        <td>true</td>
-                        <td>too</td>
-
-
-                </tr>
-
-                <tr>
-                    <th style="text-align:center;">01:00 - 02:00</th>
-
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-
-
-                </tr>
-
-                <tr>
-                    <th style="text-align:center;">02:00 - 03:00</th>
-
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-
-                </tr>
-
-            </table>
-                <button class="btn btn-primary" type="button" style="margin-top:10px;" onclick="addRow()">More Row</button>
-                <button class="btn btn-danger" type="button" style="margin-top:10px;" onclick="removeRow()">Delete Row</button>
-            </div>
-        </div>
+{#    <div id="menu1" class="tab-pane fade">#}
+{#        <!-- schedule -->#}
+{#        <div id="schedule" class="container-fluid text-center">#}
+{##}
+{#            <h2> Schedule </h2>#}
+{#            <h4> Your timings </h4>#}
+{##}
+{##}
+{#            <table width="80%" align="center" id="scheduleTable">#}
+{#                <tr>#}
+{#                    <th class="toprow">Time</th>#}
+{#                    <th class="toprow">Monday</th>#}
+{#                    <th class="toprow">Tuesday</th>#}
+{#                    <th class="toprow">Wednesday</th>#}
+{#                    <th class="toprow">Thursday</th>#}
+{#                    <th class="toprow">Friday</th>#}
+{#                    <th class="toprow">Saturday</th>#}
+{#                </tr>#}
+{##}
+{#                <tr>#}
+{#                    <th style="text-align:center;">10:00 - 11:00</th>#}
+{##}
+{#                        <td>On</td>#}
+{#                        <td>click</td>#}
+{#                        <td>=</td>#}
+{#                        <td>change</td>#}
+{#                        <td>then</td>#}
+{#                        <td>Submit?</td>#}
+{##}
+{#                </tr>#}
+{##}
+{#                <tr>#}
+{#                    <th style="text-align:center;">11:00 - 12:00</th>#}
+{##}
+{#                        <td>#}
+{#                            <div class="form-group">#}
+{#                                <label class="form-control-label" for="tableedit">Or:</label>#}
+{#                                <input type="text" name="Med" id="tableedit" class="form-control" placeholder="E.g. Activity"  size="40"/>#}
+{#                            </div>#}
+{#                        </td>#}
+{##}
+{#                        <td>#}
+{#                            <div class="form-group">#}
+{#                                <label class="form-control-label" for="tableedit1">Use:</label>#}
+{#                                <input type="text" name="Med" id="tableedit1" class="form-control" placeholder="E.g. Activity"  size="40"/>#}
+{#                            </div>#}
+{#                        </td><td>#}
+{#                            <div class="form-group">#}
+{#                                <label class="form-control-label" for="tableedit2">Input:</label>#}
+{#                                <input type="text" name="Med" id="tableedit2" class="form-control" placeholder="E.g. Activity"  size="40"/>#}
+{#                            </div>#}
+{#                        </td>#}
+{#                        <td>#}
+{#                            <div class="form-group">#}
+{#                                <label class="form-control-label" for="tableedit3">To:</label>#}
+{#                                <input type="text" name="Med" id="tableedit3" class="form-control" placeholder="E.g. Activity"  size="40"/>#}
+{#                            </div>#}
+{#                        </td>#}
+{#                        <td>#}
+{#                            <div class="form-group">#}
+{#                                <label class="form-control-label" for="tableedit4">Change:</label>#}
+{#                                <input type="text" name="Med" id="tableedit4" class="form-control" placeholder="E.g. Activity"  size="40"/>#}
+{#                            </div>#}
+{#                        </td>#}
+{#                        <td>#}
+{#                            <div class="form-group">#}
+{#                                <label class="form-control-label" for="tableedit5">Them?:</label>#}
+{#                                <input type="text" name="Med" id="tableedit5" class="form-control" placeholder="E.g. Activity"  size="40"/>#}
+{#                            </div>#}
+{#                        </td>#}
+{##}
+{#                </tr>#}
+{##}
+{#                <tr>#}
+{#                    <th style="text-align:center;">12:00 - 01:00</th>#}
+{##}
+{#                        <td>We</td>#}
+{#                        <td>can</td>#}
+{#                        <td>try</td>#}
+{#                        <td>contenteditable</td>#}
+{#                        <td>true</td>#}
+{#                        <td>too</td>#}
+{##}
+{##}
+{#                </tr>#}
+{##}
+{#                <tr>#}
+{#                    <th style="text-align:center;">01:00 - 02:00</th>#}
+{##}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{##}
+{##}
+{#                </tr>#}
+{##}
+{#                <tr>#}
+{#                    <th style="text-align:center;">02:00 - 03:00</th>#}
+{##}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{#                        <td></td>#}
+{##}
+{#                </tr>#}
+{##}
+{#            </table>#}
+{#                <button class="btn btn-primary" type="button" style="margin-top:10px;" onclick="addRow()">More Row</button>#}
+{#                <button class="btn btn-danger" type="button" style="margin-top:10px;" onclick="removeRow()">Delete Row</button>#}
+{#            </div>#}
+{#        </div>#}
 </div>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded",docIsReady);
+function docIsReady() {
+    var medName = document.getElementById("medName").value;
+
+    if (medName == "Dextromethorphan (Cough)") {
+        document.getElementById("medDesc").value = "Dextromethorphan's primary use is as a cough suppressant, relieving coughs associated with the flu and the common cold, including minor throat and bronchial irritations.";
+        document.getElementById("sideEffect").value = "Less serious side effects of dextromethorphan include: Vomiting. Drowsiness. Nausea. Dizziness. Diarrhea. Constipation. Nervousness. Restlessness.";
+
+    }
+    else if (medName == "Paracetamol (Cold)") {
+        document.getElementById("medDesc").value = "Paracetamol is a pain reliever and a fever reducer. The exact mechanism of action of is not known. Paracetamol is used to treat many conditions such as headache, muscle aches, arthritis, backache, toothaches, colds, and fevers.";
+        document.getElementById("sideEffect").value = "Loss of appetite, nausea, vomiting, stomach pain, sweating, and confusion or weakness. Later symptoms may include pain in your upper stomach, dark urine, and yellowing of your skin or the whites of your eyes.";
+    }
+    else if (medName == "Acetaminophen (Fever)") {
+        document.getElementById("medDesc").value = "Acetaminophen is a pain reliever and a fever reducer. Acetaminophen is used to treat many conditions such as headache, muscle aches, arthritis, backache, toothaches, colds, and fevers.";
+        document.getElementById("sideEffect").value = "Nausea, vomiting, loss of appetite, or severe stomach pain.";
+    }
+    else if (medName == "Antiemetic (Nausea)") {
+        document.getElementById("medDesc").value = "An antiemetic is a drug that is effective against vomiting and nausea. Antiemetics are typically used to treat motion sickness and the side effects of opioid analgesics, general anaesthetics, antipsychotic medication and chemotherapy directed against cancer. They may be used for severe cases of gastroenteritis, especially if the patient is dehydrated.";
+        document.getElementById("sideEffect").value = "Gastrointestinal disturbance";
+    }
+    else if (medName == "Diclofenac (Stomach Ache)") {
+        document.getElementById("medDesc").value = "Diclofenac is a nonsteroidal anti-inflammatory drug taken or applied to reduce inflammation and as an analgesic reducing pain in certain conditions.";
+        document.getElementById("sideEffect").value = "Dyspepsia, nausea, abdominal pain, constipation, headache, dizziness, rash, and drowsiness. More serious (and rarer) reactions include stroke, high blood pressure, GI bleed, and heart attack.";
+    }
+    else {
+         document.getElementById("medDesc").value = "";
+         document.getElementById("sideEffect").value = "";
+    }
+}
+</script>
 {% endblock %}
