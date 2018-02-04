@@ -24,46 +24,26 @@
             $('.food').hide();
             $('#indian').show();
 
-            $('#malay').reset();
-            $('#chinese').reset();
-            $('#western').reset();
-            $('#international').reset();
         }
         else if ($(this).attr('value') === 'Malay Cuisine') {
             $('.food').hide();
             $('#malay').show();
 
-            $('#indian').reset();
-            $('#chinese').reset();
-            $('#western').reset();
-            $('#international').reset();
         }
         else if ($(this).attr('value') === 'Chinese Cuisine') {
             $('.food').hide();
             $('#chinese').show();
 
-            $('#malay').reset();
-            $('#indian').reset();
-            $('#western').reset();
-            $('#international').reset();
         }
         else if ($(this).attr('value') === 'Western Cuisine') {
             $('.food').hide();
             $('#western').show();
 
-            $('#malay').reset();
-            $('#chinese').reset();
-            $('#indian').reset();
-            $('#international').reset();
         }
         else if ($(this).attr('value') === 'International Cuisine') {
             $('.food').hide();
             $('#international').show();
 
-            $('#malay').reset();
-            $('#chinese').reset();
-            $('#western').reset();
-            $('#indian').reset();
         }
         else {
             $('.food').hide();
@@ -76,46 +56,26 @@
             $('.food').hide();
             $('#indian').show();
 
-            $('#malay').reset();
-            $('#chinese').reset();
-            $('#western').reset();
-            $('#international').reset();
         }
         else if (foodType === 'Malay Cuisine') {
             $('.food').hide();
             $('#malay').show();
 
-            $('#indian').reset();
-            $('#chinese').reset();
-            $('#western').reset();
-            $('#international').reset();
         }
         else if (foodType === 'Chinese Cuisine') {
             $('.food').hide();
             $('#chinese').show();
 
-            $('#malay').reset();
-            $('#indian').reset();
-            $('#western').reset();
-            $('#international').reset();
         }
         else if (foodType === 'Western Cuisine') {
             $('.food').hide();
             $('#western').show();
 
-            $('#malay').reset();
-            $('#chinese').reset();
-            $('#indian').reset();
-            $('#international').reset();
         }
         else if (foodType === 'International Cuisine') {
             $('.food').hide();
             $('#international').show();
 
-            $('#malay').reset();
-            $('#chinese').reset();
-            $('#western').reset();
-            $('#indian').reset();
         }
         else {
             $('.food').hide();
@@ -132,6 +92,7 @@
       <h3> Select food choice </h3>
         <h3><strong><em> Day {{ days }} </em></strong> </h3>
         <h4> <em>Please select only one option!</em> </h4>
+        <h5> <em>*All options are halal* </em> </h5>
         <form method="POST" action="/menu/">
 
             <div class="form-group" style="margin:30px;" id="foodname">
@@ -140,22 +101,37 @@
 
             <div  style="margin:30px;" id="indian" class="food" onclick="$(this).show()">
                 {{  render_field(form.indian,style="list-style:none;") }}
+                <label for="indian-0"><p style="margin:1px;"> Appam </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/appam.JPG"></label>
+                <label for="indian-1"><p style="margin:1px"> Prata </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/prata.jpg"/></label>
+                <label for="indian-2"><p style="margin:1px"> Nasi Briyani </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/nasi%20briyani.jpg"/></label>
             </div>
 {##}
             <div  style="margin:30px;" id="malay" class="food" onclick="$(this).show() ">
                 {{  render_field(form.malay,style="list-style:none;") }}
+                <label for="malay-0"><p style="margin:1px;"> Mee Rebus </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/mee%20rebus.jpg"></label>
+                <label for="malay-1"><p style="margin:1px;"> Mee Siam </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/mee%20siam.jpg"></label>
+                <label for="malay-2"><p style="margin:1px;"> Nasi Lemak </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/nasi%20lemak.jpg"></label>
             </div>
 {##}
             <div  style="margin:30px;" id="chinese" class="food" onclick="$(this).show()">
                 {{  render_field(form.chinese,style="list-style:none;") }}
+                <label for="chinese-0"><p style="margin:1px;"> Chicken Rice </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/chicken%20rice.jpg"></label>
+                <label for="chinese-1"><p style="margin:1px;"> Shredded Chicken Porridge </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/shredded%20chicken%20porridge.jpg"></label>
+                <label for="chinese-2"><p style="margin:1px;"> Handmade Noodles </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/ban%20mian.jpg"></label>
             </div>
 
             <div  style="margin:30px;" id="western" class="food" onclick="$(this).show()">
                 {{  render_field(form.western,style="list-style:none;") }}
+                <label for="western-0"><p style="margin:1px;"> Chicken Chop </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/chicken%20chop.jpg"></label>
+                <label for="western-1"><p style="margin:1px;"> Fish & Chips </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/fish%20&%20chips.jpg"></label>
+                <label for="western-2"><p style="margin:1px;"> Bolognese Spaghetti </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/bolognese%20spaghetti.jpg"></label>
             </div>
 {##}
             <div  style="margin:30px;" id="international" class="food" onclick="$(this).show()">
                 {{  render_field(form.international,style="list-style:none;") }}
+                <label for="international-0"><p style="margin:1px;"> Paella </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/paella.jpg"></label>
+                <label for="international-1"><p style="margin:1px;"> Swedish Meatballs  </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/swedish%20meatballs%20&%20mashed%20potatoes.jpg"></label>
+                <label for="international-2"><p style="margin:1px;"> Mediterranean Grilled Bass </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/mediterranean%20sea%20bass.jpeg"></label>
             </div>
 {##}
 {#            <div class="form-group" style="margin:30px;">#}

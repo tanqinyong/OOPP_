@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField, FileField, IntegerField
 from werkzeug.utils import secure_filename
 import random, datetime, os
-from datetime import timedelta
+from datetime import timedelta, date
 from threading import Timer
 now = datetime.datetime.now()
 print(now.strftime("%d/%m/%Y %H:%M"))
@@ -71,10 +71,10 @@ class FoodOrderForm(Form):
 
 
 # Trainee page
-class TraineeForm(Form):
-    name = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
-    comment = TextAreaField('Comment:')
-    submit = SubmitField('Enter')
+# class TraineeForm(Form):
+#    name = StringField('Name:',[validators.DataRequired(),validators.Length(min=1, max=30)])
+#    comment = TextAreaField('Comment:')
+#    submit = SubmitField('Enter')
 
 
 # Patient info page
@@ -233,6 +233,7 @@ def render_admin():
                 'password': new_staff.get_password(),
                 'image_name': new_staff.get_image_name(),
             })
+
             hospital_admin = root.child("Staff").get()
             for data in hospital_admin:
                 datainfo = hospital_admin[data]
@@ -700,9 +701,38 @@ def render_staff_profile(id):
 
     return render_template('staff_profile.html', eachstaff = staff)
 
-@app.route('/billing/')
+
+@app.route('/billing')
 def render_billing():
-    return render_template('billing.html')
+    pat_info = root.child('patient_info').get()
+
+    for key, val in pat_info.items():
+        time_list = val["time"].split()
+        date_list = time_list[2].split("/")
+        date_in = date(int(date_list[2]), int(date_list[1]), int(date_list[0]))
+        days_full = date.today() - date_in
+        days_string = str(days_full)
+        days_list = days_string.split()
+        days = int(days_list[0])
+
+        ward = val["ward"]
+        if ward == "A":
+            cost = 466.52
+        elif ward == "B1":
+            cost = 251.45
+        elif ward == "B2":
+            cost = 75
+        elif ward == "C":
+            cost = 35
+
+        medicine1 = val["med1"]
+        medicine2 = val["med2"]
+        medicine3 = val["med3"]
+
+    service_fee = 50
+    operation_fee = 5000
+
+    return render_template('billing.html', ward=ward, ward_cost=cost, stay_in_days=days, med1=medicine1, med2=medicine2, med3=medicine3, service=service_fee, operation=operation_fee)
 
 
 @app.route('/nursecallpage/',methods=['GET','POST'])
@@ -710,9 +740,10 @@ def render_nurse():
         # DAYS
         # FOOD ORDER
         Food_Order = root.child('Food_Order').get()
-        print(Food_Order)
+        Nurses_calling = root.child('Nurse Call').get()
         id_list = []
         list = []
+        nurse_list = []
         for i in Food_Order:
             eachorder = Food_Order[i]
             order = FoodOrder(eachorder['foodname'],eachorder['day'],eachorder['user_id'],eachorder['indian'],eachorder['malay'],eachorder['chinese'],eachorder['western'],eachorder['international'])
@@ -729,14 +760,21 @@ def render_nurse():
                'symptom': newcall.get_reason(),
                'id': newcall.get_user_id()
              })
-            flash('A nurse will attend to you shortly.','success')
+
+            flash('A nurse will attend to you shortly.', 'success')
+            return redirect(url_for('render_nurse'))
+
+        for n in Nurses_calling:
+            eachnurse = Nurses_calling[n]
+            call = NurseCall(eachnurse['symptom'],eachnurse['id'])
+            nurse_list.append(call)
 
         # FOOD ORDER
         # client.api.account.messages.create(
         #     to="+12316851234",
         #     from_="+15555555555",
         #     body="Hello there!")
-        return render_template('nursecallpage.html',orders = list,nurse = nurse_form,id_list=id_list)
+        return render_template('nursecallpage.html',orders = list,nurse = nurse_form,id_list=id_list,nurse_list=nurse_list)
 
 
 
@@ -777,11 +815,16 @@ def logout():
 @app.route('/menu/', methods = ['GET','POST'])
 def render_menu():
     form = FoodOrderForm(request.form)
+
+    # getting the number of days
     now_unformatted = datetime.datetime.now()
     now = now_unformatted.strftime("%d%m%y")
     days = int(session["login_date"][0:2]) - int(now[0:2])
-    print(days) # zero
-    if request.method =='POST' and form.validate():
+
+    # getting timing for breakfast, lunch or dinner
+
+
+    if request.method == 'POST' and form.validate():
             neworder = FoodOrder(form.foodname.data,days+1,session["user_id"],form.indian.data,form.malay.data,form.chinese.data,form.western.data,form.international.data)
             neworder_db = root.child('Food_Order')
             neworder_db.push ({
