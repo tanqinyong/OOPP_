@@ -90,8 +90,19 @@
     <h1 style="text-align: center;"> Menu </h1>
     <div class="section-content">
       <h3> Select food choice </h3>
-        <h3><strong><em> Day {{ days }} </em></strong> </h3>
-        <h4> <em>Please select only one option!</em> </h4>
+        <h3><strong><em> Day {{ days }}
+            {% if 11 >= hours >= 7 %}
+                <h4> Breakfast (will be served 30 minutes after your order) </h4>
+            {% elif  14 > hours > 11 %}
+                <h4> Lunch (will be served 30 minutes after your order) </h4>
+            {% elif 22 > hours > 17 %}
+                <h4> Dinner (will be served 30 minutes after your order) </h4>
+            {% else %}
+                <h4> Extra order </h4>
+            {% endif %}
+        </em></strong> </h3>
+        <h4 style="color:red"> <em>Please select only one option!</em> </h4>
+        <h4 style="color:red"> <em> Re-Ordering your food for the same meal will update it! </em></h4>
         <h5> <em>*All options are halal* </em> </h5>
         <form method="POST" action="/menu/">
 
@@ -109,8 +120,8 @@
             <div  style="margin:30px;" id="malay" class="food" onclick="$(this).show() ">
                 {{  render_field(form.malay,style="list-style:none;") }}
                 <label for="malay-0"><p style="margin:1px;"> Mee Rebus </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/mee%20rebus.jpg"></label>
-                <label for="malay-1"><p style="margin:1px;"> Mee Siam </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/mee%20siam.jpg"></label>
-                <label for="malay-2"><p style="margin:1px;"> Nasi Lemak </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/nasi%20lemak.jpg"></label>
+                <label for="malay-1"><p style="margin:1px;"> Nasi Lemak </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/nasi%20lemak.jpg"></label>
+                <label for="malay-2"><p style="margin:1px;"> Mee Siam </p><img style="width:180px;height:120px;border-radius:10px;margin:10px;" src="/static/images/mee%20siam.jpg"></label>
             </div>
 {##}
             <div  style="margin:30px;" id="chinese" class="food" onclick="$(this).show()">
@@ -148,6 +159,9 @@
                 {{ render_field(form.submit ,class="button-menu", value="Enter",style="padding:5px;font-size:20px;width:100px") }}
                 <label for="submit"> </label>
             </div>
+{#            <div style="display:inline" >#}
+{#                <input type="submit" id="configreset" value="Update" class="button-menu" style="padding:5px;font-size: 20px;width:100px">#}
+{#            </div>#}
         </form>
     </div>
 </main>
