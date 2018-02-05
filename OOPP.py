@@ -43,6 +43,11 @@ app.secret_key = "toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ"
 app.config['SESSION_TYPE'] = 'filesystem'
 
 
+# twilio shit
+class Housekeeping(Form):
+    submit = SubmitField('Call Us!')
+
+
 class LoginForm(Form):
     username = StringField('Staff ID:', [validators.DataRequired()])
     password = PasswordField('Password:', [validators.DataRequired()])
@@ -57,7 +62,7 @@ class PatientLogin(Form):
 
 # Nurse Call Page
 class NurseCallForm(Form):
-    problem = SelectMultipleField("", choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
+    problem = SelectMultipleField(validators.DataRequired(),"", choices=[("Heart","Heart"),("Extremities","Extremities"),("Headache","Headache"),("Stomach","Stomach"),("Nausea","Nausea"),("Breathing","Breathing")],option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
     submit = SubmitField('Enter')
 
 
@@ -322,10 +327,10 @@ def render_admin():
                 setid.set_patient_id(data)
                 print(data)
             flash(new_patient.get_name() +' added!(Patient)'+ ' User = '+username + ' Password = '+password, 'success')
-            # client.api.account.messages.create(
-            #     to="+6592211065",
-            #     from_="+18636927542",
-            #     body="Your user is: {} and password: {}".format(username,password))
+            client.api.account.messages.create(
+                to="+6592211065",
+                from_="+18636927542",
+                body="Your user is: {} and password: {}".format(username,password))
 
     return render_template('Admin.html',form=admin_form)
 
@@ -738,10 +743,9 @@ def render_billing():
 
 @app.route('/nursecallpage/',methods=['GET','POST'])
 def render_nurse():
-        # DAYS
         # FOOD ORDER
         Food_Order = root.child('Food_Order').get()
-        Nurses_calling = root.child('Nurse Call').get()
+        Nurse_Call = root.child('Nurse Call').get()
         id_list = []
         list = []
         nurse_list = []
@@ -755,33 +759,44 @@ def render_nurse():
         else:
             pass
 
-
         # NURSE CALL
         nurse_form = NurseCallForm(request.form)
         if request.method == 'POST' and nurse_form.validate():
             newcall = NurseCall(nurse_form.problem.data,session['user_id'])
+            print(newcall.get_reason())
             newcall_db = root.child('Nurse Call')
-            newcall_db.push ({
-               'symptom': newcall.get_reason(),
-               'id': newcall.get_user_id()
-             })
+            if newcall.get_reason() != []:
+                newcall_db.push ({
+                   'symptom': newcall.get_reason(),
+                   'id': newcall.get_user_id()
+                 })
 
-            flash('A nurse will attend to you shortly.', 'success')
-            return redirect(url_for('render_nurse'))
+                flash('A nurse will attend to you shortly.', 'success')
+                return redirect(url_for('render_nurse'))
+            else:
+                flash('Incomplete Nurse Call Form! Try again.', 'danger')
+                return redirect(url_for('render_nurse'))
 
-        if Nurses_calling is not None:
-            for n in Nurses_calling:
-                eachnurse = Nurses_calling[n]
-                call = NurseCall(eachnurse['symptom'],eachnurse['id'])
-                nurse_list.append(call)
+        if Nurse_Call is not None:
+            for n in Nurse_Call:
+                try:
+                    eachnurse = Nurse_Call[n]
+                    call = NurseCall(eachnurse['symptom'],eachnurse['id'])
+                    nurse_list.append(call)
+                except KeyError:
+                    continue
+
         else:
             pass
 
-        # FOOD ORDER
-        # client.api.account.messages.create(
-        #     to="+12316851234",
-        #     from_="+15555555555",
-        #     body="Hello there!")
+        # HOUSEKEEPING
+        # housekeeping_form = Housekeeping(request.form)
+        # if request.method == 'POST' and housekeeping_form.validate():
+        #     client.api.account.messages.create(
+        #         to="+6592211065",
+        #         from_="+18636927542",
+        #         body="You have called for housekeeping services.Your user is: {}. You will be attended to shortly.".format(session['user_id']))
+
         return render_template('nursecallpage.html',orders = list,nurse = nurse_form,id_list=id_list,nurse_list=nurse_list)
 
 
@@ -854,8 +869,30 @@ def render_menu():
         # testing
         neworder_db = root.child('Food_Order').order_by_child('user_id').equal_to(session['user_id']).get()
         nigger = root.child('Food_Order').get()
-        # if nigga is empty
+
+        # if nigga is empty (empty database)
         if nigger is None:
+            print('push')
+            # new class + push into db
+            neworder = FoodOrder(form.foodname.data, days, session["user_id"], form.indian.data, form.malay.data,
+                                 form.chinese.data, form.western.data, form.international.data, meal)
+            neworder_db = root.child('Food_Order')
+            neworder_db.push({
+                'day': neworder.get_days(),
+                'user_id': neworder.get_patient_id(),
+                'foodname': neworder.get_foodname(),
+                'indian': neworder.get_indian(),
+                'malay': neworder.get_malay(),
+                'chinese': neworder.get_chinese(),
+                'western': neworder.get_western(),
+                'international': neworder.get_international(),
+                'meal': neworder.get_meal(),
+            })
+            flash('Success! Your order has been received!', 'success')
+            return redirect(url_for("render_nurse"))
+
+        # if you havent ordered yet
+        if neworder_db == {}:
             print('push')
             # new class + push into db
             neworder = FoodOrder(form.foodname.data, days, session["user_id"], form.indian.data, form.malay.data,
@@ -878,27 +915,27 @@ def render_menu():
         for key, val in neworder_db.items():
             print(key)
             print(val)
-            if val['day'] == days:
-                if val['meal'] == meal:
-                    # update
-                    print('update')
-                    neworder = FoodOrder(form.foodname.data, days, session["user_id"], form.indian.data, form.malay.data, form.chinese.data, form.western.data, form.international.data,meal)
-                    neworder_db = root.child('Food_Order/'+ key)
-                    neworder_db.set({
-                        'day': neworder.get_days(),
-                        'user_id': neworder.get_patient_id(),
-                        'foodname': neworder.get_foodname(),
-                        'indian': neworder.get_indian(),
-                        'malay': neworder.get_malay(),
-                        'chinese': neworder.get_chinese(),
-                        'western': neworder.get_western(),
-                        'international': neworder.get_international(),
-                        'meal': neworder.get_meal(),
-                    })
-                    flash('Successfully updated! Your order has been updated! ', 'success')
-                    return redirect(url_for("render_nurse"))
+            if val['day'] == days and val['meal'] == meal :
+                # update
+                print('update')
+                neworder = FoodOrder(form.foodname.data, days, session["user_id"], form.indian.data, form.malay.data, form.chinese.data, form.western.data, form.international.data,meal)
+                neworder_db = root.child('Food_Order/'+ key)
+                neworder_db.set({
+                    'day': neworder.get_days(),
+                    'user_id': neworder.get_patient_id(),
+                    'foodname': neworder.get_foodname(),
+                    'indian': neworder.get_indian(),
+                    'malay': neworder.get_malay(),
+                    'chinese': neworder.get_chinese(),
+                    'western': neworder.get_western(),
+                    'international': neworder.get_international(),
+                    'meal': neworder.get_meal(),
+                })
+                flash('Successfully updated! Your order has been updated! ', 'success')
+                return redirect(url_for("render_nurse"))
 
             else:
+                # if diff day or meal of the day
                 print('push')
                 # new class + push into db
                 neworder = FoodOrder(form.foodname.data, days,session["user_id"],form.indian.data,form.malay.data,form.chinese.data,form.western.data,form.international.data,meal)
@@ -942,6 +979,17 @@ def delete_order(id):
     order_db.delete()
     flash('Order Deleted', 'success')
 
+    return redirect(url_for('render_nurse'))
+
+
+@app.route('/housekeeping/',methods=['POST'])
+def housekeeping():
+    client.api.account.messages.create(
+        to="+6592211065",
+        from_="+18636927542",
+        body="Housekeeping has been called for patient ID {}.".format(session['user_id']))
+
+    flash('You have called for housekeeping services they will attend to you shortly ', 'success')
     return redirect(url_for('render_nurse'))
 
 

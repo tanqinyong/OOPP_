@@ -246,6 +246,7 @@ td:hover
                 {% if order == orders[-1]%}
                     <p> Category: {{ order.get_foodname() }}</p>
                     <p> Day: {{ order.get_days() }} </p>
+                    <p> Meal: {{ order.get_meal() }}</p>
                     <p> Chosen Options: </p>
                     <p> {{ order.get_indian() }}</p>
                     <p> {{ order.get_malay() }}</p>
@@ -255,8 +256,6 @@ td:hover
                     <form action="{{url_for('delete_order', id=id_list[-1])}}" method="post">
                     <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
                     </form>
-        {% else %}
-                    <p> No order has been made</p>
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -290,9 +289,12 @@ td:hover
         <p> We provide cleaning services and aid patients in their ADLs (activities of daily living) </p>
     </div>
 
-    <div class="col-md-3">
-        <button class="button-menu" style="vertical-align:middle;" onclick=""><span> <h3> Call us! </h3> </span></button>
-    </div>
+{#    <div class="col-md-3">#}
+{#        <button class="button-menu" style="vertical-align:middle;" onclick="{{ twilio(True) }}"><span> <h3> Call us! </h3> </span></button>#}
+{#    </div>#}
+    <form action="{{url_for('housekeeping')}}" method="post">
+            <input type="submit" value="Call Us!" class="button-menu" onclick="return confirm('Are you sure you want to call for housekeeping?');">
+    </form>
     </div>
 </div>
 
