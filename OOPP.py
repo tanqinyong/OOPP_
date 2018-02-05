@@ -650,51 +650,37 @@ def delete_med(medicine, id):
 
     return redirect(url_for("render_patient_info_editor"))
 
-@app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
-def render_staff_profile(id):
-
-    url = "Staff/" + id
-    print(url)
-
-    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
-    staff =''
-
-    form = StaffProfile(request.form)
-
-    print(eachstaff)
-
-    staff_id = ''
+@app.route('/staff_profile/', methods=['POST', 'GET'])
+def render_staff_profile():
+    eachstaff = root.child('Staff').get()
 
     for k, v in eachstaff.items():
-        print(k, v)
-        # print(v['username'])
-        # print(v['password'])
-        staff_id = k
-        print(staff_id)
-        staff = Staff(v["name"], v["nric"], v["gender"], v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'])
-        staff.set_staffid(v["username"])
-        # staff.set_st(v)
-        # print(staff.get_st())
-        # list.append(staff)
-
-    print(request.method)
-    # url = "Staff/" + staff_id
-    # print(url)
+        if v["username"] == session["user_id"]:
+            get_database_id = k
+            get_name = v["name"]
+            get_nric = v["nric"]
+            get_dob = v["dob"]
+            get_email = v["email"]
+            get_address = v["address"]
+            get_gender = v["gender"]
+            get_phone_no = v["phone_no"]
+            get_image_name = v["image_name"]
+            get_username = v["username"]
+            get_password = v["password"]
 
     if request.method == 'POST':
-        print("hello")
-        name = form.name.data  # redundant
-        nric = form.nric.data
-        gender = form.gender.data
-        dob = form.dob.data
-        email = form.email.data
-        phone_no = form.phone_no.data
-        username = form.username.data
-        address = form.address.data
-        image_name = ""
+        name = request.form["name"]  # redundant
+        nric = request.form["nric"]
+        gender = request.form["gender"]
+        dob = request.form["dob"]
+        email = request.form["email"]
+        phone_no = request.form["phone_no"]
+        address = request.form["address"]
+        username = request.form["username"]
+        password = request.form["password"]
+        image_name = get_image_name
 
-        st = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
-        st = root.child('Staff/' + staff_id)
+        st = root.child('Staff/' + get_database_id)
         st.set({
             "name": name,
             "nric": nric,
@@ -702,22 +688,15 @@ def render_staff_profile(id):
             "dob": dob,
             "email": email,
             "phone_no": phone_no,
-            "username": username,
             "address": address,
+            "username": username,
+            "password": password,
             "image_name": image_name
         })
         flash('You have successfully updated your profile!')
 
-        # redirect(url_for(point_p))
-    # staff.set_staff_profile(id)
-    # def alert():            #function to update database Staff
+    return render_template('staff_profile.html', get_username= get_username, get_password=get_password, get_image_name=get_image_name, get_name=get_name, get_nric=get_nric, get_gender=get_gender, get_dob=get_dob, get_email=get_email, get_phone_no=get_phone_no, get_address=get_address)
 
-
-    #
-    # alert1 = alert()
-    # list.append(alert1)
-
-    return render_template('staff_profile.html', eachstaff=staff)
 
 
 @app.route('/billing/')
