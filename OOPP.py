@@ -4,9 +4,8 @@ from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, S
 from werkzeug.utils import secure_filename
 import random, datetime, os
 from datetime import timedelta
+import time
 from threading import Timer
-now = datetime.datetime.now()
-print(now.strftime("%d/%m/%Y %H:%M"))
 # Classes and shit
 from Food_Order import FoodOrder
 # from Nurse_call import NurseCall
@@ -710,12 +709,16 @@ def render_nurse():
         id_list = []
         list = []
         nurse_list = []
-        for i in Food_Order:
-            eachorder = Food_Order[i]
-            order = FoodOrder(eachorder['foodname'],eachorder['day'],eachorder['user_id'],eachorder['indian'],eachorder['malay'],eachorder['chinese'],eachorder['western'],eachorder['international'])
-            # order.set_foodid(food_id)
-            list.append(order)
-            id_list.append(i)
+        if Food_Order is not None:
+            for i in Food_Order:
+                eachorder = Food_Order[i]
+                order = FoodOrder(eachorder['foodname'],eachorder['day'],eachorder['user_id'],eachorder['indian'],eachorder['malay'],eachorder['chinese'],eachorder['western'],eachorder['international'],eachorder['meal'])
+                # order.set_foodid(food_id)
+                list.append(order)
+                id_list.append(i)
+        else:
+            pass
+
 
         # NURSE CALL
         nurse_form = NurseCallForm(request.form)
@@ -785,31 +788,102 @@ def render_menu():
     # getting the number of days
     now_unformatted = datetime.datetime.now()
     now = now_unformatted.strftime("%d%m%y")
-    days = int(session["login_date"][0:2]) - int(now[0:2])
+    days = int(now[0:2]) - int(session["login_date"][0:2])
+    days = days + 1
 
     # getting timing for breakfast, lunch or dinner
+    current_time = datetime.datetime.now().strftime('%H%M%S')
+    hours = current_time[0:2]
+    hours = int(hours)
 
+    # check what meal it is
+    meal = "extra order"
+    if 11 >= hours >= 7:
+        meal = "breakfast"
+    elif 14 > hours > 11:
+        meal = "lunch"
+    elif 22 > hours > 17:
+        meal = "dinner"
+
+    # neworder_db = root.child('Food_Order').order_by_child('user_id').equal_to(session['user_id']).get()
+    # for key, val in neworder_db.items():
+    #     print(key)
+    #     print(val)
+    #     print(val['day'])
 
     if request.method == 'POST' and form.validate():
-            neworder = FoodOrder(form.foodname.data,days+1,session["user_id"],form.indian.data,form.malay.data,form.chinese.data,form.western.data,form.international.data)
+        # testing
+        neworder_db = root.child('Food_Order').order_by_child('user_id').equal_to(session['user_id']).get()
+        nigger = root.child('Food_Order').get()
+        # if nigga is empty
+        if nigger is None:
+            print('push')
+            # new class + push into db
+            neworder = FoodOrder(form.foodname.data, days, session["user_id"], form.indian.data, form.malay.data,
+                                 form.chinese.data, form.western.data, form.international.data, meal)
             neworder_db = root.child('Food_Order')
-            neworder_db.push ({
-            'day': neworder.get_days(),
-            'user_id':neworder.get_patient_id(),
-            'foodname': neworder.get_foodname(),
-            'indian':neworder.get_indian(),
-            'malay':neworder.get_malay(),
-            'chinese':neworder.get_chinese(),
-            'western':neworder.get_western(),
-            'international':neworder.get_international()
+            neworder_db.push({
+                'day': neworder.get_days(),
+                'user_id': neworder.get_patient_id(),
+                'foodname': neworder.get_foodname(),
+                'indian': neworder.get_indian(),
+                'malay': neworder.get_malay(),
+                'chinese': neworder.get_chinese(),
+                'western': neworder.get_western(),
+                'international': neworder.get_international(),
+                'meal': neworder.get_meal(),
             })
-            flash('Success!','success')
+            flash('Success! Your order has been received!', 'success')
+            return redirect(url_for("render_nurse"))
+
+        for key, val in neworder_db.items():
+            print(key)
+            print(val)
+            if val['day'] == days:
+                if val['meal'] == meal:
+                    # update
+                    print('update')
+                    neworder = FoodOrder(form.foodname.data, days, session["user_id"], form.indian.data, form.malay.data, form.chinese.data, form.western.data, form.international.data,meal)
+                    neworder_db = root.child('Food_Order/'+ key)
+                    neworder_db.set({
+                        'day': neworder.get_days(),
+                        'user_id': neworder.get_patient_id(),
+                        'foodname': neworder.get_foodname(),
+                        'indian': neworder.get_indian(),
+                        'malay': neworder.get_malay(),
+                        'chinese': neworder.get_chinese(),
+                        'western': neworder.get_western(),
+                        'international': neworder.get_international(),
+                        'meal': neworder.get_meal(),
+                    })
+                    flash('Successfully updated! Your order has been updated! ', 'success')
+                    return redirect(url_for("render_nurse"))
+
+            else:
+                print('push')
+                # new class + push into db
+                neworder = FoodOrder(form.foodname.data, days,session["user_id"],form.indian.data,form.malay.data,form.chinese.data,form.western.data,form.international.data,meal)
+                neworder_db = root.child('Food_Order')
+                neworder_db.push ({
+                'day': neworder.get_days(),
+                'user_id':neworder.get_patient_id(),
+                'foodname': neworder.get_foodname(),
+                'indian':neworder.get_indian(),
+                'malay':neworder.get_malay(),
+                'chinese':neworder.get_chinese(),
+                'western':neworder.get_western(),
+                'international':neworder.get_international(),
+                'meal':neworder.get_meal(),
+                })
+                flash('Success! Your order has been received!','success')
+                return redirect(url_for("render_nurse"))
+
             return redirect(url_for("render_nurse"))
 
     elif request.method == 'GET':
-        return render_template('menu.html', form=form, days=days+1)
+        return render_template('menu.html', form=form, days=days, current_time=current_time,hours = hours)
 
-    return render_template('menu.html', form=form, days =days+1)
+    return render_template('menu.html', form=form, days =days, current_time=current_time, hours = hours)
 
 @app.route('/trainee_notes/')
 def render_trainee_notes():

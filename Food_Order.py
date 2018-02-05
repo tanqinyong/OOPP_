@@ -1,5 +1,5 @@
 class FoodOrder:
-    def __init__(self, foodname, days, patient_id, indian, malay, chinese, western, international):
+    def __init__(self, foodname, days, patient_id, indian, malay, chinese, western, international, meal):
         self.__foodname = foodname
         self.__days = days
         self.__patient_id = patient_id
@@ -8,8 +8,12 @@ class FoodOrder:
         self.__chinese = chinese
         self.__western = western
         self.__international = international
+        self.__meal = meal
 
     # Accessor methods
+    def get_meal(self):
+        return self.__meal
+
     def get_foodname(self):
         return self.__foodname
 
@@ -35,6 +39,9 @@ class FoodOrder:
         return self.__international
 
     # Mutator methods
+    def set_meal(self,meal):
+        self.__meal = meal
+
     def set_foodname(self,foodname):
         self.__foodname = foodname
 

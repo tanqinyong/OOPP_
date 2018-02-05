@@ -241,8 +241,9 @@ td:hover
         <!-- Display option chosen + delete -->
         <div class="col-sm-3">
             <h3> Option chosen: </h3>
+        {% if orders != null %}
             {% for order in orders %}
-                {% if order == orders[-1] %}
+                {% if order == orders[-1]%}
                     <p> Category: {{ order.get_foodname() }}</p>
                     <p> Day: {{ order.get_days() }} </p>
                     <p> Chosen Options: </p>
@@ -251,18 +252,21 @@ td:hover
                     <p> {{ order.get_chinese() }}</p>
                     <p> {{ order.get_western() }}</p>
                     <p> {{ order.get_international() }}</p>
+        {% else %}
+                <p> No order has been made</p>
 
 {#                    <p> Quantity: {{ order.get_price() }}</p>#}
 {#                    <p> Price: {{ order.get_quantity() }}</p>#}
 
 {#                    <a href="/update_order/{{order.get_food_id()}}" class="btn btn-warning">Update</a>#}
 
-                    <form action="{{url_for('delete_order', id=id_list[-1])}}" method="post">
-                        <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
-                    </form>
 
                 {% endif %}
             {% endfor %}
+        {% endif %}
+            <form action="{{url_for('delete_order', id=id_list[-1])}}" method="post">
+                <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
+            </form>
         </div>
 
     </div>
