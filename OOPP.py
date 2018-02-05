@@ -246,17 +246,17 @@ def render_admin():
                 'password': new_staff.get_password(),
                 'image_name': new_staff.get_image_name(),
             })
-            hospital_admin = root.child("Staff").get()
-            for data in hospital_admin:
-                datainfo = hospital_admin[data]
-                setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"],
-                                   datainfo["address"], datainfo["gender"], datainfo["occupation"],
-                                   datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
-                                   datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
-                                   datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
-                                   datainfo["username"], datainfo["password"], datainfo["image_name"])
-                setid.set_patient_id(data)
-                print(data)
+            # hospital_admin = root.child("Staff").get()
+            # for data in hospital_admin:
+            #     datainfo = hospital_admin[data]
+            #     setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"],
+            #                        datainfo["address"], datainfo["gender"], datainfo["occupation"],
+            #                        datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
+            #                        datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
+            #                        datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
+            #                        datainfo["username"], datainfo["password"], datainfo["image_name"])
+            #     setid.set_patient_id(data)
+            #     print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
             client.api.account.messages.create(
                 to="+6592211065",
@@ -701,6 +701,7 @@ def render_staff_profile(id):
             "address": address,
             "image_name": image_name
         })
+        flash('You have successfully updated your profile!')
 
         # redirect(url_for(point_p))
     # staff.set_staff_profile(id)
