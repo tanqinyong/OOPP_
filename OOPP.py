@@ -9,12 +9,12 @@ import time
 from threading import Timer
 # Classes and shit
 from Food_Order import FoodOrder
- from Nurse_call import NurseCall
- from Patient_Info import Edit_Patient
+# from Nurse_call import NurseCall
+# from Patient_Info import Edit_Patient
 from Hospital import *
 from scaledrone import Scaledrone
 import json
-from Admin import Staff, Patient
+# from Admin import Staff, Patient
 
 # TWILIO
 # /usr/bin/env python
@@ -923,11 +923,12 @@ def render_menu():
 
 @app.route('/trainee_notes/')
 def render_trainee_notes():
-    drone = Scaledrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+    drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
     room = 'observable-room'
     message = {'foo': 'bar'}
     response = drone.publish(room, json.dumps(message))
     print(response)
+
     return render_template('trainee_notes.html')
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
