@@ -14,13 +14,22 @@
       <li>Ward: {{ ward }}</li>
       <li>No. of days of hospital stay: {{ stay_in_days }}</li>
      </ul>
-     <h4>Medical Fee: ${{ med1 + med2 + med3 }}</h4>
+     <h4>Medical Fee: ${{ medicine_cost }}</h4>
      <ul>
-      <li>XXX medicine: ${{ med1 }}</li>
-      <li>YYY medicine: ${{ med2 }}</li>
-      <li>ZZZ medicine: ${{ med3 }}</li>
+         {% for i, j in med.items() %}
+             {% if j["medName"] == "Dextromethorphan (Cough)" %}
+                 <li>{{ j["medName"] }}: $20</li>
+             {% elif j["medName"] == "Paracetamol (Cold)" %}
+                 <li>{{ j["medName"] }}: $5</li>
+             {% elif j["medName"] == "Acetaminophen (Fever)" %}
+                 <li>{{ j["medName"] }}: $10</li>
+             {% elif j["medName"] == "Antiemetic (Nausea)" %}
+                 <li>{{ j["medName"] }}: $15</li>
+             {% elif j["medName"] == "Diclofenac (Stomach Ache)" %}
+                 <li>{{ j["medName"] }}: $10</li>
+             {% endif %}
+         {% endfor %}
      </ul>
-      <h4>Services: ${{ service }} </h4>
       <h4>Operation: ${{ operation }}</h4>
       <br><button class="btn btn-default btn-lg">Pay now/More Details?</button>
     </div>
@@ -30,7 +39,7 @@
       <h2><span class="glyphicon glyphicon-info-sign" style="font-size:40px"></span>Something statistical I suppose?</h2>
    </div>
    <div class="col-sm-12">
-      <h2>Total Hospital Bill: ${{ med1 + med2 + med3 + service + operation}}</h2>
+      <h2>Total Hospital Bill: ${{ medicine_cost + operation}}</h2>
    </div>
   </div>
 </div>

@@ -713,37 +713,50 @@ def render_staff_profile(id):
 
     return render_template('staff_profile.html', eachstaff=staff)
 
-@app.route('/billing')
+
+@app.route('/billing/')
 def render_billing():
+    med = root.child("Medicine/" + session["user_id"]).get()
+    med_cost = 0
+    for i, j in med.items():
+        if j["medName"] == "Dextromethorphan (Cough)":
+            med_cost += 20
+        elif j["medName"] == "Paracetamol (Cold)":
+            med_cost += 5
+        elif j["medName"] == "Acetaminophen (Fever)":
+            med_cost += 10
+        elif j["medName"] == "Antiemetic (Nausea)":
+            med_cost += 15
+        elif j["medName"] == "Diclofenac (Stomach Ache)":
+            med_cost += 10
+
     pat_info = root.child('patient_info').get()
-
     for key, val in pat_info.items():
-        time_list = val["time"].split()
-        date_list = time_list[2].split("/")
-        date_in = date(int(date_list[2]), int(date_list[1]), int(date_list[0]))
-        days_full = date.today() - date_in
-        days_string = str(days_full)
-        days_list = days_string.split()
-        days = int(days_list[0])
+        if val["newthing"] == session["user_id"]:
+            time_list = val["time"].split()
+            date_list = time_list[2].split("/")
+            date_in = date(int(date_list[2]), int(date_list[1]), int(date_list[0]))
+            days_full = date.today() - date_in
+            days_string = str(days_full)
+            days_list = days_string.split()
+            if days_list[0] == "0:00:00":
+                days = 1
+            else:
+                days = int(days_list[0])
 
-        ward = val["ward"]
-        if ward == "A":
-            cost = 466.52
-        elif ward == "B1":
-            cost = 251.45
-        elif ward == "B2":
-            cost = 75
-        elif ward == "C":
-            cost = 35
+            ward = val["ward"]
+            if ward == "A":
+                cost = 466.52
+            elif ward == "B1":
+                cost = 251.45
+            elif ward == "B2":
+                cost = 75
+            elif ward == "C":
+                cost = 35
 
-        medicine1 = val["med1"]
-        medicine2 = val["med2"]
-        medicine3 = val["med3"]
-
-    service_fee = 50
     operation_fee = 5000
 
-    return render_template('billing.html', ward=ward, ward_cost=cost, stay_in_days=days, med1=medicine1, med2=medicine2, med3=medicine3, service=service_fee, operation=operation_fee)
+    return render_template('billing.html', ward=ward, ward_cost=cost, stay_in_days=days, med=med, medicine_cost=med_cost, operation=operation_fee)
 
 
 @app.route('/nursecallpage/',methods=['GET','POST'])
