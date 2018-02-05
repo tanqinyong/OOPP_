@@ -645,51 +645,69 @@ def delete_med(medicine, id):
 
     return redirect(url_for("render_patient_info_editor"))
 
-@app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
-def render_staff_profile(id):
+@app.route('/staff_profile/', methods=['POST', 'GET'])
+def render_staff_profile():
 
-    url = "Staff/" + id
-    print(url)
+    #url = "Staff/" + id
+    #print(url)
 
-    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
-    staff =''
+    #staff =''
 
-    form = StaffProfile(request.form)
+    #print(eachstaff)
 
-    print(eachstaff)
+    #staff_id = ''
 
-    staff_id = ''
+    eachstaff = root.child('Staff').get()
 
     for k, v in eachstaff.items():
-        print(k, v)
+        if v["username"] == session["user_id"]:
+            get_database_id = k
+            get_name = v["name"]
+            get_nric = v["nric"]
+            get_dob = v["dob"]
+            get_email = v["email"]
+            get_address = v["address"]
+            get_gender = v["gender"]
+            get_phone_no = v["phone_no"]
+            get_image_name = v["image_name"]
+            get_username = v["username"]
+            get_password = v["password"]
+        #print(k, v)
         # print(v['username'])
         # print(v['password'])
-        staff_id = k
-        print(staff_id)
-        staff = Staff(v["name"], v["nric"], v["gender"], v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'])
-        staff.set_staffid(v["username"])
+
+        #staff_id = k
+        #print(staff_id)
+        #staff = Staff(v["name"], v["nric"], v["gender"], v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'])
+        #staff.set_staffid(v["username"])
+
         # staff.set_st(v)
         # print(staff.get_st())
         # list.append(staff)
 
-    print(request.method)
+    #print(request.method)
     # url = "Staff/" + staff_id
     # print(url)
 
+    #form = StaffProfile(request.form)
     if request.method == 'POST':
-        print("hello")
-        name = form.name.data  # redundant
-        nric = form.nric.data
-        gender = form.gender.data
-        dob = form.dob.data
-        email = form.email.data
-        phone_no = form.phone_no.data
-        username = form.username.data
-        address = form.address.data
-        image_name = ""
+        name = request.form["name"]  # redundant
+        nric = request.form["nric"]
+        gender = request.form["gender"]
+        dob = request.form["dob"]
+        email = request.form["email"]
+        phone_no = request.form["phone_no"]
+        address = request.form["address"]
+        username = request.form["username"]
+        password = request.form["password"]
+        image_name = get_image_name
 
-        st = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
-        st = root.child('Staff/' + staff_id)
+        # username = request.form["username"]
+        #image_name = ""
+
+        #st = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
+
+        st = root.child('Staff/' + get_database_id)
         st.set({
             "name": name,
             "nric": nric,
@@ -697,8 +715,9 @@ def render_staff_profile(id):
             "dob": dob,
             "email": email,
             "phone_no": phone_no,
-            "username": username,
             "address": address,
+            "username": username,
+            "password": password,
             "image_name": image_name
         })
         flash('You have successfully updated your profile!')
@@ -712,7 +731,7 @@ def render_staff_profile(id):
     # alert1 = alert()
     # list.append(alert1)
 
-    return render_template('staff_profile.html', eachstaff=staff)
+    return render_template('staff_profile.html', get_username= get_username, get_password=get_password, get_image_name=get_image_name, get_name=get_name, get_nric=get_nric, get_gender=get_gender, get_dob=get_dob, get_email=get_email, get_phone_no=get_phone_no, get_address=get_address)
 
 
 @app.route('/billing/')
@@ -951,7 +970,7 @@ def render_menu():
 
 @app.route('/trainee_notes/')
 def render_trainee_notes():
-    drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+    drone = Scaledrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
     room = 'observable-room'
     message = {'foo': 'bar'}
     response = drone.publish(room, json.dumps(message))

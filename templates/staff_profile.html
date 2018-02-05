@@ -54,6 +54,8 @@ td:hover
 {#    <li><a data-toggle="tab" href="#menu1">History</a></li>#}
 {#</ul>#}
 
+
+
 <div class="tab-content">
 <!-- STAFF PROFILE -->
 <div id="home" class="tab-pane fade in active">
@@ -61,13 +63,13 @@ td:hover
 <div class="container">
     <h1>Profile</h1>
   	<hr>
-    <form method="POST" action="/staff_profile/{{ eachstaff.get_staffid }}">
+    <form method="POST" action="/staff_profile/">
 	<div class="row">
       <!-- left column -->
         <div class="col-md-3">
             <div class="text-center">
 {#          <img src="//placehold.it/100" >#}
-            <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ eachstaff.get_image_name() }}" class="avatar img-circle" alt="avatar">
+            <img style="border-radius: 50%; height:250px; width:250px" src="../../static/images/{{ get_image_name }}" class="avatar img-circle" alt="avatar">
             </div>
         </div>
 
@@ -82,70 +84,72 @@ td:hover
 {#      {% endif %}#}
 {#        <h3>Personal info</h3>#}
 
-        <form class="form-horizontal" role="form">
+        <form method="post" class="form-horizontal" role="form">
             <div class="form-group">
                 <label class="col-lg-3 control-label">Name:</label>
                 <div class="col-lg-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_name() }}>
+                    <input name="name" class="form-control" type="text" value={{ get_name }}>
                 </div>
             </div>
             <br><hr>
             <div class="form-group">
                 <label class="col-lg-3 control-label">NRIC:</label>
                 <div class="col-lg-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_nric() }} readonly>
+                    <input name="nric" class="form-control" type="text" value={{ get_nric }} readonly>
                 </div>
             </div>
             <br><hr>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Gender:</label>
                 <div class="col-lg-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_gender() }} readonly>
+                    <input name="gender" class="form-control" type="text" value={{ get_gender }} readonly>
                 </div>
             </div>
             <br><hr>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Birthday:</label>
                 <div class="col-lg-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_dob() }} readonly>
+                    <input name="dob" class="form-control" type="text" value={{ get_dob }} readonly>
                 </div>
             </div>
             <br><hr>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Email:</label>
                 <div class="col-lg-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_email() }}>
+                    <input name="email" class="form-control" type="text" value={{ get_email }}>
                 </div>
             </div>
             <br><hr>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Phone:</label>
                 <div class="col-lg-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_phone_no() }}>
+                    <input name="phone_no" class="form-control" type="text" value={{ get_phone_no }}>
                 </div>
             </div>
             <br><hr>
             <div class="form-group">
                 <label class="col-lg-3 control-label">Address:</label>
                 <div class="col-lg-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_address() }}>
+                    <input name="address" class="form-control" type="text" value={{ get_address }}>
                 </div>
             </div>
             <br><hr>
+
             <div class="form-group">
                 <label class="col-md-3 control-label">Username:</label>
                 <div class="col-md-8">
-                    <input class="form-control" type="text" value={{ eachstaff.get_username() }} readonly>
+                    <input name="username" class="form-control" type="text" value={{ get_username }} readonly>
                 </div>
             </div>
             <br><hr>
             <div class="form-group">
                 <label class="col-md-3 control-label">Password:</label>
                 <div class="col-md-8">
-                    <input class="form-control" type="password" value= {{ eachstaff.get_password }} readonly>
+                    <input name="password" class="form-control" type="password" value= {{ get_password }} readonly>
                 </div>
             </div>
             <br><hr>
+            <!--
             <div class="form-group">
                 <label class="col-md-3 control-label">Change password:</label>
                 <div class="col-md-8">
@@ -153,6 +157,7 @@ td:hover
                 </div>
             </div>
             <br><hr>
+            -->
             <div class="form-group">
                 <label class="col-md-3 control-label"></label>
                 <div class="col-md-8">
