@@ -165,8 +165,8 @@ td:hover
                         <th class="toprow">Pictures</th>
                         <th class="toprow" rowspan="7"> Previous Selection:
                             {%    for nurse_call in nurse_list  %}
-                            {% if nurse_call == nurse_list[-1] %}
-                            <p> {{ nurse_call.get_reason() }}</p>
+                            {% if nurse_call == nurse_list[-1]  %}
+                                <p> {{ nurse_call.get_reason() }}</p>
                             {% endif %}
                             {% endfor %}
 
@@ -241,7 +241,7 @@ td:hover
         <!-- Display option chosen + delete -->
         <div class="col-sm-3">
             <h3> Option chosen: </h3>
-        {% if orders != null %}
+        {% if orders != False %}
             {% for order in orders %}
                 {% if order == orders[-1]%}
                     <p> Category: {{ order.get_foodname() }}</p>
@@ -252,21 +252,18 @@ td:hover
                     <p> {{ order.get_chinese() }}</p>
                     <p> {{ order.get_western() }}</p>
                     <p> {{ order.get_international() }}</p>
+                    <form action="{{url_for('delete_order', id=id_list[-1])}}" method="post">
+                    <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
+                    </form>
         {% else %}
-                <p> No order has been made</p>
-
-{#                    <p> Quantity: {{ order.get_price() }}</p>#}
-{#                    <p> Price: {{ order.get_quantity() }}</p>#}
-
-{#                    <a href="/update_order/{{order.get_food_id()}}" class="btn btn-warning">Update</a>#}
-
-
+                    <p> No order has been made</p>
                 {% endif %}
             {% endfor %}
         {% endif %}
-            <form action="{{url_for('delete_order', id=id_list[-1])}}" method="post">
-                <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
-            </form>
+{#        {% if  %}#}
+{#            <form action="{{url_for('delete_order', id=id_list[-1])}}" method="post">#}
+{#                <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">#}
+{#            </form>#}
         </div>
 
     </div>
