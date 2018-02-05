@@ -108,7 +108,7 @@ class StaffProfile(Form):
     gender = SelectField("Gender", choices=[("Male", "Male"), ("Female", "Female"), ("Others", "Others")], default="")
     phone_no = StringField("Contact No")
     username = StringField('Username')
-
+    submitInfo = SubmitField("")
 
 # Admin Page
 # validations not yet done for AdminForm!!!!!!!!!!
@@ -650,91 +650,68 @@ def render_staff_profile(id):
 
     url = "Staff/" + id
     print(url)
-    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
-    list = []
 
-    # print(eachstaff)
+    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
+    staff =''
+
+    form = StaffProfile(request.form)
+
+    print(eachstaff)
+
+    staff_id = ''
 
     for k, v in eachstaff.items():
         print(k, v)
         # print(v['username'])
         # print(v['password'])
+        staff_id = k
+        print(staff_id)
         staff = Staff(v["name"], v["nric"], v["gender"], v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'])
+        staff.set_staffid(v["username"])
         # staff.set_st(v)
         # print(staff.get_st())
         # list.append(staff)
 
+    print(request.method)
+    # url = "Staff/" + staff_id
+    # print(url)
+
+    if request.method == 'POST':
+        print("hello")
+        name = form.name.data  # redundant
+        nric = form.nric.data
+        gender = form.gender.data
+        dob = form.dob.data
+        email = form.email.data
+        phone_no = form.phone_no.data
+        username = form.username.data
+        address = form.address.data
+        image_name = ""
+
+        st = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
+        st = root.child('Staff/' + staff_id)
+        st.set({
+            "name": name,
+            "nric": nric,
+            "gender": gender,
+            "dob": dob,
+            "email": email,
+            "phone_no": phone_no,
+            "username": username,
+            "address": address,
+            "image_name": image_name
+        })
+
+        # redirect(url_for(point_p))
     # staff.set_staff_profile(id)
-    def alert():            #function to update database Staff
-        form = StaffProfile(request.form)
-        if request.method == 'POST' and form.validate():
-            name = form.name.data  # redundant
-            nric = form.nric.data
-            gender = form.gender.data
-            dob = form.dob.data
-            email = form.email.data
-            phone_no = form.phone_no.data
-            username = form.username.data
-            address = form.address.data
-            image_name = ""
-
-            okay = root.child("Staff").order_by_child("username").equal_to(session["user_id"])
-            okay.set({
-                "name": name,
-                "nric": nric,
-                "gender": gender,
-                "dob": dob,
-                "email": email,
-                "phone_no": phone_no,
-                "username": username,
-                "address": address,
-                "image_name": image_name
-            })
-
-    alert1 = alert()
-    list.append(alert1)
-
-    return render_template('staff_profile.html', eachstaff=staff, updatealert=alert1)
-
-'''
-            print(session["user_id"])
-            for key, val in okay.items():
-            if session["user_id"] == val['username']:
-                staff_name = val["name"]
-                img_name = val["image_name"]
-            else:
-                staff_name = name
-                st = Staff(name, nric, gender, dob, email, phone_no, address, username, image_name)
-    else:
-        ok = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
-        for key, val in ok.items():
-            if session["user_id"] == val['username']:
-                session["staff_admin_info"] = key
-          # pat_name = val["name"]
-         # form.name.data = pat_name
-        datainfo = root.child("Staff/" + session["staff_admin_info"]).get()
-        data = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"],
-                          datainfo["gender"], datainfo["occupation"],
-                          datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
-                          datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
-                          datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
-                          datainfo["password"], datainfo["image_name"])
-
-        formstaff = root.child("staff_ino/" + session["staff_url"]).get()
-        staff_form = Staff(formstaff["name"], formstaff["illness"], formstaff["patientdesc"], formstaff["medicinedesc"],
-                                    formstaff["med1"], formstaff["med2"], formstaff["med3"],
-                                    formstaff["time"], formstaff["image_name"])
-
-        form.gender.data = staff_form.get_gender()
-        form.nric.data = staff_form.get_nric()
-        form.dob.data = staff_form.get_dob()
-        form.username.data = staff_form.get_username()
-        form.phone_no.data = staff_form.get_phone_no()
-        form.email.data = staff_form.get_email()
-        form.address.data = staff_form.get_address()
-        form.username.data = staff_form.get_username()'''
+    # def alert():            #function to update database Staff
 
 
+    #
+    # alert1 = alert()
+    # list.append(alert1)
+
+    return render_template('staff_profile.html', eachstaff=staff)
 
 @app.route('/billing')
 def render_billing():
@@ -977,5 +954,5 @@ if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
     #PLEASE KEEP IT AT PORT 80
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it

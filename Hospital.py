@@ -232,7 +232,14 @@ class Staff:
         self.__image_name = image_name
         self.__username = username
         self.__password = password
+        self.__staffid = ''
         # self.__ward = ward
+
+    def set_staffid(self, staffid):
+        self.__staffid = staffid
+
+    def get_staffid(self):
+        return self.__staffid
 
     def get_name(self):
         return self.__name
