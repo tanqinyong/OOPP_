@@ -2,7 +2,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField, FileField, IntegerField
 from werkzeug.utils import secure_filename
-from scaledrone import Scaledrone
 import random, datetime, os
 from datetime import timedelta, date
 from datetime import timedelta
@@ -13,6 +12,8 @@ from Food_Order import FoodOrder
 # from Nurse_call import NurseCall
 # from Patient_Info import Edit_Patient
 from Hospital import *
+from scaledrone import Scaledrone
+import json
 # from Admin import Staff, Patient
 
 # TWILIO
@@ -127,7 +128,6 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET','POST'])
 def render_login():
-    session.clear()
     form = PatientLogin(request.form)
     if request.method == "POST" and form.validate():
         username = form.username.data
@@ -923,13 +923,11 @@ def render_menu():
 
 @app.route('/trainee_notes/')
 def render_trainee_notes():
-    import json
     drone = Scaledrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
     room = 'observable-room'
     message = {'foo': 'bar'}
     response = drone.publish(room, json.dumps(message))
     print(response)
-
     return render_template('trainee_notes.html')
 
 @app.route('/delete_order/<string:id>', methods=['POST'])
