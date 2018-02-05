@@ -104,6 +104,17 @@ class Patient_Info(Form):
     #https://wtforms.readthedocs.io/en/latest/fields.html#wtforms.fields.FieldList
 
 
+class StaffProfile(Form):
+    name = StringField("Name", [validators.Length(min=1, max=30), validators.DataRequired()])
+    nric = StringField("NRIC")
+    dob = StringField("DOB")  # , format='%d/%m/%Y', validators=(validators.Optional(),))
+    email = StringField("Email")
+    address = StringField("Address", [validators.Length(min=1, max=30), validators.DataRequired()])
+    gender = SelectField("Gender", choices=[("Male", "Male"), ("Female", "Female"), ("Others", "Others")], default="")
+    phone_no = StringField("Contact No")
+    username = StringField('Username')
+    submitInfo = SubmitField("")
+
 # Admin Page
 # validations not yet done for AdminForm!!!!!!!!!!
 class AdminForm(Form):
@@ -240,17 +251,17 @@ def render_admin():
                 'password': new_staff.get_password(),
                 'image_name': new_staff.get_image_name(),
             })
-            hospital_admin = root.child("Staff").get()
-            for data in hospital_admin:
-                datainfo = hospital_admin[data]
-                setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"],
-                                   datainfo["address"], datainfo["gender"], datainfo["occupation"],
-                                   datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
-                                   datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
-                                   datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
-                                   datainfo["username"], datainfo["password"], datainfo["image_name"])
-                setid.set_patient_id(data)
-                print(data)
+            # hospital_admin = root.child("Staff").get()
+            # for data in hospital_admin:
+            #     datainfo = hospital_admin[data]
+            #     setid = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"],
+            #                        datainfo["address"], datainfo["gender"], datainfo["occupation"],
+            #                        datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
+            #                        datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
+            #                        datainfo["emergency_contact_relationship"], datainfo["maritalstatus"],
+            #                        datainfo["username"], datainfo["password"], datainfo["image_name"])
+            #     setid.set_patient_id(data)
+            #     print(data)
             flash(new_staff.get_name() +' added!(Staff)'+ ' User = '+username + ' Password = '+password, 'success')
             client.api.account.messages.create(
                 to="+6592211065",
@@ -641,104 +652,117 @@ def delete_med(medicine, id):
 
 @app.route('/staff_profile/<string:id>', methods=['POST', 'GET'])
 def render_staff_profile(id):
-    # id = 'S41745'
-    # url = "Staff/" + id
-    # print(url)
-    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
 
-    # print(eachstaff)
+    url = "Staff/" + id
+    print(url)
+
+    eachstaff = root.child('Staff').order_by_child('username').equal_to(id).get()
+    staff =''
+
+    form = StaffProfile(request.form)
+
+    print(eachstaff)
+
+    staff_id = ''
 
     for k, v in eachstaff.items():
         print(k, v)
         # print(v['username'])
         # print(v['password'])
-        staff = Staff(v["name"], v["nric"], v["gender"],  v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'], v['ward'])
+        staff_id = k
+        print(staff_id)
+        staff = Staff(v["name"], v["nric"], v["gender"], v["dob"], v["email"], v["phone_no"], v["address"], v['username'], v['password'], v['image_name'])
+        staff.set_staffid(v["username"])
+        # staff.set_st(v)
+        # print(staff.get_st())
+        # list.append(staff)
 
-    # staff.set_patient_id(id)
-    # form = AdminForm(request.form)
-    # if request.method == 'POST' and form.validate():
-    #     name = form.name.data  # redundant
-    #     gender = form.gender.data
-    #     nric = form.nric.data
-    #     dob = form.dob.data
-    #     username = form.username.data
-    #     phone_no = form.phone_no.data
-    #     email = form.email.data
-    #     address = form.address.data
-    #     ward = form.ward.data
-    #     okay = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
-    #     image_name = ""
-    #     print(session["user_id"])
-    #     for key, val in okay.items():
-    #         if session["user_id"] == val['username']:
-    #             staff_name = val["name"]
-    #             img_name = val["image_name"]
-    #         else:
-    #             staff_name = name
-    #     st = Staff(name, gender, nric, dob, username, phone_no, email, address, image_name, ward)
-    # else:
-    #     ok = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
-    #     for key, val in ok.items():
-    #         if session["user_id"] == val['username']:
-    #             session["staff_admin_info"] = key
-    #             # pat_name = val["name"]
-    #     # form.name.data = pat_name
-    #     datainfo = root.child("Staff/" + session["staff_admin_info"]).get()
-    #     data = Admin_Work(datainfo["name"], datainfo["nric"], datainfo["dob"], datainfo["email"], datainfo["address"],
-    #                        datainfo["gender"], datainfo["occupation"],
-    #                        datainfo["income"], datainfo["bloodtype"], datainfo["race"], datainfo["phone_no"],
-    #                        datainfo["emergency_contact_no"], datainfo["emergency_contact_address"],
-    #                        datainfo["emergency_contact_relationship"], datainfo["maritalstatus"], datainfo["username"],
-    #                        datainfo["password"], datainfo["image_name"])
+    print(request.method)
+    # url = "Staff/" + staff_id
+    # print(url)
+
+    if request.method == 'POST':
+        print("hello")
+        name = form.name.data  # redundant
+        nric = form.nric.data
+        gender = form.gender.data
+        dob = form.dob.data
+        email = form.email.data
+        phone_no = form.phone_no.data
+        username = form.username.data
+        address = form.address.data
+        image_name = ""
+
+        st = root.child("Staff").order_by_child("username").equal_to(session["user_id"]).get()
+        st = root.child('Staff/' + staff_id)
+        st.set({
+            "name": name,
+            "nric": nric,
+            "gender": gender,
+            "dob": dob,
+            "email": email,
+            "phone_no": phone_no,
+            "username": username,
+            "address": address,
+            "image_name": image_name
+        })
+        flash('You have successfully updated your profile!')
+
+        # redirect(url_for(point_p))
+    # staff.set_staff_profile(id)
+    # def alert():            #function to update database Staff
+
+
     #
-    #     formstaff = root.child("staff_ino/" + session["staff_url"]).get()
-    #     staff_form = Edit_Patient(formstaff["name"], formstaff["illness"], formstaff["patientdesc"], formstaff["medicinedesc"],
-    #                               formstaff["med1"], formstaff["med2"], formstaff["med3"],
-    #                               formstaff["time"], formstaff["image_name"], formstaff["ward"])
-    #
-    #     form.gender.data = staff_form.get_gender()
-    #     form.nric.data = staff_form.get_nric()
-    #     form.dob.data = staff_form.get_dob()
-    #     form.username.data = staff_form.get_username()
-    #     form.phone_no.data = staff_form.get_phone_no()
-    #     form.email.data = staff_form.get_email()
-    #     form.address.data = staff_form.get_address()
-    #     form.ward.data = staff_form.get_ward()
+    # alert1 = alert()
+    # list.append(alert1)
 
-    return render_template('staff_profile.html', eachstaff = staff)
+    return render_template('staff_profile.html', eachstaff=staff)
 
 
-@app.route('/billing')
+@app.route('/billing/')
 def render_billing():
+    med = root.child("Medicine/" + session["user_id"]).get()
+    med_cost = 0
+    for i, j in med.items():
+        if j["medName"] == "Dextromethorphan (Cough)":
+            med_cost += 20
+        elif j["medName"] == "Paracetamol (Cold)":
+            med_cost += 5
+        elif j["medName"] == "Acetaminophen (Fever)":
+            med_cost += 10
+        elif j["medName"] == "Antiemetic (Nausea)":
+            med_cost += 15
+        elif j["medName"] == "Diclofenac (Stomach Ache)":
+            med_cost += 10
+
     pat_info = root.child('patient_info').get()
-
     for key, val in pat_info.items():
-        time_list = val["time"].split()
-        date_list = time_list[2].split("/")
-        date_in = date(int(date_list[2]), int(date_list[1]), int(date_list[0]))
-        days_full = date.today() - date_in
-        days_string = str(days_full)
-        days_list = days_string.split()
-        days = int(days_list[0])
+        if val["newthing"] == session["user_id"]:
+            time_list = val["time"].split()
+            date_list = time_list[2].split("/")
+            date_in = date(int(date_list[2]), int(date_list[1]), int(date_list[0]))
+            days_full = date.today() - date_in
+            days_string = str(days_full)
+            days_list = days_string.split()
+            if days_list[0] == "0:00:00":
+                days = 1
+            else:
+                days = int(days_list[0])
 
-        ward = val["ward"]
-        if ward == "A":
-            cost = 466.52
-        elif ward == "B1":
-            cost = 251.45
-        elif ward == "B2":
-            cost = 75
-        elif ward == "C":
-            cost = 35
+            ward = val["ward"]
+            if ward == "A":
+                cost = 466.52
+            elif ward == "B1":
+                cost = 251.45
+            elif ward == "B2":
+                cost = 75
+            elif ward == "C":
+                cost = 35
 
-        medicine1 = val["med1"]
-        medicine2 = val["med2"]
-        medicine3 = val["med3"]
-
-    service_fee = 50
     operation_fee = 5000
 
-    return render_template('billing.html', ward=ward, ward_cost=cost, stay_in_days=days, med1=medicine1, med2=medicine2, med3=medicine3, service=service_fee, operation=operation_fee)
+    return render_template('billing.html', ward=ward, ward_cost=cost, stay_in_days=days, med=med, medicine_cost=med_cost, operation=operation_fee)
 
 
 @app.route('/nursecallpage/',methods=['GET','POST'])
@@ -997,5 +1021,5 @@ if __name__ == '__main__':
     # app.secret_key = 'toUUtBRQZqXHdVPLXDQH0FbIRs3heozyVGZPigXJ'
     app.debug = True
     #PLEASE KEEP IT AT PORT 80
-    app.run(port=80)
+    app.run(port=5000)
     #app.run(host = '0.0.0.0', port = 5000) not sure if this is how you change it
