@@ -927,11 +927,12 @@ def render_menu():
 
 @app.route('/trainee_notes/')
 def render_trainee_notes():
-    drone = Scaledrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+    drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
     room = 'observable-room'
     message = {'foo': 'bar'}
     response = drone.publish(room, json.dumps(message))
     print(response)
+
     return render_template('trainee_notes.html')
 
 
