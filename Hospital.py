@@ -220,7 +220,7 @@ class Medicine:
 
 # This is for staff
 class Staff:
-    def __init__(self, name, nric, gender, dob,  email, phone_no, address, username, password, image_name, ward):
+    def __init__(self, name, nric, gender, dob,  email, phone_no, address, username, password, image_name):
         # super().__init__(name, nric, username, password, image_name, ward, dob, email, address, gender, phone_no)
         self.__name = name
         self.__nric = nric
@@ -232,7 +232,7 @@ class Staff:
         self.__image_name = image_name
         self.__username = username
         self.__password = password
-        self.__ward = ward
+        # self.__ward = ward
 
     def get_name(self):
         return self.__name
@@ -264,11 +264,11 @@ class Staff:
     def set_image_name(self,image_name):
         self.__image_name=image_name
 
-    def get_ward(self):
-        return self.__ward
-
-    def set_ward(self,ward):
-        self.__ward = ward
+    # def get_ward(self):
+    #     return self.__ward
+    #
+    # def set_ward(self,ward):
+    #     self.__ward = ward
 
     def get_dob(self):
         return self.__dob
