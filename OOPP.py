@@ -9,12 +9,12 @@ import time
 from threading import Timer
 # Classes and shit
 from Food_Order import FoodOrder
-# from Nurse_call import NurseCall
-# from Patient_Info import Edit_Patient
+ from Nurse_call import NurseCall
+ from Patient_Info import Edit_Patient
 from Hospital import *
 from scaledrone import Scaledrone
 import json
-# from Admin import Staff, Patient
+from Admin import Staff, Patient
 
 # TWILIO
 # /usr/bin/env python
