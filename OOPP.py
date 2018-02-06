@@ -201,7 +201,7 @@ def render_login():
                     session['db_id'] = key
                     session['user_id'] = username
 
-                    return redirect(url_for('render_trainee_notes'))
+                    return redirect(url_for('render_staff_profile'))
                 else:
                     error = "Invalid Login"
                     flash(error, "danger")
@@ -717,6 +717,7 @@ def render_staff_profile():
             "image_name": image_name
         })
         flash('You have successfully updated your profile!')
+        return redirect(url_for('render_staff_profile'))
 
     return render_template('staff_profile.html', get_username= get_username, get_password=get_password, get_image_name=get_image_name, get_name=get_name, get_nric=get_nric, get_gender=get_gender, get_dob=get_dob, get_email=get_email, get_phone_no=get_phone_no, get_address=get_address)
 
