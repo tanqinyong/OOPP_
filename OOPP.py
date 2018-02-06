@@ -1,6 +1,6 @@
 # Flask, WTForms and cool shit
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField, FileField, IntegerField
+from wtforms import Form, StringField, TextAreaField, RadioField, SelectField, SubmitField, SelectMultipleField, validators, widgets, PasswordField, DateField, FileField, IntegerField, ValidationError
 from werkzeug.utils import secure_filename
 import random, datetime, os
 from datetime import timedelta, date
@@ -15,6 +15,7 @@ from Hospital import *
 from scaledrone import Scaledrone
 import json
 # from Admin import Staff, Patient
+from Payment import Payment_Info
 
 # TWILIO
 # /usr/bin/env python
@@ -136,6 +137,28 @@ class AdminForm(Form):
     maritalstatus = SelectField("Marital Status: ", choices=[("Married", "Married"), ("Single", "Single"), ("Divorced", "Divorced"), ("Widowed", "Widowed")], default="")
     image_name = FileField("Patient's Image: ") #not even used
 
+class Payment(Form):
+    type = RadioField("Type", [validators.InputRequired()], choices=[("card", "Credit/Debit card"), ("giro", "GIRO"), ("mail", "Cheque/Bank draft"), ("epay", "Internet/Mobile banking"), ("manual", "Cashier/Self-service stations")])
+    card_type = RadioField("Card", [validators.InputRequired()], choices=[("mastercard", "Mastercard"), ("visa", "Visa"), ("amex", "American Express")])
+    card_number = IntegerField("Card Number", [validators.InputRequired(message="No input")])
+    card_name = StringField("Card holder Name", [validators.Length(min=1, max=150), validators.InputRequired()])
+    card_expiry = StringField("Card Expiry Date", [validators.InputRequired(message="No input")])
+    card_cvc = IntegerField("Card CVC/CVV", [validators.InputRequired(message="No input")])
+
+
+def length(min=-1, max=-1):
+    message = 'Must be between %d and %d characters long.' % (min, max)
+
+    def _length(form, field):
+        l = field.data and len(field.data) or 0
+        if l < min or max != -1 and l > max:
+            raise ValidationError(message)
+
+    return _length
+
+
+
+#class Credit
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -744,6 +767,36 @@ def render_billing():
     return render_template('billing.html', ward=ward, ward_cost=cost, stay_in_days=days, med=med, medicine_cost=med_cost, operation=operation_fee)
 
 
+@app.route('/payment/', methods=['GET','POST'])
+def payment():
+    form = Payment(request.form)
+    if request.method == 'POST' and form.validate():
+        type = form.type.data
+        card_type = form.card_type.data
+        card_number = form.card_number.data
+        card_name = form.card_name.data
+        card_expiry = form.card_expiry.data
+        card_cvc = form.card_cvc.data
+
+        new_payment = Payment_Info(type, card_type, card_number, card_name, card_expiry, card_cvc)
+
+        new_payment_db = root.child('Payment')
+        new_payment_db.push({
+            'type': new_payment.get_type(),
+            'card_type': new_payment.get_card_type(),
+            "card_number": new_payment.get_card_number(),
+            "card_name": new_payment.get_card_name(),
+            "card_expiry": new_payment.get_card_expiry(),
+            "card_cvc": new_payment.get_card_cvc(),
+            "newthing": session["user_id"]
+        })
+
+        flash('Your card payment is submitted and will be processed within 3 working days.', 'success')
+        
+    return render_template('payment.html', form=form)
+
+
+
 @app.route('/nursecallpage/',methods=['GET','POST'])
 def render_nurse():
         # FOOD ORDER
@@ -967,7 +1020,7 @@ def render_menu():
 
 @app.route('/trainee_notes/')
 def render_trainee_notes():
-    drone = ScaleDrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
+    drone = Scaledrone('SNazg8KrKdwSphWf', 'fCw1xxKBLoYBFZuif4vRKgK3ibIdH6mk')
     room = 'observable-room'
     message = {'foo': 'bar'}
     response = drone.publish(room, json.dumps(message))
