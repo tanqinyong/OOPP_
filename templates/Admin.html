@@ -43,36 +43,36 @@
     <div id="box" class="container">
         <div>
             <h1>New Staff/Patient</h1>
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" >
                 <div class="form-group">
-                    {{ render_field(form.type) }} <input type=file name=file>
+                    {{ render_field(form.type,style="margin:5px;list-style:none;") }} <input type=file name=file>
                 </div>
                 <div class="form=group">
-                    {{ render_field(form.name) }} {{ render_field(form.nric) }} {{ render_field(form.gender) }}
+                    {{ render_field(form.name,style="margin:5px") }}  {{ render_field(form.nric,style="margin:5px") }}  {{ render_field(form.gender,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.dob) }} {{ render_field(form.race) }}
+                    {{ render_field(form.dob,style="margin:5px") }}  {{ render_field(form.race,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.bloodtype) }} {{ render_field(form.phone_no) }}
+                    {{ render_field(form.bloodtype,style="margin:5px") }}   {{ render_field(form.phone_no,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.email) }} {{ render_field(form.address) }}
+                    {{ render_field(form.email,style="margin:5px") }}   {{ render_field(form.address,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.occupation) }} {{ render_field(form.income) }}
+                    {{ render_field(form.occupation,style="margin:5px") }}   {{ render_field(form.income,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.maritalstatus) }}
+                    {{ render_field(form.maritalstatus,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.emergency_contact_no) }}
+                    {{ render_field(form.emergency_contact_no,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.emergency_contact_address) }}
+                    {{ render_field(form.emergency_contact_address,style="margin:5px") }}
                 </div>
                 <div class="form-group">
-                    {{ render_field(form.emergency_contact_relationship) }}
+                    {{ render_field(form.emergency_contact_relationship,style="margin:5px") }}
                 </div>
                 <button type="submit" class="btn btn-default">Submit</button>
             </form>
