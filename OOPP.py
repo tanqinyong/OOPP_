@@ -1026,6 +1026,8 @@ def render_trainee_notes():
     response = drone.publish(room, json.dumps(message))
     print(response)
 
+    username = session['user_id']
+
     return render_template('trainee_notes.html')
 
 
