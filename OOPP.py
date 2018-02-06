@@ -910,7 +910,7 @@ def render_menu():
     meal = "extra order"
     if 11 >= hours >= 7:
         meal = "breakfast"
-    elif 14 > hours > 11:
+    elif 14 >= hours > 11:
         meal = "lunch"
     elif 22 > hours > 17:
         meal = "dinner"
@@ -925,7 +925,6 @@ def render_menu():
         # testing
         neworder_db = root.child('Food_Order').order_by_child('user_id').equal_to(session['user_id']).get()
         nigger = root.child('Food_Order').get()
-
         # if nigga is empty (empty database)
         if nigger is None:
             print('push')
