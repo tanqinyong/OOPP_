@@ -21,7 +21,7 @@
         $('#mail').hide();
         $('#epay').hide();
         $('#manual').hide();
-        $('button').hide();
+        $('#submit').hide();
         $('input[type="radio"]').click(function(){
             if ($(this).attr('value') == 'card'){
                 $('#card, button').show();
@@ -74,9 +74,10 @@
         </div>
         </div>
 
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button id="submit" type="submit" class="btn btn-default">Submit</button>
     </form>
 
+    <a href="/invoice/"><button type="submit" class="btn btn-default">View invoice</button></a>
     <div id="giro">
         <p>Please click <a href="http://www.renci.org.sg/wp-content/uploads/2014/12/GIRODonation.pdf">here</a>
         to view the GIRO application form. Kindly print out and complete the form and mail it to.

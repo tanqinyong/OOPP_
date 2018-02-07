@@ -768,6 +768,27 @@ def render_billing():
     return render_template('billing.html', ward=ward, ward_cost=cost, stay_in_days=days, med=med, medicine_cost=med_cost, operation=operation_fee)
 
 
+@app.route('/invoice/')
+def render_invoice():
+    med = root.child("Medicine/" + session["user_id"]).get()
+    med_cost = 0
+    for i, j in med.items():
+        if j["medName"] == "Dextromethorphan (Cough)":
+            med_cost += 20
+        elif j["medName"] == "Paracetamol (Cold)":
+            med_cost += 5
+        elif j["medName"] == "Acetaminophen (Fever)":
+            med_cost += 10
+        elif j["medName"] == "Antiemetic (Nausea)":
+            med_cost += 15
+        elif j["medName"] == "Diclofenac (Stomach Ache)":
+            med_cost += 10
+
+    name = session["user_id"]
+
+    return render_template("invoice.html", medicine_cost=med_cost, name=name)
+
+
 @app.route('/payment/', methods=['GET','POST'])
 def payment():
     form = Payment(request.form)
